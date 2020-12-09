@@ -14,7 +14,7 @@ def index():
 @app.route('/users', methods=['POST'])
 def register_user():
     insert_user()
-    return 'OK'
+register_user()
 
 if __name__ == '__main__':
     app.run()
