@@ -62,3 +62,7 @@ node_labels3 = nx.get_node_attributes(GG,'Clase')
 nx.draw_networkx_labels(GG, pos, labels = node_labels3)
 
 plt.show()
+
+
+nx.write_gexf(GG, "randomGraph.gexf")
+nx.write_gexf(GG, "randomGraph2.gexf")
