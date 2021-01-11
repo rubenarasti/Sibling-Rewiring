@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+    <head>
+		<meta charset="utf-8">
+		<title>Subida de Archivos</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
+	</head>
+	<body>
+        <div class="Upload File">
+            <h1>Selecciona el archivo para subir</h1>
+            <p>
+            	{% with messages = get_flashed_messages() %}
+            	  {% if messages %}
+            		<ul class=flashes>
+            		{% for message in messages %}
+            		  <li>{{ message }}</li>
+            		{% endfor %}
+            		</ul>
+            	  {% endif %}
+            	{% endwith %}
+            </p>
+            
+            <form method=post enctype=multipart/form-data>
+              <input type=file name=file>
+              <input type=submit value=Subir>
+            </form>
+        </div>
+    </body>
+</html>
