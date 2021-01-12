@@ -3,7 +3,7 @@ import networkx as nx
 def test_same_graph():
         
     f1 = nx.read_gexf("randomGraph.gexf")
-    f2 = nx.read_gexf("randomGraph2.gexf")
+    f2 = nx.read_gexf("../Environment/sire/uploads/randomGraphuploaded.gexf")
     
     edges1 = f1.edges()
     edges2 = f2.edges()

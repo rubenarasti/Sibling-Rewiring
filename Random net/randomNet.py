@@ -66,3 +66,4 @@ plt.show()
 
 nx.write_gexf(GG, "randomGraph.gexf")
 nx.write_gexf(GG, "randomGraph2.gexf")
+nx.write_gexf(GG, "randomGraphuploaded.gexf")
