@@ -1,5 +1,6 @@
 import networkx as nx
 import random
+import pandas as pd
 from matplotlib import pyplot as plt
 
 totalNodos = 200
@@ -7,14 +8,14 @@ G = nx.Graph()
 siblings = []
 
 def create_initial_network():
-    GG = nx.Graph()
-    GG.add_nodes_from(range(totalNodos))
+    initial_network = nx.Graph()
+    initial_network.add_nodes_from(range(totalNodos))
 
     dicNombre = {}
     dicEtapa = {}
     dicCurso = {}
     dicClase = {}
-    nodos = list(GG.nodes())
+    nodos = list(initial_network.nodes())
     curso = 0
     etapa = (['infantil', 'primaria', 'secundaria'])
     clase = (['A', 'B', 'C'])
@@ -36,47 +37,82 @@ def create_initial_network():
         dicCurso[x] = curso
         dicClase[x] = selectedClase
         
-    nx.set_node_attributes(GG, dicNombre, 'Nombre')
-    nx.set_node_attributes(GG, dicEtapa, 'Etapa')
-    nx.set_node_attributes(GG, dicCurso, 'Curso')
-    nx.set_node_attributes(GG, dicClase, 'Clase')
+    nx.set_node_attributes(initial_network, dicNombre, 'Nombre')
+    nx.set_node_attributes(initial_network, dicEtapa, 'Etapa')
+    nx.set_node_attributes(initial_network, dicCurso, 'Curso')
+    nx.set_node_attributes(initial_network, dicClase, 'Clase')
     
     
-    copy = list(GG.nodes())
+    copy = list(initial_network.nodes())
     num = 10
     for i in range(0,num):
         node1 = random.choice(copy)
         node2 = random.choice(copy)
         edge = (node1,node2)
-        if edge not in GG.edges():
-            GG.add_edge(node1,node2)
+        if edge not in initial_network.edges():
+            initial_network.add_edge(node1,node2)
             siblings.append(edge)
+
+    pos=nx.kamada_kawai_layout(initial_network)
     
-    pos=nx.kamada_kawai_layout(GG)
-    
-    nx.draw(GG, pos)
-    node_labels = nx.get_node_attributes(GG,'Nombre')
-    nx.draw_networkx_labels(GG, pos, labels = node_labels)
-    node_labels1 = nx.get_node_attributes(GG,'Etapa')
-    nx.draw_networkx_labels(GG, pos, labels = node_labels1)
-    node_labels2 = nx.get_node_attributes(GG,'Curso')
-    nx.draw_networkx_labels(GG, pos, labels = node_labels2)
-    node_labels3 = nx.get_node_attributes(GG,'Clase')
-    nx.draw_networkx_labels(GG, pos, labels = node_labels3)
+    nx.draw(initial_network, pos)
+    node_labels = nx.get_node_attributes(initial_network,'Nombre')
+    nx.draw_networkx_labels(initial_network, pos, labels = node_labels)
+    node_labels1 = nx.get_node_attributes(initial_network,'Etapa')
+    nx.draw_networkx_labels(initial_network, pos, labels = node_labels1)
+    node_labels2 = nx.get_node_attributes(initial_network,'Curso')
+    nx.draw_networkx_labels(initial_network, pos, labels = node_labels2)
+    node_labels3 = nx.get_node_attributes(initial_network,'Clase')
+    nx.draw_networkx_labels(initial_network, pos, labels = node_labels3)
     
     plt.show()
     
     
-    nx.write_gexf(GG, "randomGraph.gexf")
-    nx.write_gexf(GG, "randomGraph2.gexf")
-    nx.write_gexf(GG, "randomGraphuploaded.gexf")
+    nx.write_gexf(initial_network, "randomGraph.gexf")
+    nx.write_gexf(initial_network, "randomGraph2.gexf")
+    nx.write_gexf(initial_network, "randomGraphuploaded.gexf")
     
-    return GG
+    return initial_network
 
-
-G = create_initial_network()
- 
-etapa = nx.get_node_attributes(G, 'Etapa')
-print(etapa[1])
-print(G.nodes())
+def create_siblings_matrix():
+    initial = nx.Graph()
+    initial = create_initial_network()
+    
+    siblings = []
+    nombre_siblings = []
+    etapa_siblings = []
+    curso_siblings = []
+    clase_siblings = []
+    matriz_hermanos = []
+    
+    nombres = nx.get_node_attributes(initial,'Nombre')
+    etapas = nx.get_node_attributes(initial,'Etapa')
+    cursos = nx.get_node_attributes(initial,'Curso')
+    clases = nx.get_node_attributes(initial,'Clase')
+    
+    for edge in initial.edges():
+        for e in edge:
+            if e not in siblings:
+                siblings.append(e)
+                nombre_siblings.append(nombres[e])
+                etapa_siblings.append(etapas[e])
+                curso_siblings.append(cursos[e])
+                clase_siblings.append(clases[e])
+                
+    for i in range(0,len(nombre_siblings)):
+        matriz_hermanos.append([nombre_siblings[i],etapa_siblings[i],curso_siblings[i],clase_siblings[i]])
+        
+    print(matriz_hermanos)
+    
+    data = {'nombre': nombre_siblings,
+        'etapa': etapa_siblings,
+        'curso' : curso_siblings,
+        'clase': clase_siblings}
+   
+    df_siblings = pd.DataFrame(data, columns = ['nombre','etapa', 'curso', 'clase'])
+    
+    return initial, df_siblings
+    
+G, siblings = create_siblings_matrix()
 print(siblings)
+print(siblings.values)
