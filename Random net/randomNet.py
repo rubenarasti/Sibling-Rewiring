@@ -101,7 +101,7 @@ def create_siblings_matrix():
                 
     for i in range(0,len(nombre_siblings)):
         matriz_hermanos.append([nombre_siblings[i],etapa_siblings[i],curso_siblings[i],clase_siblings[i]])
-        
+    print('Es la matriz de hermanos')   
     print(matriz_hermanos)
     
     data = {'nombre': nombre_siblings,
@@ -112,7 +112,71 @@ def create_siblings_matrix():
     df_siblings = pd.DataFrame(data, columns = ['nombre','etapa', 'curso', 'clase'])
     
     return initial, df_siblings
+
+def create_schoolyear_class_network(G):
+    initial = G
+    schoolyear_class = nx.Graph()
+    dicNombre = {}
+    dicEtapa = {}
+    dicCurso = {}
+    dicClase = {}
+    etapas = nx.get_node_attributes(initial,'Etapa')
+    clases = nx.get_node_attributes(initial,'Clase')
+    cursos = nx.get_node_attributes(initial,'Curso')
+    
+    for node in initial.nodes():
+        name = []
+        name.append(etapas[node])
+        name.append(cursos[node])
+        name.append(clases[node])
+        node_name = ''.join(str(e) for e in name)
+    
+        if node_name not in schoolyear_class.nodes():
+            schoolyear_class.add_node(node_name)
+            dicNombre[node_name] = node_name
+            dicEtapa[node_name] = etapas[node]
+            dicCurso[node_name] = cursos[node]
+            dicClase[node_name] = clases[node]
+    
+    nx.set_node_attributes(schoolyear_class, dicNombre, 'Nombre')
+    nx.set_node_attributes(schoolyear_class, dicEtapa, 'Etapa')
+    nx.set_node_attributes(schoolyear_class, dicCurso, 'Curso')
+    nx.set_node_attributes(schoolyear_class, dicClase, 'Clase')
+    
+        
+    for edge in initial.edges(): #para poner los enlaces 
+        sibling1 = []
+        sibling1.append(etapas[edge[0]])
+        sibling1.append(cursos[edge[0]])
+        sibling1.append(clases[edge[0]])
+        sibling1_name = ''.join(str(e) for e in sibling1)
+        
+        sibling2 = []
+        sibling2.append(etapas[edge[1]])
+        sibling2.append(cursos[edge[1]])
+        sibling2.append(clases[edge[1]])
+        sibling2_name = ''.join(str(e) for e in sibling2)
+        
+        if (sibling1_name,sibling2_name) not in schoolyear_class.edges():
+            schoolyear_class.add_edge(sibling1_name,sibling2_name)
+            schoolyear_class.edges[sibling1_name, sibling2_name]["peso"] = 0
+        else:
+            schoolyear_class.edges[sibling1_name, sibling2_name]["peso"] += 1
+        
+    print('enlaces de schoolyear_class')
+    print(schoolyear_class.edges(data=True))
+    
+    pos=nx.kamada_kawai_layout(schoolyear_class)
+    
+    nx.draw(schoolyear_class, pos)
+    node_labels = nx.get_node_attributes(schoolyear_class,'Nombre')
+    nx.draw_networkx_labels(schoolyear_class, pos, labels = node_labels)
+    edge_labels = nx.get_edge_attributes(schoolyear_class,'peso')
+    nx.draw_networkx_edge_labels(schoolyear_class, pos, labels = edge_labels)
+    
+    plt.show()
     
 G, siblings = create_siblings_matrix()
-print(siblings)
-print(siblings.values)
+create_schoolyear_class_network(G)
+#print(siblings)
+#print(siblings.values)
