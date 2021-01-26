@@ -59,6 +59,18 @@ def create_initial_network():
     nx.set_node_attributes(initial_network, dicCurso, 'Curso')
     nx.set_node_attributes(initial_network, dicClase, 'Clase')
     
+    nombres =  nx.get_node_attributes(initial_network,'Nombre')
+    etapas =  nx.get_node_attributes(initial_network,'Etapa')
+    cursos =  nx.get_node_attributes(initial_network,'Curso')
+    clases =  nx.get_node_attributes(initial_network,'Clase')
+    
+    for nodex in initial_network.nodes():
+        for nodey in initial_network.nodes():
+            if nombres[nodex] != nombres[nodey] and etapas[nodex]==etapas[nodey] and cursos[nodex]==cursos[nodey] and clases[nodex]==clases[nodey]:
+                enlace = (nodex, nodey)
+                if enlace not in initial_network.edges():
+                    initial_network.add_edge(nodex,nodey)
+                      
     copy = list(initial_network.nodes())
     num = 75
     for i in range(0,num):
@@ -68,7 +80,7 @@ def create_initial_network():
         if edge not in initial_network.edges():
             initial_network.add_edge(node1,node2)
             siblings.append(edge)
-
+    
     pos=nx.kamada_kawai_layout(initial_network)
     
     nx.draw(initial_network, pos)
@@ -84,9 +96,9 @@ def create_initial_network():
     plt.show()
     
     
-    nx.write_gexf(initial_network, "randomGraph.gexf")
-    nx.write_gexf(initial_network, "randomGraph2.gexf")
-    nx.write_gexf(initial_network, "randomGraphuploaded.gexf")
+    #nx.write_gexf(initial_network, "randomGraph.gexf")
+    #nx.write_gexf(initial_network, "randomGraph2.gexf")
+    #nx.write_gexf(initial_network, "randomGraphuploaded.gexf")
     
     return initial_network
    
@@ -118,8 +130,8 @@ def create_siblings_matrix():
                 
     for i in range(0,len(nombre_siblings)):
         matriz_hermanos.append([nombre_siblings[i],etapa_siblings[i],curso_siblings[i],clase_siblings[i]])
-    print('Es la matriz de hermanos')   
-    print(matriz_hermanos)
+    #print('Es la matriz de hermanos')   
+    #print(matriz_hermanos)
     
     data = {'nombre': nombre_siblings,
         'etapa': etapa_siblings,
@@ -180,9 +192,9 @@ def create_schoolyear_class_network(G):
         else:
             schoolyear_class.edges[sibling1_name, sibling2_name]["peso"] += 1
         
-    print('enlaces de schoolyear_class')
-    print(schoolyear_class.edges(data=True))
-    print(len(schoolyear_class.edges()))
+    #print('enlaces de schoolyear_class')
+    #print(schoolyear_class.edges(data=True))
+    #print(len(schoolyear_class.edges()))
     
     pos=nx.circular_layout(schoolyear_class)
     
@@ -195,8 +207,8 @@ def create_schoolyear_class_network(G):
     plt.show()
     
 G, siblings_matrix = create_siblings_matrix()
-print(siblings_matrix)
-print(siblings)
+#print(siblings_matrix)
+#print(siblings)
 #print(siblings.values)
-#create_schoolyear_class_network(G)
+create_schoolyear_class_network(G)
 #create_initial_network()
