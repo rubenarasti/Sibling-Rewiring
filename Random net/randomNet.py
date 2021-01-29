@@ -3,8 +3,10 @@ import random
 import pandas as pd
 from matplotlib import pyplot as plt
 
-totalAlumnos = 975
+totalAlumnos = 78
+#975
 G = nx.Graph()
+G_siblings = nx.Graph()
 siblings = []
 
 def create_initial_network():
@@ -72,7 +74,7 @@ def create_initial_network():
                     initial_network.add_edge(nodex,nodey)
                       
     copy = list(initial_network.nodes())
-    num = 75
+    num = 20
     for i in range(0,num):
         node1 = random.choice(copy)
         node2 = random.choice(copy)
@@ -100,12 +102,12 @@ def create_initial_network():
     #nx.write_gexf(initial_network, "randomGraph2.gexf")
     #nx.write_gexf(initial_network, "randomGraphuploaded.gexf")
     
-    return initial_network
+    return initial_network, siblings
    
 
 def create_siblings_matrix():
     initial = nx.Graph()
-    initial = create_initial_network()
+    initial, hermanos = create_initial_network()
     
     siblings = []
     nombre_siblings = []
@@ -119,7 +121,7 @@ def create_siblings_matrix():
     cursos = nx.get_node_attributes(initial,'Curso')
     clases = nx.get_node_attributes(initial,'Clase')
     
-    for edge in initial.edges():
+    for edge in hermanos:
         for e in edge:
             if e not in siblings:
                 siblings.append(e)
@@ -140,9 +142,9 @@ def create_siblings_matrix():
    
     df_siblings = pd.DataFrame(data, columns = ['nombre','etapa', 'curso', 'clase'])
     
-    return initial, df_siblings
+    return initial, hermanos, matriz_hermanos, df_siblings
 
-def create_schoolyear_class_network(G):
+def create_schoolyear_class_network(G, hermanos):
     initial = G
     schoolyear_class = nx.Graph()
     dicNombre = {}
@@ -173,7 +175,7 @@ def create_schoolyear_class_network(G):
     nx.set_node_attributes(schoolyear_class, dicClase, 'Clase')
     
         
-    for edge in initial.edges(): #para poner los enlaces 
+    for edge in hermanos: #para poner los enlaces 
         sibling1 = []
         sibling1.append(etapas[edge[0]])
         sibling1.append(cursos[edge[0]])
@@ -205,10 +207,32 @@ def create_schoolyear_class_network(G):
     nx.draw_networkx_edge_labels(schoolyear_class, pos, labels = edge_labels)
     
     plt.show()
+
+    return schoolyear_class
+
+
+
+def generate_neighbor(matrix, net):
+    clase = (['A', 'B', 'C'])
+    pos = random.randint(0,len(matrix))
+    sibling_to_change = matrix[pos]
     
-G, siblings_matrix = create_siblings_matrix()
-#print(siblings_matrix)
+    sibling_name = sibling_to_change[0]
+    new_class = random.choice(clase)
+    matrix[pos][3] = new_class
+    
+    dicClase = nx.get_node_attributes(G,'Clase')
+    dicClase[sibling_name] = new_class
+    nx.set_node_attributes(net, dicClase, 'Clase')
+    
+    return sibling_name, matrix, net
+
+
+G, hermanos, siblings_matrix, df_siblings = create_siblings_matrix()
+#print(df_siblings)
 #print(siblings)
 #print(siblings.values)
-create_schoolyear_class_network(G)
+#G_siblings = create_schoolyear_class_network(G, hermanos)
 #create_initial_network()
+generate_neighbor(siblings_matrix, G)
+
