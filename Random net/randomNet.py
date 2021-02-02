@@ -1,9 +1,10 @@
 import networkx as nx
+from math import e
 import random
 import pandas as pd
 from matplotlib import pyplot as plt
 
-totalAlumnos = 78
+totalAlumnos = 156
 #975
 G = nx.Graph()
 G_siblings = nx.Graph()
@@ -74,7 +75,7 @@ def create_initial_network():
                     initial_network.add_edge(nodex,nodey)
                       
     copy = list(initial_network.nodes())
-    num = 20
+    num = 50
     for i in range(0,num):
         node1 = random.choice(copy)
         node2 = random.choice(copy)
@@ -122,13 +123,13 @@ def create_siblings_matrix():
     clases = nx.get_node_attributes(initial,'Clase')
     
     for edge in hermanos:
-        for e in edge:
-            if e not in siblings:
-                siblings.append(e)
-                nombre_siblings.append(nombres[e])
-                etapa_siblings.append(etapas[e])
-                curso_siblings.append(cursos[e])
-                clase_siblings.append(clases[e])
+        for ed in edge:
+            if ed not in siblings:
+                siblings.append(ed)
+                nombre_siblings.append(nombres[ed])
+                etapa_siblings.append(etapas[ed])
+                curso_siblings.append(cursos[ed])
+                clase_siblings.append(clases[ed])
                 
     for i in range(0,len(nombre_siblings)):
         matriz_hermanos.append([nombre_siblings[i],etapa_siblings[i],curso_siblings[i],clase_siblings[i]])
@@ -194,6 +195,7 @@ def create_schoolyear_class_network(G, hermanos):
         else:
             schoolyear_class.edges[sibling1_name, sibling2_name]["peso"] += 1
         
+        #print('peso del enlace', schoolyear_class.get_edge_data(sibling1_name, sibling2_name), (sibling1_name,sibling2_name))
     #print('enlaces de schoolyear_class')
     #print(schoolyear_class.edges(data=True))
     #print(len(schoolyear_class.edges()))
@@ -214,25 +216,107 @@ def create_schoolyear_class_network(G, hermanos):
 
 def generate_neighbor(matrix, net):
     clase = (['A', 'B', 'C'])
-    pos = random.randint(0,len(matrix))
+    pos = random.randint(0,(len(matrix)-1))
     sibling_to_change = matrix[pos]
+    edges_to_remove = []
     
     sibling_name = sibling_to_change[0]
+    
+    name = []
+    name.append(sibling_to_change[1])
+    name.append(sibling_to_change[2])
+    name.append(sibling_to_change[3])
+    node_name_ini = ''.join(str(e) for e in name)
+    
     new_class = random.choice(clase)
     matrix[pos][3] = new_class
     
+    name = []
+    name.append(sibling_to_change[1])
+    name.append(sibling_to_change[2])
+    name.append(sibling_to_change[3])
+    node_name_fin = ''.join(str(e) for e in name)
+    
+    if node_name_ini != node_name_fin:
+        for edge in net.edges:
+            if node_name_ini in edge:
+                
+                edges_to_remove.append(edge)
+                #print(node_name_ini, edge[0], edge[1])
+                peso = net.edges[edge[0], edge[1]]["peso"] 
+                if peso > 0:
+                    net.edges[edge[0], edge[1]]["peso"] -= 1
+    
+    for rem in edges_to_remove:  
+        net.remove_edge(rem[0], rem[1])
+        
+        if rem[0] == node_name_ini:
+            if (node_name_fin, rem[1]) not in net.edges():
+                net.add_edge(node_name_fin, rem[1])
+                net.edges[node_name_fin, rem[1]]["peso"] = 0
+            else:
+                net.edges[node_name_fin, rem[1]]["peso"] += 1
+        elif rem[1] == node_name_ini:
+            if (rem[0], node_name_fin) not in net.edges():
+                net.add_edge(rem[0], node_name_fin)
+                net.edges[rem[0], node_name_fin]["peso"] = 0
+            else:
+                net.edges[rem[0], node_name_fin]["peso"] += 1
+            
     dicClase = nx.get_node_attributes(G,'Clase')
     dicClase[sibling_name] = new_class
-    nx.set_node_attributes(net, dicClase, 'Clase')
+    nx.set_node_attributes(G, dicClase, 'Clase')
     
-    return sibling_name, matrix, net
+    
+    return net
 
 
+def solve(G_siblings):
+    return (sum(dict(G_siblings.degree()).values())/G_siblings.number_of_nodes())
+    
+    
+def solve_simulated_annealing(G, matrix):
+    
+    tf = random.uniform(0.05, 0.01)
+    alpha = random.uniform(0.8, 0.99)
+    l = random.randint(10,50)
+    current_solution = generate_neighbor(matrix,G)
+    t = solve(G) * 0.4
+    candidate_solution = current_solution
+        
+    vecino_inicial = current_solution
+        
+        
+    while t >= tf:
+        for i in range(l):
+            aux = generate_neighbor(matrix,current_solution)
+            candidate_solution = aux
+            candidate_fmax = solve(candidate_solution)
+            current_fmax = solve(current_solution)
+            diff = candidate_fmax - current_fmax
+
+            if diff < 0 or random.random() < e**(-diff/t):
+                current_solution = candidate_solution
+                
+            if vecino_inicial is not current_solution:
+                print('\n*******ha cambiado*********************')
+                #print('VECINO ACTUAL -', current_solution.edges)
+                print('diff', diff)
+        t = alpha * t
+        
+        
+    print('\n****************************')
+    print('MEJOR VECINO ENCONTRADO -', current_solution)
+    print(current_solution.edges)
+    print('Fmax -', current_fmax)
+        
+    
 G, hermanos, siblings_matrix, df_siblings = create_siblings_matrix()
 #print(df_siblings)
 #print(siblings)
 #print(siblings.values)
-#G_siblings = create_schoolyear_class_network(G, hermanos)
+G_siblings = create_schoolyear_class_network(G, hermanos)
 #create_initial_network()
-generate_neighbor(siblings_matrix, G)
+#generate_neighbor(siblings_matrix, G_siblings)
 
+solve_simulated_annealing(G_siblings, siblings_matrix)
