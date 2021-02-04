@@ -4,7 +4,7 @@ import random
 import pandas as pd
 from matplotlib import pyplot as plt
 
-totalAlumnos = 156
+totalAlumnos = 784
 #975
 G = nx.Graph()
 G_siblings = nx.Graph()
@@ -20,9 +20,13 @@ def create_initial_network():
     dicClase = {}
     etapa = (['infantil', 'primaria', 'secundaria'])
     clase = (['A', 'B', 'C'])
+    alumnos_clase = 0
     
-    
-    alumnos_clase = totalAlumnos//(3*len(clase)+6*len(clase)+4*len(clase))
+    if totalAlumnos//(3*len(clase)+6*len(clase)+4*len(clase)) == totalAlumnos/(3*len(clase)+6*len(clase)+4*len(clase)):
+        alumnos_clase = totalAlumnos//(3*len(clase)+6*len(clase)+4*len(clase))
+    else:
+        alumnos_clase = (totalAlumnos//(3*len(clase)+6*len(clase)+4*len(clase))) + 1
+        
     
     x = 0
     for et in etapa:
@@ -302,6 +306,7 @@ def solve_simulated_annealing(G, matrix):
                 print('\n*******ha cambiado*********************')
                 #print('VECINO ACTUAL -', current_solution.edges)
                 print('diff', diff)
+            #print(current_fmax, candidate_fmax)
         t = alpha * t
         
         
