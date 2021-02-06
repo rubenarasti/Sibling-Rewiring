@@ -126,6 +126,7 @@ def create_siblings_matrix():
     cursos = nx.get_node_attributes(initial,'Curso')
     clases = nx.get_node_attributes(initial,'Clase')
     
+    
     for edge in hermanos:
         for ed in edge:
             if ed not in siblings:
@@ -156,6 +157,7 @@ def create_schoolyear_class_network(G, hermanos):
     dicEtapa = {}
     dicCurso = {}
     dicClase = {}
+    dicEstudiantes = {}
     etapas = nx.get_node_attributes(initial,'Etapa')
     clases = nx.get_node_attributes(initial,'Clase')
     cursos = nx.get_node_attributes(initial,'Curso')
@@ -173,11 +175,13 @@ def create_schoolyear_class_network(G, hermanos):
             dicEtapa[node_name] = etapas[node]
             dicCurso[node_name] = cursos[node]
             dicClase[node_name] = clases[node]
-    
+            dicEstudiantes[node_name] = []    
+            
     nx.set_node_attributes(schoolyear_class, dicNombre, 'Nombre')
     nx.set_node_attributes(schoolyear_class, dicEtapa, 'Etapa')
     nx.set_node_attributes(schoolyear_class, dicCurso, 'Curso')
     nx.set_node_attributes(schoolyear_class, dicClase, 'Clase')
+    nx.set_node_attributes(schoolyear_class, dicEstudiantes, 'Estudiantes')
     
         
     for edge in hermanos: #para poner los enlaces 
@@ -186,23 +190,28 @@ def create_schoolyear_class_network(G, hermanos):
         sibling1.append(cursos[edge[0]])
         sibling1.append(clases[edge[0]])
         sibling1_name = ''.join(str(e) for e in sibling1)
+        if edge[0] not in dicEstudiantes[sibling1_name]:
+            dicEstudiantes[sibling1_name].append(edge[0])
         
         sibling2 = []
         sibling2.append(etapas[edge[1]])
         sibling2.append(cursos[edge[1]])
         sibling2.append(clases[edge[1]])
         sibling2_name = ''.join(str(e) for e in sibling2)
+        if edge[1] not in dicEstudiantes[sibling2_name]:
+            dicEstudiantes[sibling2_name].append(edge[1])
         
         if (sibling1_name,sibling2_name) not in schoolyear_class.edges():
             schoolyear_class.add_edge(sibling1_name,sibling2_name)
             schoolyear_class.edges[sibling1_name, sibling2_name]["peso"] = 0
         else:
             schoolyear_class.edges[sibling1_name, sibling2_name]["peso"] += 1
-        
+    
         #print('peso del enlace', schoolyear_class.get_edge_data(sibling1_name, sibling2_name), (sibling1_name,sibling2_name))
     #print('enlaces de schoolyear_class')
     #print(schoolyear_class.edges(data=True))
     #print(len(schoolyear_class.edges()))
+    #print(nx.get_node_attributes(schoolyear_class,'Estudiantes'))
     
     pos=nx.circular_layout(schoolyear_class)
     
@@ -241,7 +250,12 @@ def generate_neighbor(matrix, net):
     name.append(sibling_to_change[3])
     node_name_fin = ''.join(str(e) for e in name)
     
+    dicEstudiantes = nx.get_node_attributes(net,'Estudiantes')
+    
     if node_name_ini != node_name_fin:
+        dicEstudiantes[node_name_ini].remove(sibling_name)
+        dicEstudiantes[node_name_fin].append(sibling_name)
+        
         for edge in net.edges:
             if node_name_ini in edge:
                 
@@ -250,6 +264,7 @@ def generate_neighbor(matrix, net):
                 peso = net.edges[edge[0], edge[1]]["peso"] 
                 if peso > 0:
                     net.edges[edge[0], edge[1]]["peso"] -= 1
+                
     
     for rem in edges_to_remove:  
         net.remove_edge(rem[0], rem[1])
@@ -267,9 +282,6 @@ def generate_neighbor(matrix, net):
             else:
                 net.edges[rem[0], node_name_fin]["peso"] += 1
             
-    dicClase = nx.get_node_attributes(G,'Clase')
-    dicClase[sibling_name] = new_class
-    nx.set_node_attributes(G, dicClase, 'Clase')
     
     
     return net
@@ -324,4 +336,4 @@ G_siblings = create_schoolyear_class_network(G, hermanos)
 #create_initial_network()
 #generate_neighbor(siblings_matrix, G_siblings)
 
-solve_simulated_annealing(G_siblings, siblings_matrix)
+#solve_simulated_annealing(G_siblings, siblings_matrix)
