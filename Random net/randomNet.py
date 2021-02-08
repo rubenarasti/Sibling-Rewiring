@@ -263,8 +263,7 @@ def generate_neighbor(matrix, net):
                 #print(node_name_ini, edge[0], edge[1])
                 peso = net.edges[edge[0], edge[1]]["peso"] 
                 if peso > 0:
-                    net.edges[edge[0], edge[1]]["peso"] -= 1
-                
+                    net.edges[edge[0], edge[1]]["peso"] -= 1          
     
     for rem in edges_to_remove:  
         net.remove_edge(rem[0], rem[1])
@@ -282,51 +281,50 @@ def generate_neighbor(matrix, net):
             else:
                 net.edges[rem[0], node_name_fin]["peso"] += 1
             
-    
-    
+            
     return net
 
 
 def solve(G_siblings):
-    return (sum(dict(G_siblings.degree()).values())/G_siblings.number_of_nodes())
+    total = 0
+    for component in nx.connected_components(G_siblings):
+        total += (len(component)**2)
     
+    return total
     
 def solve_simulated_annealing(G, matrix):
     
     tf = random.uniform(0.05, 0.01)
     alpha = random.uniform(0.8, 0.99)
     l = random.randint(10,50)
-    current_solution = generate_neighbor(matrix,G)
     t = solve(G) * 0.4
-    candidate_solution = current_solution
-        
-    vecino_inicial = current_solution
-        
-        
+    current_solution = G
+    
+    ini_fmax = solve(G)
+    
     while t >= tf:
         for i in range(l):
-            aux = generate_neighbor(matrix,current_solution)
-            candidate_solution = aux
+            candidate_solution = generate_neighbor(matrix,current_solution)
+            
             candidate_fmax = solve(candidate_solution)
             current_fmax = solve(current_solution)
             diff = candidate_fmax - current_fmax
-
-            if diff < 0 or random.random() < e**(-diff/t):
+            
+            if candidate_fmax < current_fmax or random.random() < e**(-diff/t):
                 current_solution = candidate_solution
                 
-            if vecino_inicial is not current_solution:
-                print('\n*******ha cambiado*********************')
-                #print('VECINO ACTUAL -', current_solution.edges)
-                print('diff', diff)
-            #print(current_fmax, candidate_fmax)
         t = alpha * t
         
-        
     print('\n****************************')
-    print('MEJOR VECINO ENCONTRADO -', current_solution)
+    print('VECINO INICIAL -')
+    print(G.edges)
+    print('Fmax -', ini_fmax)    
+    print('\n****************************')
+    print('MEJOR VECINO ENCONTRADO -')
     print(current_solution.edges)
     print('Fmax -', current_fmax)
-        
+    
+    
     
 G, hermanos, siblings_matrix, df_siblings = create_siblings_matrix()
 #print(df_siblings)
@@ -336,4 +334,5 @@ G_siblings = create_schoolyear_class_network(G, hermanos)
 #create_initial_network()
 #generate_neighbor(siblings_matrix, G_siblings)
 
-#solve_simulated_annealing(G_siblings, siblings_matrix)
+solve_simulated_annealing(G_siblings, siblings_matrix)
+#solve(G_siblings)
