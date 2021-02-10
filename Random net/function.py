@@ -60,24 +60,21 @@ class SimulatedAnnealing:
         node_name_fin = ''.join(str(e) for e in name)
             
         dicEstudiantes = nx.get_node_attributes(net,'Estudiantes')
-        node = 'secundaria3C'
-        print(dicEstudiantes, 'numero')
         
         if node_name_ini != node_name_fin:
-            #if len(dicEstudiantes[node_name_fin]) < numberSiblings:
-            dicEstudiantes[node_name_ini].remove(sibling_name)
-            dicEstudiantes[node_name_fin].append(sibling_name)
-                    
-            for edge in net.edges:
-                if node_name_ini in edge:
-                    
-                    edges_to_remove.append(edge)
-                    #print(node_name_ini, edge[0], edge[1])
-                    peso = net.edges[edge[0], edge[1]]["peso"] 
-                    if peso > 0:
-                        net.edges[edge[0], edge[1]]["peso"] -= 1
-            #else:
-             #   pass
+            if len(dicEstudiantes[node_name_fin]) < numberSiblings:
+                dicEstudiantes[node_name_ini].remove(sibling_name)
+                dicEstudiantes[node_name_fin].append(sibling_name)
+                        
+                for edge in net.edges:
+                    if node_name_ini in edge:
+                        
+                        edges_to_remove.append(edge)
+                        #print(node_name_ini, edge[0], edge[1])
+                        peso = net.edges[edge[0], edge[1]]["peso"] 
+                        if peso > 0:
+                            net.edges[edge[0], edge[1]]["peso"] -= 1
+            
                 
             
         for rem in edges_to_remove:  
