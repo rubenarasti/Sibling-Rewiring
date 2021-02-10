@@ -48,7 +48,6 @@ class RandomNet:
         Creates the initial network
         
         """
-        self.initial_network.add_nodes_from(range(self.totalStudents))
     
         dicNombre = {}
         dicEtapa = {}
@@ -62,11 +61,12 @@ class RandomNet:
             alumnos_clase = self.totalStudents//(3*len(clase)+6*len(clase)+4*len(clase))
         else:
             alumnos_clase = (self.totalStudents//(3*len(clase)+6*len(clase)+4*len(clase))) + 1
-            
+            self.totalStudents = alumnos_clase*(3*len(clase)+6*len(clase)+4*len(clase))
+        
+        self.initial_network.add_nodes_from(range(self.totalStudents))
         
         x = 0
         for et in etapa:
-            letra = 0
             if et == etapa[0]:
                 for curso in range(1,4):
                     for alumno1 in range(alumnos_clase):
@@ -143,7 +143,7 @@ class RandomNet:
         #nx.write_gexf(initial_network, "randomGraph2.gexf")
         #nx.write_gexf(initial_network, "randomGraphuploaded.gexf")
         
-    
+        
     def create_siblings_matrix(self):
         """
         Creates the matrix where there's the siblings' data.

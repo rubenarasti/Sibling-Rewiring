@@ -19,7 +19,7 @@ class SimulatedAnnealing:
         Solves the Flow Shop problem with simulated annealing
     """
     
-    def generate_neighbor(self,matrix, net):
+    def generate_neighbor(self,matrix, net, numberSiblings):
         """
         Generates a net changing one of the edges
 
@@ -29,6 +29,8 @@ class SimulatedAnnealing:
             matrix of siblings
         net : net
             net of schoolyear_class
+        numberSiblings : int
+            number of siblings
         
         Returns
         --------
@@ -58,19 +60,25 @@ class SimulatedAnnealing:
         node_name_fin = ''.join(str(e) for e in name)
             
         dicEstudiantes = nx.get_node_attributes(net,'Estudiantes')
-            
+        node = 'secundaria3C'
+        print(dicEstudiantes, 'numero')
+        
         if node_name_ini != node_name_fin:
+            #if len(dicEstudiantes[node_name_fin]) < numberSiblings:
             dicEstudiantes[node_name_ini].remove(sibling_name)
             dicEstudiantes[node_name_fin].append(sibling_name)
-                
+                    
             for edge in net.edges:
                 if node_name_ini in edge:
-                        
+                    
                     edges_to_remove.append(edge)
                     #print(node_name_ini, edge[0], edge[1])
                     peso = net.edges[edge[0], edge[1]]["peso"] 
                     if peso > 0:
-                        net.edges[edge[0], edge[1]]["peso"] -= 1          
+                        net.edges[edge[0], edge[1]]["peso"] -= 1
+            #else:
+             #   pass
+                
             
         for rem in edges_to_remove:  
             net.remove_edge(rem[0], rem[1])
@@ -110,7 +118,7 @@ class SimulatedAnnealing:
         
         return total
     
-    def solve_simulated_annealing(self, G, matrix):
+    def solve_simulated_annealing(self, G, matrix, siblings):
         """
         Generates the solution
 
@@ -120,6 +128,8 @@ class SimulatedAnnealing:
             net of schoolyear_class
         matrix : matrix
             matrix of siblings
+        siblings : int
+            number of siblings
         """
         tf = random.uniform(0.05, 0.01)
         alpha = random.uniform(0.8, 0.99)
@@ -131,7 +141,7 @@ class SimulatedAnnealing:
         
         while t >= tf:
             for i in range(l):
-                candidate_solution = self.generate_neighbor(matrix,current_solution)
+                candidate_solution = self.generate_neighbor(matrix,current_solution, siblings)
                 
                 candidate_fmax = self.solve(candidate_solution)
                 current_fmax = self.solve(current_solution)
@@ -156,4 +166,4 @@ n.create_initial_network()
 n.create_schoolyear_class_network()
 n.create_siblings_matrix()
 s = SimulatedAnnealing()
-s.solve_simulated_annealing(n.schoolyear_class,n.siblingsMatrix)
+s.solve_simulated_annealing(n.schoolyear_class,n.siblingsMatrix,n.numberSiblings)
