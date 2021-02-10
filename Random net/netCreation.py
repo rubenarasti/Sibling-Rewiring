@@ -35,7 +35,11 @@ class RandomNet:
         numberSiblings : int
             Number of couples of siblings
         """
+        self.etapa = (['infantil', 'primaria', 'secundaria'])
+        self.clase = (['A', 'B', 'C'])
         self.totalStudents = int(input('Introduce el total de alumnos: '))
+        if self.totalStudents < (3*len(self.clase)+6*len(self.clase)+4*len(self.clase)):
+            self.totalStudents = (3*len(self.clase)+6*len(self.clase)+4*len(self.clase))
         self.numberSiblings = int(input('Introduce el número de parejas de hermanos: '))
         self.initial_network = nx.Graph()
         self.siblings = []
@@ -48,47 +52,45 @@ class RandomNet:
         Creates the initial network
         
         """
-    
+        
         dicNombre = {}
         dicEtapa = {}
         dicCurso = {}
         dicClase = {}
-        etapa = (['infantil', 'primaria', 'secundaria'])
-        clase = (['A', 'B', 'C'])
         alumnos_clase = 0
-        
-        if self.totalStudents//(3*len(clase)+6*len(clase)+4*len(clase)) == self.totalStudents/(3*len(clase)+6*len(clase)+4*len(clase)):
-            alumnos_clase = self.totalStudents//(3*len(clase)+6*len(clase)+4*len(clase))
+        var = 3*len(self.clase)+6*len(self.clase)+4*len(self.clase)
+        if self.totalStudents//var == self.totalStudents/var:
+            alumnos_clase = self.totalStudents//var
         else:
-            alumnos_clase = (self.totalStudents//(3*len(clase)+6*len(clase)+4*len(clase))) + 1
-            self.totalStudents = alumnos_clase*(3*len(clase)+6*len(clase)+4*len(clase))
+            alumnos_clase = (self.totalStudents//var) + 1
+            self.totalStudents = alumnos_clase*var
         
         self.initial_network.add_nodes_from(range(self.totalStudents))
         
         x = 0
-        for et in etapa:
-            if et == etapa[0]:
+        for et in self.etapa:
+            if et == self.etapa[0]:
                 for curso in range(1,4):
                     for alumno1 in range(alumnos_clase):
-                        for letra in clase:
+                        for letra in self.clase:
                             dicEtapa[x] = et
                             dicCurso[x] = curso
                             dicClase[x] = letra 
                             dicNombre[x] = x
                             x+=1
-            elif et==etapa[1]:
+            elif et==self.etapa[1]:
                 for curso in range(1,7):
                     for alumno2 in range(alumnos_clase):
-                        for letra in clase:
+                        for letra in self.clase:
                             dicEtapa[x] = et
                             dicCurso[x] = curso
                             dicClase[x] = letra 
                             dicNombre[x] = x
                             x += 1
-            elif et==etapa[2]:
+            elif et==self.etapa[2]:
                 for curso in range(1,5):
                     for alumno3 in range(alumnos_clase):
-                        for letra in clase:
+                        for letra in self.clase:
                             #print('etapa', et,'curso', curso,'clase', letra, 'alumno', x,sep=',')
                             dicEtapa[x] = et
                             dicCurso[x] = curso
@@ -153,6 +155,7 @@ class RandomNet:
         dataframe
             dataframe with siblings' information.
         """
+        
         siblings = []
         nombre_siblings = []
         etapa_siblings = []

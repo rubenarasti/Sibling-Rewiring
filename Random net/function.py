@@ -2,6 +2,7 @@ from netCreation import RandomNet
 import random
 import networkx as nx
 from math import e
+import numpy as np
 
 class SimulatedAnnealing:
     """
@@ -37,7 +38,9 @@ class SimulatedAnnealing:
         net: net
             the new net after changing
         """
-        clase = (['A', 'B', 'C'])
+        clases = nx.get_node_attributes(net,'Clase')
+        
+        clase = np.unique(list((clases.values())))
         pos = random.randint(0,(len(matrix)-1))
         sibling_to_change = matrix[pos]
         edges_to_remove = []
