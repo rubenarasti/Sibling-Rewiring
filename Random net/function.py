@@ -1,8 +1,8 @@
-from netCreation import RandomNet
 import random
 import networkx as nx
 from math import e
 import numpy as np
+from netCreation import RandomNet
 
 class SimulatedAnnealing:
     """
@@ -20,7 +20,7 @@ class SimulatedAnnealing:
         Solves the Flow Shop problem with simulated annealing
     """
     
-    def generate_neighbor(self,matrix, net, numberSiblings):
+    def generate_neighbor(self,matrix, net_to_change, numberSiblings):
         """
         Generates a net changing one of the edges
 
@@ -38,6 +38,9 @@ class SimulatedAnnealing:
         net: net
             the new net after changing
         """
+        
+        net = nx.Graph()
+        net = net_to_change.copy()
         clases = nx.get_node_attributes(net,'Clase')
         
         clase = np.unique(list((clases.values())))
@@ -63,7 +66,7 @@ class SimulatedAnnealing:
         node_name_fin = ''.join(str(e) for e in name)
             
         dicEstudiantes = nx.get_node_attributes(net,'Estudiantes')
-        
+       
         if node_name_ini != node_name_fin:
             if len(dicEstudiantes[node_name_fin]) < numberSiblings:
                 dicEstudiantes[node_name_ini].remove(sibling_name)
@@ -71,15 +74,10 @@ class SimulatedAnnealing:
                         
                 for edge in net.edges:
                     if node_name_ini in edge:
-                        
                         edges_to_remove.append(edge)
-                        #print(node_name_ini, edge[0], edge[1])
                         peso = net.edges[edge[0], edge[1]]["peso"] 
                         if peso > 0:
                             net.edges[edge[0], edge[1]]["peso"] -= 1
-            
-                
-            
         for rem in edges_to_remove:  
             net.remove_edge(rem[0], rem[1])
                 
@@ -95,7 +93,7 @@ class SimulatedAnnealing:
                     net.edges[rem[0], node_name_fin]["peso"] = 0
                 else:
                     net.edges[rem[0], node_name_fin]["peso"] += 1
-                    
+            
         return net
     
     def solve(self, G_siblings, percentage_component, percentage_individual, totalStudents):
@@ -134,7 +132,7 @@ class SimulatedAnnealing:
         
         return total
     
-    def solve_simulated_annealing(self, G, matrix, siblings, totalStudents):
+    def solve_simulated_annealing(self, G, matrix, siblings, totalStudents,alpha, l, tf):
         """
         Generates the solution
 
@@ -168,10 +166,6 @@ class SimulatedAnnealing:
             percentage_component = 60
             percentage_individual =  40
             
-        
-        tf = random.uniform(0.05, 0.01)
-        alpha = random.uniform(0.8, 0.99)
-        l = random.randint(10,50)
         t = self.solve(G, percentage_component, percentage_individual, totalStudents) * 0.4
         current_solution = G
         
@@ -184,9 +178,14 @@ class SimulatedAnnealing:
                 candidate_fmax = self.solve(candidate_solution, percentage_component, percentage_individual, totalStudents)
                 current_fmax = self.solve(current_solution, percentage_component, percentage_individual, totalStudents)
                 diff = candidate_fmax - current_fmax
-                
-                if candidate_fmax < current_fmax or random.random() < e**(-diff/t):
+                ranm = (random.random())
+                div =  e**(-diff/t)
+                num = ranm < div
+                ##########################################################
+                #print(diff, ranm, div, num)
+                if candidate_fmax < current_fmax or num:
                     current_solution = candidate_solution
+                    #print('cambia')
                     
             t = alpha * t
             
@@ -198,11 +197,3 @@ class SimulatedAnnealing:
         print('MEJOR VECINO ENCONTRADO -')
         print(current_solution.edges)
         print('Fmax -', current_fmax)
-
-n = RandomNet()
-n.create_initial_network()
-n.create_schoolyear_class_network()
-n.create_siblings_matrix()
-s = SimulatedAnnealing()
-s.solve_simulated_annealing(n.schoolyear_class,n.siblingsMatrix,n.numberSiblings,n.totalStudents)
-
