@@ -1,8 +1,7 @@
 import random
 import networkx as nx
-from math import e
+from math import e, log
 import numpy as np
-from netCreation import RandomNet
 
 class SimulatedAnnealing:
     """
@@ -12,11 +11,11 @@ class SimulatedAnnealing:
 
     Methods
     -------
-    generate_neighbor(matrix, net)
+    generate_neighbor(matrix, net, int)
         Generates a new net changing one of the edges
-    solve(net)
+    solve(net, int, int, int)
         Generates a solution based of the introduced net
-    solve_simulated_annealing(net, matrix)
+    solve_simulated_annealing(net, matrix, int, int, float, int, float)
         Solves the Flow Shop problem with simulated annealing
     """
     
@@ -132,9 +131,155 @@ class SimulatedAnnealing:
         
         return total
     
+    def linear_cooling_sequence(self, t, it):
+        """
+        Calculates the new temperature per iteration using a linear function.
+
+        Parameters
+        ----------
+        t : float
+            temperature actual
+        it: int
+            actual iteration
+        Returns
+        --------
+        tt: float
+            new temperature
+        """
+        beta = random.uniform(0.8, 0.99)
+        tt = t - it * beta 
+        return tt
+    
+    def geometrical_cooling_sequence(self, alpha, t):
+        """
+        Calculates the new temperature per iteration using a geometrical function.
+
+        Parameters
+        ----------
+        alpha : float
+            value to multiplicate
+        t: float
+            actual temperature
+        Returns
+        --------
+        tt: float
+            new temperature
+        """
+        tt = t* alpha
+        return tt
+    
+    def  arithmetic_geometric_cooling_sequence(self, t):
+        """
+        Calculates the new temperature per iteration using a arithmetic-geometric progression.
+        This progression is defined as a recurrence affine relation between a term and the next one of sequence. 
+. 
+        Parameters
+        ----------
+        t : float
+            temperature actual
+        Returns
+        --------
+        tt: float
+            new temperature
+        """
+        ####pedir los valores en el menú
+        print('\t\t Selección de los parámetros')
+        print('******************************************')
+        print('\t 1- Opciones avanzadas')
+        print('\t 2- Valores por defecto')
+        option = (input('Selecciona una opción: '))
+        if option == "1":
+            print('Recordatorio:') 
+            print('\t a>1 la progresión diverge a +- infinito')
+            print('\t |a|<1 la progresión converge a L = b/(1-a)')
+            print('\t a-< (-1) la progresión diverge a +- infinito')
+            a = int(input('Introduce el valor para a: '))
+            b = int(input('Introduce el valor para b: '))
+            tt = a*t + b
+        else:
+            print('Se toma la opción por defecto')
+            a = random.uniform(-4, 10)
+            b = random.random()
+            tt = a*t + b
+        
+        return tt
+    
+    def  logarithmic_cooling_sequence(self, initial_t, it):
+        """
+        Calculates the new temperature per iteration using a logarithmic function.
+
+        Parameters
+        ----------
+        initial_t : float
+            initial temperature
+        it: int
+            actual iteration
+        Returns
+        --------
+        tt: float
+            new temperature
+        """
+        print('\t\t Selección del parámetro alpha')
+        print('*********************************************')
+        print('\t 1- Opciones avanzadas')
+        print('\t 2- Valores por defecto')
+        option = (input('Selecciona una opción: '))
+        if option == "1":
+            alpha = int(input('Introduce el valor para alpa (mayor de 1): '))
+            if alpha <1:
+                print('Se ha seleccionado un valor erróneo. Se usa alpha = ', alpha)
+                alpha = 20
+        else:
+            alpha = 20
+            print('Se toma la opción por defecto, alpha = ', alpha)
+        tt = initial_t/(1+(alpha*log(1+it)))
+        return tt
+    
+    def cauchy_cooling_sequence(self,initial_t, it):
+        """
+        Calculates the new temperature per iteration using a cauchy progression.
+
+        Parameters
+        ----------
+        initial_t : float
+            initial temperature
+        it: int
+            actual iteration
+        Returns
+        --------
+        tt: float
+            new temperature
+        """
+        tt  = initial_t/(1+it)
+        return tt
+    
+    def modified_cauchy_cooling_sequence(self, initial_t, tf, l, t):
+        """
+        Calculates the new temperature per iteration using a modified cauchy progression.
+
+        Parameters
+        ----------
+        initial_t : float
+            initial temperature
+        tf: float
+            final temperature
+        l: int
+            number of iterations
+        t: float
+            actual temperature
+        Returns
+        --------
+        tt: float
+            new temperature
+        """
+        betha = initial_t - tf/(l-1)*initial_t*tf
+        tt = t/(1+betha*t)
+        return tt
+    
+        
     def solve_simulated_annealing(self, G, matrix, siblings, totalStudents,alpha, l, tf):
         """
-        Generates the solution
+        Generates the solution based on basic algorithm (uses Boltzmann probability)
 
         Parameters
         ----------
@@ -165,10 +310,10 @@ class SimulatedAnnealing:
             print('\tSe toman valores por defecto')
             percentage_component = 60
             percentage_individual =  40
-            
-        t = self.solve(G, percentage_component, percentage_individual, totalStudents) * 0.4
+        initial_t =     self.solve(G, percentage_component, percentage_individual, totalStudents) * 0.4
+        t = initial_t
         current_solution = G
-        
+        it = 0
         ini_fmax = self.solve(G, percentage_component, percentage_individual, totalStudents)
         
         while t >= tf:
@@ -187,7 +332,9 @@ class SimulatedAnnealing:
                     current_solution = candidate_solution
                     #print('cambia')
                     
-            t = alpha * t
+            t = self.modified_cauchy_cooling_sequence(initial_t, tf, l, t)
+            print(t)
+            it+=1
             
         print('\n****************************')
         print('VECINO INICIAL -')
