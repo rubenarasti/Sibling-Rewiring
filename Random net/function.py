@@ -98,7 +98,7 @@ class SimulatedAnnealing:
                     
         return net
     
-    def solve(self, G_siblings):
+    def solve(self, G_siblings, percentage_component, percentage_individual, totalStudents):
         """
         Generates a solution
 
@@ -106,19 +106,35 @@ class SimulatedAnnealing:
         ----------
         G_siblings : net
             net of schoolyear_class, edges are siblings
-            
+        percentage_component: int
+            probability of component infection
+        percentage_individual: int
+            probability of student's infection
+        totalStudents : int
+            total number of students
         Returns
         --------
         total: int
             the solution
         """
-        total = 0
+        total_component = 0
         for component in nx.connected_components(G_siblings):
-            total += (len(component)**2)
+            total_component += (len(component)**2)
+            
+        total_individual = 0
+        individual = []
+        dicEstudents = nx.get_node_attributes(G_siblings, 'Estudiantes')
+        for component in nx.connected_components(G_siblings):
+            for node in component:
+                individual.append((len(dicEstudents[node])/totalStudents)*len(component))
+        indv = np.array(individual)
+        total_individual = indv.var()
+        
+        total = (percentage_component*0.1)*total_component + (percentage_individual*0.1)*total_individual
         
         return total
     
-    def solve_simulated_annealing(self, G, matrix, siblings):
+    def solve_simulated_annealing(self, G, matrix, siblings, totalStudents):
         """
         Generates the solution
 
@@ -130,21 +146,43 @@ class SimulatedAnnealing:
             matrix of siblings
         siblings : int
             number of siblings
+        totalStudents : int
+            totalNumber of nodes of initial network
         """
+        print('\t\t Selección de porcentajes para las métricas')
+        print('***************************************************************')
+        print('\t1 - Seleccionados por usuario')
+        print('\t2 - Por defecto')
+        option = input('Selecciona una opción: ')
+        
+        if option == "1":
+            print('Se va a pedir la importancia que tiene la probabilidad de contagio por componente, el resto será la probabilidad individual')
+            percentage_component = int(input('Introduce el peso que deseas darle a la probabilidad por componente [0-100]: '))
+            if percentage_component < 0 or percentage_component >100:
+                print('El valor introducido no se encuentra entre los valores establecidos')
+                print('Se dará un valor por defecto')
+                percentage_component = 60
+            percentage_individual = 100 - percentage_component
+        elif option != "1":
+            print('\tSe toman valores por defecto')
+            percentage_component = 60
+            percentage_individual =  40
+            
+        
         tf = random.uniform(0.05, 0.01)
         alpha = random.uniform(0.8, 0.99)
         l = random.randint(10,50)
-        t = self.solve(G) * 0.4
+        t = self.solve(G, percentage_component, percentage_individual, totalStudents) * 0.4
         current_solution = G
         
-        ini_fmax = self.solve(G)
+        ini_fmax = self.solve(G, percentage_component, percentage_individual, totalStudents)
         
         while t >= tf:
             for i in range(l):
                 candidate_solution = self.generate_neighbor(matrix,current_solution, siblings)
                 
-                candidate_fmax = self.solve(candidate_solution)
-                current_fmax = self.solve(current_solution)
+                candidate_fmax = self.solve(candidate_solution, percentage_component, percentage_individual, totalStudents)
+                current_fmax = self.solve(current_solution, percentage_component, percentage_individual, totalStudents)
                 diff = candidate_fmax - current_fmax
                 
                 if candidate_fmax < current_fmax or random.random() < e**(-diff/t):
@@ -166,4 +204,5 @@ n.create_initial_network()
 n.create_schoolyear_class_network()
 n.create_siblings_matrix()
 s = SimulatedAnnealing()
-s.solve_simulated_annealing(n.schoolyear_class,n.siblingsMatrix,n.numberSiblings)
+s.solve_simulated_annealing(n.schoolyear_class,n.siblingsMatrix,n.numberSiblings,n.totalStudents)
+
