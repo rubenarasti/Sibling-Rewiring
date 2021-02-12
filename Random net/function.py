@@ -150,14 +150,14 @@ class SimulatedAnnealing:
         tt = t - it * beta 
         return tt
     
-    def geometrical_cooling_sequence(self, alpha, t):
+    def geometrical_cooling_sequence(self, values, t):
         """
         Calculates the new temperature per iteration using a geometrical function.
 
         Parameters
         ----------
-        alpha : float
-            value to multiplicate
+        values : array
+            contains the value of alpha
         t: float
             actual temperature
         Returns
@@ -165,46 +165,10 @@ class SimulatedAnnealing:
         tt: float
             new temperature
         """
-        tt = t* alpha
+        tt = t* values[0]
         return tt
     
-    def  arithmetic_geometric_cooling_sequence(self, t):
-        """
-        Calculates the new temperature per iteration using a arithmetic-geometric progression.
-        This progression is defined as a recurrence affine relation between a term and the next one of sequence. 
-. 
-        Parameters
-        ----------
-        t : float
-            temperature actual
-        Returns
-        --------
-        tt: float
-            new temperature
-        """
-        ####pedir los valores en el menú
-        print('\t\t Selección de los parámetros')
-        print('******************************************')
-        print('\t 1- Opciones avanzadas')
-        print('\t 2- Valores por defecto')
-        option = (input('Selecciona una opción: '))
-        if option == "1":
-            print('Recordatorio:') 
-            print('\t a>1 la progresión diverge a +- infinito')
-            print('\t |a|<1 la progresión converge a L = b/(1-a)')
-            print('\t a-< (-1) la progresión diverge a +- infinito')
-            a = int(input('Introduce el valor para a: '))
-            b = int(input('Introduce el valor para b: '))
-            tt = a*t + b
-        else:
-            print('Se toma la opción por defecto')
-            a = random.uniform(-4, 10)
-            b = random.random()
-            tt = a*t + b
-        
-        return tt
-    
-    def  logarithmic_cooling_sequence(self, initial_t, it):
+    def  logarithmic_cooling_sequence(self, initial_t, it, values):
         """
         Calculates the new temperature per iteration using a logarithmic function.
 
@@ -219,20 +183,7 @@ class SimulatedAnnealing:
         tt: float
             new temperature
         """
-        print('\t\t Selección del parámetro alpha')
-        print('*********************************************')
-        print('\t 1- Opciones avanzadas')
-        print('\t 2- Valores por defecto')
-        option = (input('Selecciona una opción: '))
-        if option == "1":
-            alpha = int(input('Introduce el valor para alpa (mayor de 1): '))
-            if alpha <1:
-                print('Se ha seleccionado un valor erróneo. Se usa alpha = ', alpha)
-                alpha = 20
-        else:
-            alpha = 20
-            print('Se toma la opción por defecto, alpha = ', alpha)
-        tt = initial_t/(1+(alpha*log(1+it)))
+        tt = initial_t/(1+(values[0]*log(1+it)))
         return tt
     
     def cauchy_cooling_sequence(self,initial_t, it):
@@ -277,7 +228,7 @@ class SimulatedAnnealing:
         return tt
     
         
-    def solve_simulated_annealing(self, G, matrix, siblings, totalStudents,alpha, l, tf):
+    def solve_simulated_annealing(self, G, matrix, siblings, totalStudents, l, tf, values, option_cooling):
         """
         Generates the solution based on basic algorithm (uses Boltzmann probability)
 
@@ -292,8 +243,8 @@ class SimulatedAnnealing:
         totalStudents : int
             totalNumber of nodes of initial network
         """
-        print('\t\t Selección de porcentajes para las métricas')
-        print('***************************************************************')
+        print('\t\t \n\nSelección de porcentajes para la obtención de la solución')
+        print('*********************************************************************************')
         print('\t1 - Seleccionados por usuario')
         print('\t2 - Por defecto')
         option = input('Selecciona una opción: ')
@@ -330,10 +281,18 @@ class SimulatedAnnealing:
                 #print(diff, ranm, div, num)
                 if candidate_fmax < current_fmax or num:
                     current_solution = candidate_solution
-                    #print('cambia')
                     
-            t = self.modified_cauchy_cooling_sequence(initial_t, tf, l, t)
-            print(t)
+            if option_cooling == 1:        
+                t = self.linear_cooling_sequence(t, it)
+            elif option_cooling == 3:
+                t = self.logarithmic_cooling_sequence(initial_t, it, values)
+            elif option_cooling == 4:
+                t = self.cauchy_cooling_sequence(initial_t, it)
+            elif option_cooling == 5:
+                t = self.modified_cauchy_cooling_sequence(initial_t, tf, l, t)
+            elif option_cooling == 6:
+                t = self.geometrical_cooling_sequence(values, t)
+            
             it+=1
             
         print('\n****************************')
