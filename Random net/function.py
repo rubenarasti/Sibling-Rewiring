@@ -19,7 +19,7 @@ class SimulatedAnnealing:
         Solves the Flow Shop problem with simulated annealing
     """
     
-    def generate_neighbor(self,matrix, net_to_change, numberSiblings):
+    def generate_neighbor(self,matrix, net_to_change, numberSiblings, seed_value):
         """
         Generates a net changing one of the edges
 
@@ -31,6 +31,8 @@ class SimulatedAnnealing:
             net of schoolyear_class
         numberSiblings : int
             number of siblings
+        seed_value : int
+            seed value
         
         Returns
         --------
@@ -38,6 +40,7 @@ class SimulatedAnnealing:
             the new net after changing
         """
         
+        random.seed(seed_value)
         net = nx.Graph()
         net = net_to_change.copy()
         clases = nx.get_node_attributes(net,'Clase')
@@ -113,6 +116,7 @@ class SimulatedAnnealing:
             probability of student's infection
         totalStudents : int
             total number of students
+        
         Returns
         --------
         total: int
@@ -232,7 +236,7 @@ class SimulatedAnnealing:
         return tt
     
         
-    def solve_simulated_annealing(self, G, matrix, siblings, totalStudents, l, tf, values, option_cooling):
+    def solve_simulated_annealing(self, G, matrix, siblings, totalStudents, l, tf, values, option_cooling, seed_value):
         """
         Generates the solution based on basic algorithm (uses Boltzmann probability)
 
@@ -246,7 +250,19 @@ class SimulatedAnnealing:
             number of siblings
         totalStudents : int
             totalNumber of nodes of initial network
+        l : int
+            total number of iterations
+        tf : float
+            final temperature
+        values : array 
+            if needed values to solve the cooling sequence
+        option_cooling : int
+            option to choose cooling sequence
+        seed_value : int
+            seed value
+        
         """
+        random.seed(seed_value)
         print('\t\t \n\nSelección de porcentajes para la obtención de la solución')
         print('*********************************************************************************')
         print('\t1 - Seleccionados por usuario')
@@ -265,7 +281,7 @@ class SimulatedAnnealing:
             print('\tSe toman valores por defecto')
             percentage_component = 60
             percentage_individual =  40
-        initial_t =     self.solve(G, percentage_component, percentage_individual, totalStudents) * 0.4
+        initial_t = self.solve(G, percentage_component, percentage_individual, totalStudents) * 0.4
         t = initial_t
         current_solution = G
         it = 0
@@ -273,12 +289,11 @@ class SimulatedAnnealing:
         
         while t >= tf:
             for i in range(l):
-                candidate_solution = self.generate_neighbor(matrix,current_solution, siblings)
+                candidate_solution = self.generate_neighbor(matrix,current_solution, siblings, seed_value)
                 
                 candidate_fmax = self.solve(candidate_solution, percentage_component, percentage_individual, totalStudents)
                 current_fmax = self.solve(current_solution, percentage_component, percentage_individual, totalStudents)
                 diff = candidate_fmax - current_fmax
-                print(diff)
                 
                 if candidate_fmax < current_fmax or random.random() < e**(-diff/t):
                     current_solution = candidate_solution

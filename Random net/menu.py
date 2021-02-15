@@ -25,6 +25,9 @@ class Menu:
         
         option = None
         it = 0
+        seed_value = random.randint(0,10)
+        
+        
         while option != "0":
             if it == 0:
                 print('Se procede a la creación de la red')
@@ -53,7 +56,7 @@ class Menu:
                 
                 if option_cooling == "1":
                     print('Se va a usar una secuencia de enfriaminto lineal\n')
-                    simAn.solve_simulated_annealing(net.schoolyear_class,net.siblingsMatrix,net.numberSiblings,net.totalStudents, l,tf, values,int(option_cooling))
+                    simAn.solve_simulated_annealing(net.schoolyear_class,net.siblingsMatrix,net.numberSiblings,net.totalStudents, l,tf, values,int(option_cooling), seed_value)
                 elif option_cooling == "2":
                     print('Se va a usar una secuencia de enfriaminto geometrico\n')
                     print('\t\t Selección del parámetro alpha')
@@ -71,7 +74,7 @@ class Menu:
                         print('\t Se toma la opción por defecto, alpha = ', alpha)
                     option_cooling = 6
                     values.append(alpha)
-                    simAn.solve_simulated_annealing(net.schoolyear_class,net.siblingsMatrix,net.numberSiblings,net.totalStudents,l,tf, values,int(option_cooling))
+                    simAn.solve_simulated_annealing(net.schoolyear_class,net.siblingsMatrix,net.numberSiblings,net.totalStudents,l,tf, values,int(option_cooling), seed_value)
                 elif option_cooling == "3":
                     print('Se va a usar una secuencia de enfriaminto logaritmica\n')
                     print('\t\t Selección del parámetro alpha')
@@ -88,26 +91,26 @@ class Menu:
                         alpha = 20
                         print('\t Se toma la opción por defecto, alpha = ', alpha)
                     values.append(alpha)
-                    simAn.solve_simulated_annealing(net.schoolyear_class,net.siblingsMatrix,net.numberSiblings,net.totalStudents, l,tf, values,int(option_cooling))
+                    simAn.solve_simulated_annealing(net.schoolyear_class,net.siblingsMatrix,net.numberSiblings,net.totalStudents, l,tf, values,int(option_cooling), seed_value)
                 elif option_cooling == "4":
                     print('Se ha seleccionado la secuencia de enfriamiento de Cauchy\n')
-                    simAn.solve_simulated_annealing(net.schoolyear_class,net.siblingsMatrix,net.numberSiblings,net.totalStudents, l,tf, values,int(option_cooling))
+                    simAn.solve_simulated_annealing(net.schoolyear_class,net.siblingsMatrix,net.numberSiblings,net.totalStudents, l,tf, values,int(option_cooling), seed_value)
                 elif option_cooling == "5":
                     print('Se ha seleccionado la secuncia de enfriamiento de Cauchy modificado\n')
-                    simAn.solve_simulated_annealing(net.schoolyear_class,net.siblingsMatrix,net.numberSiblings,net.totalStudents, l,tf, values,int(option_cooling))
+                    simAn.solve_simulated_annealing(net.schoolyear_class,net.siblingsMatrix,net.numberSiblings,net.totalStudents, l,tf, values,int(option_cooling), seed_value)
                 else:
                     option_cooling = 6
                     print('Se ha usado la secuencia de enfriamiento  por defecto, que es la logaritmica\n')
                     alpha = random.uniform(0.8, 0.99)
                     values.append(alpha)
-                    simAn.solve_simulated_annealing(net.schoolyear_class,net.siblingsMatrix,net.numberSiblings,net.totalStudents, l,tf, values,int(option_cooling))
+                    simAn.solve_simulated_annealing(net.schoolyear_class,net.siblingsMatrix,net.numberSiblings,net.totalStudents, l,tf, values,int(option_cooling), seed_value)
             elif option == "2":
                 tf = random.uniform(0.05, 0.01)
                 alpha = random.uniform(0.8, 0.99)
                 l = random.randint(10,50)
                 values.append(alpha)
                 option_cooling = 6
-                simAn.solve_simulated_annealing(net.schoolyear_class,net.siblingsMatrix,net.numberSiblings,net.totalStudents,l,tf, values,int(option_cooling))
+                simAn.solve_simulated_annealing(net.schoolyear_class,net.siblingsMatrix,net.numberSiblings,net.totalStudents,l,tf, values,int(option_cooling), seed_value)
             
             elif option != "0":
                 print('ERROR, esa opción no existe!')
