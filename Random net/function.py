@@ -46,7 +46,8 @@ class SimulatedAnnealing:
         pos = random.randint(0,(len(matrix)-1))
         sibling_to_change = matrix[pos]
         edges_to_remove = []
-            
+        clase_to_change = list(clase[:])
+        
         sibling_name = sibling_to_change[0]
             
         name = []
@@ -54,8 +55,10 @@ class SimulatedAnnealing:
         name.append(sibling_to_change[2])
         name.append(sibling_to_change[3])
         node_name_ini = ''.join(str(e) for e in name)
-            
-        new_class = random.choice(clase)
+        
+        clase_to_change.remove(sibling_to_change[3])
+        
+        new_class = random.choice(clase_to_change)
         matrix[pos][3] = new_class
             
         name = []
@@ -65,18 +68,19 @@ class SimulatedAnnealing:
         node_name_fin = ''.join(str(e) for e in name)
             
         dicEstudiantes = nx.get_node_attributes(net,'Estudiantes')
+         
        
-        if node_name_ini != node_name_fin:
-            if len(dicEstudiantes[node_name_fin]) < numberSiblings:
-                dicEstudiantes[node_name_ini].remove(sibling_name)
-                dicEstudiantes[node_name_fin].append(sibling_name)
+        if len(dicEstudiantes[node_name_fin]) < numberSiblings:
+            dicEstudiantes[node_name_ini].remove(sibling_name)
+            dicEstudiantes[node_name_fin].append(sibling_name)
                         
-                for edge in net.edges:
-                    if node_name_ini in edge:
-                        edges_to_remove.append(edge)
-                        peso = net.edges[edge[0], edge[1]]["peso"] 
-                        if peso > 0:
-                            net.edges[edge[0], edge[1]]["peso"] -= 1
+            for edge in net.edges:
+                if node_name_ini in edge:
+                    edges_to_remove.append(edge)
+                    peso = net.edges[edge[0], edge[1]]["peso"] 
+                    if peso > 0:
+                        net.edges[edge[0], edge[1]]["peso"] -= 1
+                        
         for rem in edges_to_remove:  
             net.remove_edge(rem[0], rem[1])
                 
@@ -274,12 +278,9 @@ class SimulatedAnnealing:
                 candidate_fmax = self.solve(candidate_solution, percentage_component, percentage_individual, totalStudents)
                 current_fmax = self.solve(current_solution, percentage_component, percentage_individual, totalStudents)
                 diff = candidate_fmax - current_fmax
-                ranm = (random.random())
-                div =  e**(-diff/t)
-                num = ranm < div
-                ##########################################################
-                #print(diff, ranm, div, num)
-                if candidate_fmax < current_fmax or num:
+                print(diff)
+                
+                if candidate_fmax < current_fmax or random.random() < e**(-diff/t):
                     current_solution = candidate_solution
                     
             if option_cooling == 1:        
