@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, flash, redirect
+from flask import Flask, render_template, request, flash, redirect, jsonify
 from werkzeug.utils import secure_filename
 from database import *
 
@@ -11,19 +11,25 @@ def index():
     user = {'nombre': 'Maria'}
 
     return render_template("plantillabase.html", title=title, user=user)
-	
-@app.route('/users', methods=['POST'])
-def register_user():
-    insert_user()
-register_user()
 
 @app.route('/login')
 def login():
     return render_template('login.html')
 
-@app.route('/login/register')
-def register():
+@app.route('/showSignUp')
+def showSignUp():
     return render_template('register.html')
+
+@app.route('/signUp',methods=['POST','GET'])
+def signUpDB():
+    singup(request.json)
+    return jsonify({'ok': True})
+
+@app.route('/login/register', methods=['POST','GET'])
+def register():
+    signUp()
+    #render_template('register.html')
+    return jsonify({'ok': True})
 
 @app.route('/upload')
 def upload_form():
