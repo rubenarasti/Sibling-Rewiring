@@ -16,19 +16,18 @@ def index():
 def login():
     return render_template('login.html')
 
+@app.route('/login/LogInDB', methods=['POST', 'GET'])
+def logInDB():
+	exist = logIn()
+	return jsonify({'message': exist})
+
 @app.route('/showSignUp')
 def showSignUp():
     return render_template('register.html')
 
-@app.route('/signUp',methods=['POST','GET'])
-def signUpDB():
-    singup(request.json)
-    return jsonify({'ok': True})
-
-@app.route('/login/register', methods=['POST','GET'])
+@app.route('/showLogin/register', methods=['POST','GET'])
 def register():
     signUp()
-    #render_template('register.html')
     return jsonify({'ok': True})
 
 @app.route('/upload')

@@ -1,7 +1,9 @@
 from flask import Flask, json, request
+from flask_login import LoginManager
+from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
 
-mydb = mysql.connector.connect(host="localhost", user="root", passwd="Password", database="prueba")
+mydb = mysql.connector.connect(host="localhost", user="root", passwd="Password", database="prueb")
 
 
 mycursor = mydb.cursor()
@@ -16,28 +18,18 @@ def create_procedure():
 	query = file.read()
 	mycursor.execute(query)
 
-def insert_user(name, surname, passwd):
-    sql = ("INSERT INTO users(name, surname, password) VALUES(%s,%s, %s)")
-    name = name
-    surname = surname
-    passwd = passwd
-    val = (name, surname, passwd)
-    mycursor.execute(sql, val)
-    mydb.commit()
-    return 'OK'
-
 def signUp():
 	try:
 		_name = request.form['name']
 		_surname = request.form['surname']
 		_username =  request.form['username']
 		_password = request.form['password']
-		
-		
-		if _name and _surname and _username and _password:
-			mycursor.callproc('sp_createUser2',(_name,_username,_surname,_password))
-			data = mycursor.fetchall()
 			
+			
+		if _name and _surname and _username and _password:
+			mycursor.callproc('sp_createUser',(_name,_username,_surname,_password))
+			data = mycursor.fetchall()
+				
 			if len(data) == 0:
 				mydb.commit()
 				return json.dumps({'message':'User created successfully !'})
@@ -51,10 +43,24 @@ def signUp():
 		
 	finally:
 		mydb.commit()
-		mycursor.close() 
-		mydb.close()
+
+
+def logIn():
+	_username = request.form['username']
+	_password = request.form['password']
+	
+	if  _username and _password:		
+		sql = ('SELECT user_id FROM tbl_user where user_username = %s and user_password = %s')
+		values = (_username, _password)
+		mycursor.execute(sql, values)
+		users = mycursor.fetchone()
+		user_exist = False
 		
-		
-		
+		if users != None:
+			user_exist = True
+			
+	return user_exist		
+	
+	
 create_table()
 create_procedure()
