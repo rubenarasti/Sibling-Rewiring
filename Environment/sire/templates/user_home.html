@@ -9,7 +9,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <title>{% block title %} {% endblock %}</title>
+    <title>{% block title %}{% endblock %}</title>
   </head>
   <body>
     <nav class="navbar navbar-expand-md navbar-light bg-light pull-right">
@@ -19,19 +19,21 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-            <li class="nav-item ">
-                <a class="nav-link" href="{{ url_for('login')}}">Login</a>
+            <li class="nav-right active">
+                <a class="nav-link" href="{{ url_for('upload_form')}}">Subida Archivos</a>
             </li>
             </ul>
+			<a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i>Logout</a>
         </div>
         
     </nav>
 	
     <div class="container">
-        {% block content %} {% endblock %}
-		<h1>{{ title }}</h1>
-		<h3>Bienvenido a Sibling Rewiring</h3>
-		<p>Hola, {{ user.nombre }}</p>
+        {% block content %}{% endblock %}
+		<h1>SIRE</h1>
+		<h3>Comienza a reorganizar</h3>
+		<p>Bienvenido de nuevo</p>
+		
     </div>
 
     <!-- Optional JavaScript -->

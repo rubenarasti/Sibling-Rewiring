@@ -10,7 +10,7 @@ def index():
     title = "Sire"
     user = {'nombre': 'Maria'}
 
-    return render_template("plantillabase.html", title=title, user=user)
+    return render_template('plantillabase.html', title=title, user=user)
 
 @app.route('/login')
 def login():
@@ -19,6 +19,8 @@ def login():
 @app.route('/login/LogInDB', methods=['POST', 'GET'])
 def logInDB():
 	exist = logIn()
+	if exist:
+		return render_template('user_home.html')
 	return jsonify({'message': exist})
 
 @app.route('/showSignUp')
@@ -29,6 +31,10 @@ def showSignUp():
 def register():
     signUp()
     return jsonify({'ok': True})
+
+@app.route('/user_home')
+def show_user_home():
+	return render_template('user_home.html')
 
 @app.route('/upload')
 def upload_form():
@@ -66,11 +72,14 @@ def upload_file():
             return render_template('upload.html')
     return render_template('success.html', name = file.filename)
 
+
+
 @app.route('/logout')
 def logout():
-   session.clear()
-   return render_template('login.html')
-   
+	session.clear()
+	return render_template('login.html')
+	
+	
 if __name__ == '__main__':
     app.secret_key = os.urandom(24)
     app.run()

@@ -1,4 +1,4 @@
-from flask import Flask, json, request
+from flask import Flask, json, request, session
 from flask_login import LoginManager
 from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
@@ -46,21 +46,27 @@ def signUp():
 
 
 def logIn():
-	_username = request.form['username']
-	_password = request.form['password']
-	
-	if  _username and _password:		
-		sql = ('SELECT user_id FROM tbl_user where user_username = %s and user_password = %s')
-		values = (_username, _password)
-		mycursor.execute(sql, values)
-		users = mycursor.fetchone()
-		user_exist = False
+	try:
+		_username = request.form['username']
+		_password = request.form['password']
 		
-		if users != None:
-			user_exist = True
+		if  _username and _password:		
+			sql = ('SELECT user_id FROM tbl_user where user_username = %s and user_password = %s')
+			values = (_username, _password)
+			mycursor.execute(sql, values)
+			users = mycursor.fetchone()
+			user_exist = False
 			
-	return user_exist		
+			if users != None:
+				user_exist = True
+				
+	except Exception as e:
+		return json.dumps({'error':str(e)})
+		
+	finally:
+		return user_exist
 	
+
 	
 create_table()
 create_procedure()
