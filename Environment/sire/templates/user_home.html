@@ -22,6 +22,9 @@
             <li class="nav-right active">
                 <a class="nav-link" href="{{ url_for('upload_form')}}">Subida Archivos</a>
             </li>
+			<li class="nav-right active">
+                <a class="nav-link" href="{{ url_for('show_download')}}">Descarga Archivos</a>
+            </li>
             </ul>
 			<a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i>Logout</a>
         </div>
@@ -31,9 +34,14 @@
     <div class="container">
         {% block content %}{% endblock %}
 		<h1>SIRE</h1>
-		<h3>Comienza a reorganizar</h3>
 		<p>Bienvenido de nuevo</p>
-		
+		<div class="form-group">
+		      
+			<form method="get" action="{{ url_for('upload_form')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:450px; height:450px' align='center' onclick="{{ url_for('upload_form')}}">
+        COMIENZA A REORGANIZAR</button>  
+			<form method="get" action="{{ url_for('show_download')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:450px; height:450px' align='center'> VISUALIZA TUS DATOS</button>  
+			  
+		</div> 
     </div>
 
     <!-- Optional JavaScript -->
