@@ -9,9 +9,8 @@ mydb = mysql.connector.connect(host="localhost", user="root", passwd="Password",
 mycursor = mydb.cursor()
 
 def create_table():
-    
-    mycursor.execute("CREATE TABLE IF NOT EXISTS tbl_user(user_id INT AUTO_INCREMENT PRIMARY KEY,user_name VARCHAR(45) NULL, user_surname VARCHAR(45) NULL,user_username VARCHAR(45) NULL,user_password VARCHAR (45) NULL)")
-
+	mycursor.execute("CREATE TABLE IF NOT EXISTS tbl_user(user_id INT AUTO_INCREMENT PRIMARY KEY,user_name VARCHAR(45) NULL, user_surname VARCHAR(45) NULL,user_username VARCHAR(45) NULL,user_password VARCHAR (45) NULL)")
+	
 def create_procedure():
 	mycursor.execute("DROP PROCEDURE IF EXISTS sp_createUser")
 	file = open('procedure.txt','r')
@@ -67,6 +66,5 @@ def logIn():
 		return user_exist
 	
 
-	
 create_table()
 create_procedure()
