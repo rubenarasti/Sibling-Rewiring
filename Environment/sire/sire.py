@@ -28,10 +28,11 @@ def logInDB():
 def showSignUp():
     return render_template('register.html')
 
+
 @app.route('/showLogin/register', methods=['POST','GET'])
 def register():
-	x = signUp()
-	if x == json.dumps({'message':'User created successfully !'}):
+	user_created = signUp()
+	if user_created  == json.dumps({'message':'User created successfully !'}):
 		return render_template('login.html')
 	return jsonify({'NOT': x})
 
