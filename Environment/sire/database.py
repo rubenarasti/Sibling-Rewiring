@@ -9,7 +9,7 @@ mydb = mysql.connector.connect(host="localhost", user="root", passwd="Password",
 mycursor = mydb.cursor()
 
 def create_table():
-	mycursor.execute("CREATE TABLE IF NOT EXISTS tbl_user(user_id INT AUTO_INCREMENT PRIMARY KEY,user_name VARCHAR(45) NULL, user_surname VARCHAR(45) NULL,user_username VARCHAR(45) NULL,user_password VARCHAR (45) NULL)")
+	mycursor.execute("CREATE TABLE IF NOT EXISTS tbl_user(user_id INT AUTO_INCREMENT PRIMARY KEY, user_name VARCHAR(45) NOT NULL, user_surname VARCHAR(45) NULL, user_school VARCHAR(80) NULL, user_email VARCHAR(150) NOT NULL UNIQUE, user_password VARCHAR (45) NOT NULL)")
 	
 def create_procedure():
 	mycursor.execute("DROP PROCEDURE IF EXISTS sp_createUser")
@@ -21,14 +21,14 @@ def signUp():
 	try:
 		_name = request.form['name']
 		_surname = request.form['surname']
-		_username =  request.form['username']
+		_email =  request.form['email']
+		_school = request.form['school']
 		_password = request.form['password']
 			
 			
-		if _name and _surname and _username and _password:
-			mycursor.callproc('sp_createUser',(_name,_username,_surname,_password))
+		if _name and _surname and _email and _password:
+			mycursor.callproc('sp_createUser',(_name,_surname,_school,_email,_password))
 			data = mycursor.fetchall()
-				
 			if len(data) == 0:
 				mydb.commit()
 				return json.dumps({'message':'User created successfully !'})
@@ -46,12 +46,12 @@ def signUp():
 
 def logIn():
 	try:
-		_username = request.form['username']
+		_email = request.form['email']
 		_password = request.form['password']
 		
-		if  _username and _password:		
-			sql = ('SELECT user_id FROM tbl_user where user_username = %s and user_password = %s')
-			values = (_username, _password)
+		if  _email and _password:		
+			sql = ('SELECT user_id FROM tbl_user where user_email = %s and user_password = %s')
+			values = (_email, _password)
 			mycursor.execute(sql, values)
 			users = mycursor.fetchone()
 			user_exist = False

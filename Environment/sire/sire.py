@@ -5,6 +5,7 @@ from database import *
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
     title = "Sire"
@@ -29,8 +30,10 @@ def showSignUp():
 
 @app.route('/showLogin/register', methods=['POST','GET'])
 def register():
-    signUp()
-    return jsonify({'ok': True})
+	x = signUp()
+	if x == json.dumps({'message':'User created successfully !'}):
+		return render_template('login.html')
+	return jsonify({'NOT': x})
 
 @app.route('/user_home')
 def show_user_home():
