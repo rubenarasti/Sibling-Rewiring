@@ -1,10 +1,11 @@
 import os
 from flask import Flask, render_template, request, flash, redirect, jsonify, send_file
+from flask_bootstrap import Bootstrap
 from werkzeug.utils import secure_filename
 from database import *
 
 app = Flask(__name__)
-
+bootstrap = Bootstrap(app)
 
 @app.route('/')
 def index():
@@ -28,11 +29,10 @@ def logInDB():
 def showSignUp():
     return render_template('register.html')
 
-
 @app.route('/showLogin/register', methods=['POST','GET'])
 def register():
 	user_created = signUp()
-	if user_created  == json.dumps({'message':'User created successfully !'}):
+	if user_created == json.dumps({'message':'User created successfully !'}):
 		return render_template('login.html')
 	return jsonify({'NOT': x})
 
@@ -69,7 +69,6 @@ def upload_file():
 			filename = secure_filename(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			flash('Archivo subido con éxito.')
-			add_file(app.config['UPLOAD_FOLDER'], filename)
 			return render_template('success.html')
 		else:
 			flash('Los archivos permitidos son .gexf')

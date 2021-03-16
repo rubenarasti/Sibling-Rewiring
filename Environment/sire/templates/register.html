@@ -1,41 +1,44 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<title>Registro</title>
-		<link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
-	</head>
-	<body>
-		<div class="register">
-			<h1>Registro</h1>
-			<div class="links">
-				<a href="{{ url_for('login') }}">Login</a>
-				<a href="{{ url_for('register') }}" class="active">Registro</a>
-			</div>
-			<form action="{{ url_for('register') }}" method="post" autocomplete="off">
-				<label for="name">
-					<i class="#"></i>
-				</label>
-				<input type="text" name="name" placeholder="Nombre" id="name" required>
-				<label for="surname">
-					<i class="#"></i>
-				</label>
-				<input type="text" name="surname" placeholder="Apellido" id="surname" required>
-				<label for="email">
-					<i class="fas fa-email"></i>
-				</label>
-				<input type="email" name="email" placeholder="Email" id="email" required>
-				<label for="school">
-					<i class="fas fa-email"></i>
-				</label>
-				<input type="text" name="school" placeholder="Colegio" id="school" >
-				<label for="password">
-					<i class="fas fa-lock"></i>
-				</label>
-				<input type="password" name="password" placeholder="Contraseña" id="password" required>
-				<input type="submit" value="Register">
-			</form>
+{% extends 'bootstrap/base.html' %}
+{% block styles %}
+	{{super()}}
+{% endblock %}
+{% block content %} 
+<head>
+<meta charset="utf-8">
+	<title>Login</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+</head>
+<body>
+	<div class="register">
+		<h1>Registro</h1>
+		<div class="links">
+			<a href="{{ url_for('login') }}">Login</a>
+			<a href="{{ url_for('register') }}" class="active">Registro</a>
 		</div>
-	</body>
-</html>
+		<form action="{{ url_for('register') }}" method="post" autocomplete="off">
+			<label for="name">
+				<i class="fas fa-user"></i>
+			</label>
+			<input type="text" name="name" placeholder="Nombre" id="name" required>
+			<label for="surname">
+				<i class="far fa-user"></i>
+			</label>
+			<input type="text" name="surname" placeholder="Apellido" id="surname" required>
+			<label for="email">
+				<i class="fas fa-at"></i>
+			</label>
+			<input type="email" name="email" placeholder="Email" id="email" required>
+			<label for="school">
+				<i class="fas fa-school"></i>
+			</label>
+			<input type="text" name="school" placeholder="Colegio" id="school" >
+			<label for="password">
+				<i class="fas fa-lock"></i>
+			</label>
+			<input type="password" name="password" placeholder="Contraseña" id="password" required>
+			<input type="submit" value="Register">
+		</form>
+	</div>
+</body>
+{% endblock %}

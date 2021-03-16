@@ -1,6 +1,41 @@
-<!doctype html>
-  <title>Download File</title>
-  <h1>Download File</h1>
-  <body class="body">
-     <a href="{{url_for('download')}}">Download</a>
-  </body>
+{% extends 'bootstrap/base.html' %}
+
+{% block navbar %}
+	<nav class="navbar navbar-inverse ">
+	  <div class="container-fluid">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+		  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		  </button>
+		  <a class="navbar-brand" href="#">Sire</a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		  <ul class="nav navbar-nav navbar-right">
+			<li><a href="{{ url_for('upload_form')}}">Subida Archivo</a></li>
+			<li><a href="{{ url_for('show_download')}}">Descarga</a></li>
+			<li><a href="{{ url_for('logout')}}">Desconectar</a></li>
+		  </ul>
+		</div>
+	  </div>
+	</nav>
+{% endblock %}
+
+{% block content %}
+<head>
+  <title>DESCARGA DE ARCHIVO RESULTANTE</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
+ </head>
+ 
+<body class="body">
+	<div class="container">
+		<h1>Descarga archivo</h1>
+		<a href="{{ url_for('download')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:400px; height:450px' align='center' onclick="{{ url_for('upload_form')}}">
+        Descarga</button></a>
+	</div>
+</body>
+{% endblock %}

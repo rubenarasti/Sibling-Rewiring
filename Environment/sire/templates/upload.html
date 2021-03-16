@@ -1,29 +1,58 @@
-<!doctype html>
-<html>
-    <head>
+{% extends 'bootstrap/base.html' %}
+
+{% block navbar %}
+	<nav class="navbar navbar-inverse ">
+	  <div class="container-fluid">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+		  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		  </button>
+		  <a class="navbar-brand" href="#">Sire</a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		  <ul class="nav navbar-nav navbar-right">
+			<li><a href="{{ url_for('upload_form')}}">Subida Archivo</a></li>
+			<li><a href="{{ url_for('show_download')}}">Descarga</a></li>
+			<li><a href="{{ url_for('logout')}}">Desconectar</a></li>
+		  </ul>
+		</div>
+	  </div>
+	</nav>
+{% endblock %}
+
+{% block content %} 
+	<head>
 		<meta charset="utf-8">
 		<title>Subida de Archivos</title>
 		<link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
 	</head>
+	
 	<body>
-        <div class="Upload File">
-            <h1>Selecciona el archivo para subir</h1>
-            <p>
-            	{% with messages = get_flashed_messages() %}
-            	  {% if messages %}
-            		<ul class=flashes>
-            		{% for message in messages %}
-            		  <li>{{ message }}</li>
-            		{% endfor %}
-            		</ul>
-            	  {% endif %}
-            	{% endwith %}
-            </p>
-            
-            <form method=post enctype=multipart/form-data>
-              <input type=file name=file>
-              <input type=submit value=Subir>
-            </form>
-        </div>
+		<div class="container">
+			<div class="Upload File">
+				<h1>Selecciona el archivo para subir</h1>
+				<p>
+					{% with messages = get_flashed_messages() %}
+					  {% if messages %}
+						<ul class=flashes>
+						{% for message in messages %}
+						  <li>{{ message }}</li>
+						{% endfor %}
+						</ul>
+					  {% endif %}
+					{% endwith %}
+				</p>
+				
+				<form method=post enctype=multipart/form-data>
+				  <input type=file name=file>
+				  <input type=submit value=Subir>
+				</form>
+			</div>
+		</div>
     </body>
-</html>
+{% endblock %}
