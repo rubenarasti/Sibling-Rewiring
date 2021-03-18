@@ -39,6 +39,10 @@ def register():
 @app.route('/user_home')
 def show_user_home():
 	return render_template('user_home.html')
+	
+@app.route('/selection')
+def show_selection_page():
+	return render_template('selection.html')
 
 @app.route('/upload')
 def upload_form():
