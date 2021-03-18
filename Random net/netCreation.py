@@ -141,9 +141,10 @@ class RandomNet:
         plt.show()
         
         
-        #nx.write_gexf(initial_network, "randomGraph.gexf")
-        #nx.write_gexf(initial_network, "randomGraph2.gexf")
-        #nx.write_gexf(initial_network, "randomGraphuploaded.gexf")
+        nx.write_gexf(self.initial_network, "randomGraph.gexf")
+        nx.write_gexf(self.initial_network, "randomGraphuploaded.gexf")
+        nx.write_graphml(self.initial_network, "net.graphml")
+        nx.write_graphml(self.initial_network, "netUploaded.graphml")
         
         
     def create_siblings_matrix(self):

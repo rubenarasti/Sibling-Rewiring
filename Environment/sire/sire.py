@@ -53,7 +53,7 @@ def upload_file():
 		os.mkdir(UPLOAD_FOLDER)
     
 	app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-	ALLOWED_EXTENSIONS = set(['gexf'])
+	ALLOWED_EXTENSIONS = set(['gexf', 'graphml'])
 	def allowed_file(filename):
 		return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -71,7 +71,7 @@ def upload_file():
 			flash('Archivo subido con éxito.')
 			return render_template('success.html')
 		else:
-			flash('Los archivos permitidos son .gexf')
+			flash('Los archivos permitidos son .gexf o .graphml')
 			return render_template('upload.html')
 	return render_template('success.html', name = file.filename)
 	
