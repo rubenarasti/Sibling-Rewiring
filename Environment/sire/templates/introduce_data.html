@@ -1,14 +1,9 @@
 {% extends 'bootstrap/base.html' %}
-{% block style%}
+{% block styles %}
 	{{super()}}
-	<link rel="canonical" href="https://getbootstrap.com/docs/3.3/examples/cover/">
-	<link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-	<link href="cover.css" rel="stylesheet">
-	<script src="../../assets/js/ie-emulation-modes-warning.js"></script>
 {% endblock %}
 
- {% block navbar %}
+{% block navbar %}
 	<nav class="navbar navbar-inverse ">
 	  <div class="container-fluid">
 		<!-- Brand and toggle get grouped for better mobile display -->
@@ -32,26 +27,33 @@
 	  </div>
 	</nav>
 {% endblock %}
-	
-  
+
 {% block content %} 
 <head>
+<meta charset="utf-8">
+	<title>Introduce datos para crear la red aleatoria</title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
 </head>
-
 <body>
-    <div class="container aling-items: center; justify-content: center">
-        
-		<h2>SELECCIONE LA OPCIÓN DESEADA</h2>
-		<div class="btn-group" style="text-align: center;">
-		      
-			<p><a href="{{ url_for('show_introduce_data')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:300px' align='center' onclick="{{ url_for('upload_form')}}">
-        ALEATORIO</button></a> 
-		
-			<a href="{{ url_for('upload_form')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:300px' align='center'> 
-			USANDO FICHERO</button> </a></p> 
-			  
-		</div> 
-    </div>
+	<div class="container">
+		<div class="form">
+			<h1>Introduce datos para crear la red aleatoria</h1>
+			
+			<form method="POST" action="{{ url_for('addNetwork') }}">
+				<label for="totalStudents">
+					<i class="fas fa-users"></i>
+				</label>
+				<input type="number" name="totalStudents" placeholder="Total de Alumnos" id="totalStudents" required>
+				<br><br>
+				<label for="numberSiblings">
+					<i class="fas fa-user-friends"></i>
+				</label>
+				<input type="number" name="numberSiblings" placeholder="Número de hermanos" id="numberSiblings" required>
+				<br><br>
+				<input type="submit" value="CONTINUAR">
+			</form>
+		</div>
+	</div>
 </body>
 {% endblock %}

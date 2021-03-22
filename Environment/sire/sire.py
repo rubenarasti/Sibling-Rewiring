@@ -91,6 +91,18 @@ def download():
 	p = "/randomGraphuploaded.gexf"
 	return send_file(app.config['UPLOAD_FOLDER']+ p, as_attachment=True)
 
+@app.route('/showData')
+def show_introduce_data():
+    return render_template('introduce_data.html')
+	
+@app.route('/showData/data', methods=['POST', 'GET'])
+def addNetwork():
+	net_created = addNet()
+	if net_created == json.dumps({'message':'User created successfully !'}):
+		return render_template('success.html')
+	return jsonify({'message': net_created})
+
+
 @app.route('/logout')
 def logout():
 	session.clear()
