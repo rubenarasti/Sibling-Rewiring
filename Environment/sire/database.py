@@ -8,8 +8,9 @@ mydb = mysql.connector.connect(host="localhost", user="root", passwd="Password",
 
 mycursor = mydb.cursor()
 
-def create_table():
+def create_tables():
 	mycursor.execute("CREATE TABLE IF NOT EXISTS tbl_user(user_id INT AUTO_INCREMENT PRIMARY KEY, user_name VARCHAR(45) NOT NULL, user_surname VARCHAR(45) NULL, user_school VARCHAR(80) NULL, user_email VARCHAR(150) NOT NULL UNIQUE, user_password VARCHAR (45) NOT NULL)")
+	mycursor.execute("CREATE TABLE IF NOT EXISTS tbl_network(net_id INT AUTO_INCREMENT PRIMARY KEY, net_totalStudents INT NOT NULL, net_numberSinlings INT NOT NULL, net_initialt INT, net_finalt INT, net_l INT, net_seed INT)")
 	
 def create_procedure():
 	mycursor.execute("DROP PROCEDURE IF EXISTS sp_createUser")
@@ -65,6 +66,29 @@ def logIn():
 	finally:
 		return user_exist
 	
+def addNet():
+	try: 
+		_totalStudents = request.form['totalStudents']
+		_numberSiblings = request.form['numberSiblings']
+		
+		if _totalStudents and _numberSiblings:
+			sql = ('INSERT INTO tbl_network(totalStudents, numberSiblings) VALUES(%s,%s, %s, %s)')
+			values = (_totalStudents, _numberSiblings)
+			mycursor.execute(sql, values)
+			data = mycursor.fetchall()
+			if len(data) == 0:
+				mydb.commit()
+				return json.dumps({'message':'User created successfully !'})
+			else:
+				return json.dumps({'error':str(data[0])})
+		else:
+			return json.dumps({'html':'<span>Enter the required fields</span>'})
+	
+	except Exception as e:
+		return json.dumps({'error':str(e)})
+		
+	finally:
+		mydb.commit()
 
-create_table()
+create_tables()
 create_procedure()
