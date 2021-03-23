@@ -1,6 +1,8 @@
 import os
 from flask import Flask, render_template, request, flash, redirect, jsonify, send_file
 from flask_bootstrap import Bootstrap
+import networkx as nx
+import matplotlib.pyplot as plt
 from werkzeug.utils import secure_filename
 from database import *
 
@@ -73,11 +75,38 @@ def upload_file():
 			filename = secure_filename(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			flash('Archivo subido con éxito.')
-			return render_template('success.html')
+			x = addFile(file.filename, os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			if x == json.dumps({'message':'File added successfully!'}):
+				file_name, file_directory = get_last_file()
+				
+				n, extension = os.path.splitext(file_name)
+				if extension == '.gexf':
+					G = nx.read_gexf(file_directory)
+				elif extension == '.graphml':
+					return ('PROXIMAMENTE')
+					#G = nx.read_graphml(file_directory)
+				pos=nx.kamada_kawai_layout(G)
+        
+				nx.draw(G, pos)
+				node_labels = nx.get_node_attributes(G,'Nombre')
+				nx.draw_networkx_labels(G, pos, labels = node_labels)
+				return render_template('success.html', filename = file_name, name=plt.show())
+				
+			else:
+				return render_template('upload.html')
 		else:
 			flash('Los archivos permitidos son .gexf o .graphml')
 			return render_template('upload.html')
-	return render_template('success.html', name = file.filename)
+
+@app.route('/showNet', methods=['POST'])
+def open_file():
+	file_name, file_directory = get_last_file()
+	
+	print(file_name)
+	print(file_directory)
+	
+	return render_template('suc.html')
+	
 	
 @app.route("/downloadfile", methods=['GET'])
 def show_download():
