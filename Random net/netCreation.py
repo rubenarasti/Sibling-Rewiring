@@ -269,6 +269,7 @@ class RandomNet:
         nx.draw_networkx_labels(self.schoolyear_class, pos, labels = node_labels)
         edge_labels = nx.get_edge_attributes(self.schoolyear_class,'peso')
         nx.draw_networkx_edge_labels(self.schoolyear_class, pos, labels = edge_labels)
+        print(type(self.schoolyear_class))
         
         plt.show()
 

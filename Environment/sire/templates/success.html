@@ -31,15 +31,15 @@
 {% block content %} 
 <head>
 <meta charset="utf-8">
-	<title>Se ha introducido el fichero{{filename}}</title>
+	<title>MOSTRAMOS LA RED</title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
 </head>
 <body>
 	<div class="container">
 		<div class="form">
-			<h1>Se muestra la red seleccionada </h1>
-			
+			<h1>Se muestra la red de clases y hermanos</h1>
+
 			<img src={{ name }}  height="42" width="42">
 			
 			<a href="#"><button type="submit" class="btn btn-primary btn-lg" style='width:400px; height:450px' align='center' onclick="{{ url_for('upload_form')}}">

@@ -67,10 +67,10 @@ def logIn():
 	finally:
 		return user_exist
 	
-def addNet():
+def addNet(totalStudents,numberSiblings):
 	try: 
-		_totalStudents = request.form['totalStudents']
-		_numberSiblings = request.form['numberSiblings']
+		_totalStudents = int(totalStudents)
+		_numberSiblings = int(numberSiblings)
 		
 		if _totalStudents and _numberSiblings:
 			sql = ('INSERT INTO tbl_network(net_totalStudents, net_numberSiblings) VALUES(%s,%s)')
@@ -79,7 +79,7 @@ def addNet():
 			data = mycursor.fetchall()
 			if len(data) == 0:
 				mydb.commit()
-				return json.dumps({'message':'Net added successfully !'})
+				return _totalStudents, _numberSiblings
 			else:
 				return json.dumps({'error':str(data[0])})
 		else:

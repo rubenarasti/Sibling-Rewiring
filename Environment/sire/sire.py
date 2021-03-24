@@ -5,6 +5,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from werkzeug.utils import secure_filename
 from database import *
+from netCreation import RandomNet
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -85,12 +86,22 @@ def upload_file():
 				elif extension == '.graphml':
 					return ('PROXIMAMENTE')
 					#G = nx.read_graphml(file_directory)
-				pos=nx.kamada_kawai_layout(G)
-        
-				nx.draw(G, pos)
-				node_labels = nx.get_node_attributes(G,'Nombre')
-				nx.draw_networkx_labels(G, pos, labels = node_labels)
-				return render_template('success.html', filename = file_name, name=plt.show())
+					
+				totalStudents = len(G.nodes())
+				numberSiblings = 250
+				
+				net = RandomNet(totalStudents,numberSiblings)
+				net.create_initial_network()
+				schoolyear_class = net.create_schoolyear_class_network()
+				
+				pos=nx.kamada_kawai_layout(schoolyear_class)
+				nx.draw(schoolyear_class, pos)
+				node_labels = nx.get_node_attributes(schoolyear_class,'Nombre')
+				nx.draw_networkx_labels(schoolyear_class, pos, labels = node_labels)
+				
+				addNet(totalStudents, numberSiblings)
+				
+				return render_template('success.html', name=plt.show())
 				
 			else:
 				return render_template('upload.html')
@@ -98,15 +109,6 @@ def upload_file():
 			flash('Los archivos permitidos son .gexf o .graphml')
 			return render_template('upload.html')
 
-@app.route('/showNet', methods=['POST'])
-def open_file():
-	file_name, file_directory = get_last_file()
-	
-	print(file_name)
-	print(file_directory)
-	
-	return render_template('suc.html')
-	
 	
 @app.route("/downloadfile", methods=['GET'])
 def show_download():
@@ -126,16 +128,29 @@ def show_introduce_data():
 	
 @app.route('/showData/data', methods=['POST', 'GET'])
 def addNetwork():
-	net_created = addNet()
-	if net_created == json.dumps({'message':'User created successfully !'}):
-		return render_template('success.html')
-	return jsonify({'message': net_created})
+	_totalStudents = request.form['totalStudents']
+	_numberSiblings = request.form['numberSiblings']
+		
+	totalStudents, numberSiblings = addNet(_totalStudents, _numberSiblings)
+	
+	net = RandomNet(totalStudents,numberSiblings)
+	net.create_initial_network()
+	schoolyear_class = net.create_schoolyear_class_network()
+	
+	pos=nx.kamada_kawai_layout(schoolyear_class)
+	nx.draw(schoolyear_class, pos)
+	node_labels = nx.get_node_attributes(schoolyear_class,'Nombre')
+	nx.draw_networkx_labels(schoolyear_class, pos, labels = node_labels)
+	
+	return render_template('success.html', name = plt.show())
+	
 
 
 @app.route('/logout')
 def logout():
 	session.clear()
 	return render_template('login.html')
+	
 	
 	
 if __name__ == '__main__':
