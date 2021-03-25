@@ -3,9 +3,11 @@ from flask import Flask, render_template, request, flash, redirect, jsonify, sen
 from flask_bootstrap import Bootstrap
 import networkx as nx
 import matplotlib.pyplot as plt
+import pandas as pd
 from werkzeug.utils import secure_filename
 from database import *
-from netCreation import RandomNet
+from randomNetCreation import RandomNet
+from fileNetCreation import FileNet
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -60,54 +62,69 @@ def upload_file():
 		os.mkdir(UPLOAD_FOLDER)
     
 	app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-	ALLOWED_EXTENSIONS = set(['gexf', 'graphml'])
+	
+	ALLOWED_EXTENSIONS = set(['gexf', 'csv'])
+	
 	def allowed_file(filename):
 		return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 	if request.method == 'POST':
-		if 'file' not in request.files:
+		if 'files[]' not in request.files:
 			flash('No file part')
 			return redirect(request.url)
-		file = request.files['file']
-		if file.filename == '':
-			flash('No se ha seleccionado ningún archivo')
-			return redirect(request.url)
-		if file and allowed_file(file.filename):
-			filename = secure_filename(file.filename)
-			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			flash('Archivo subido con éxito.')
-			x = addFile(file.filename, os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			if x == json.dumps({'message':'File added successfully!'}):
-				file_name, file_directory = get_last_file()
-				
-				n, extension = os.path.splitext(file_name)
-				if extension == '.gexf':
-					G = nx.read_gexf(file_directory)
-				elif extension == '.graphml':
-					return ('PROXIMAMENTE')
-					#G = nx.read_graphml(file_directory)
-					
-				totalStudents = len(G.nodes())
-				numberSiblings = 250
-				
-				net = RandomNet(totalStudents,numberSiblings)
-				net.create_initial_network()
-				schoolyear_class = net.create_schoolyear_class_network()
-				
-				pos=nx.kamada_kawai_layout(schoolyear_class)
-				nx.draw(schoolyear_class, pos)
-				node_labels = nx.get_node_attributes(schoolyear_class,'Nombre')
-				nx.draw_networkx_labels(schoolyear_class, pos, labels = node_labels)
-				
-				addNet(totalStudents, numberSiblings)
-				
-				return render_template('success.html', name=plt.show())
-				
-			else:
-				return render_template('upload.html')
-		else:
-			flash('Los archivos permitidos son .gexf o .graphml')
+			
+		files = request.files.getlist('files[]')
+		
+		if len(files) != 2:
+			flash('Debe introducir dos archivos.')
 			return render_template('upload.html')
+		
+		name1 = files[0].filename
+		extension1 = files[0].filename.rsplit('.', 1)[1].lower()
+		name2 = files[1].filename
+		extension2 = files[1].filename.rsplit('.', 1)[1].lower()
+		
+		if (extension1 == 'gexf' and extension2 == 'csv') or (extension2 == 'gexf' and extension1 == 'csv'):
+			for file in files:
+				if file and allowed_file(file.filename):
+					filename = secure_filename(file.filename)
+					file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+				else:
+					flash('Los archivos permitidos son .gexf o .graphml')
+					return render_template('upload.html')
+		else:
+			flash('Debe introducir un .csv y un grafo.')
+			return render_template('upload.html')
+		
+		file1 = addFile(name1, os.path.join(app.config['UPLOAD_FOLDER'], name1))
+		file2 = addFile(name2, os.path.join(app.config['UPLOAD_FOLDER'], name2))
+		
+		if file1 == json.dumps({'message':'File added successfully!'}) and file2 == json.dumps({'message':'File added successfully!'}):
+			file1_name, file1_directory = get_last_file()
+			file2_name, file2_directory = get_penultimate_file()
+				
+			n1, ext1 = os.path.splitext(file1_name)
+			n2, ext2 = os.path.splitext(file2_name)
+			
+			if ext1 == '.gexf':
+				G = nx.read_gexf(file1_directory)
+			elif ext1 == '.csv':
+				df = pd.read_csv(file1_directory, index_col=0)
+			if ext2 == '.gexf':
+				G = nx.read_gexf(file2_directory)
+			elif ext2 == '.csv':
+				df = pd.read_csv(file2_directory, index_col=0)
+		
+			net = FileNet(df, G)
+			schoolyear_class = net.create_schoolyear_class_network()
+					
+			pos=nx.circular_layout(schoolyear_class)
+			nx.draw(schoolyear_class, pos)
+			node_labels = nx.get_node_attributes(schoolyear_class,'Nombre')
+			nx.draw_networkx_labels(schoolyear_class, pos, labels = node_labels)
+			
+		flash('Archivo subido con éxito.')
+		return render_template('success.html', name=plt.show())
 
 	
 @app.route("/downloadfile", methods=['GET'])
