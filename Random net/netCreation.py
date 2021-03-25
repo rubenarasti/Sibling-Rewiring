@@ -143,8 +143,6 @@ class RandomNet:
         
         nx.write_gexf(self.initial_network, "randomGraph.gexf")
         nx.write_gexf(self.initial_network, "randomGraphuploaded.gexf")
-        nx.write_graphml(self.initial_network, "net.graphml")
-        nx.write_graphml(self.initial_network, "netUploaded.graphml")
         
         
     def create_siblings_matrix(self):
@@ -162,6 +160,7 @@ class RandomNet:
         etapa_siblings = []
         curso_siblings = []
         clase_siblings = []
+        hermanos = []
         
         nombres = nx.get_node_attributes(self.initial_network,'Nombre')
         etapas = nx.get_node_attributes(self.initial_network,'Etapa')
@@ -169,6 +168,8 @@ class RandomNet:
         clases = nx.get_node_attributes(self.initial_network,'Clase')
         
         for edge in self.siblings:
+            ed0 = edge[0]
+            ed1 = edge[1]
             for ed in edge:
                 if ed not in siblings:
                     siblings.append(ed)
@@ -176,18 +177,25 @@ class RandomNet:
                     etapa_siblings.append(etapas[ed])
                     curso_siblings.append(cursos[ed])
                     clase_siblings.append(clases[ed])
+                    if ed == ed0:
+                        hermanos.append(ed1)
+                    else:
+                        hermanos.append(ed0)
                     
         for i in range(0,len(nombre_siblings)):
-            self.siblingsMatrix.append([nombre_siblings[i],etapa_siblings[i],curso_siblings[i],clase_siblings[i]])
+            self.siblingsMatrix.append([nombre_siblings[i],etapa_siblings[i],curso_siblings[i],clase_siblings[i],hermanos[i]])
         #print('Es la matriz de hermanos')   
         #print(matriz_hermanos)
         
         data = {'nombre': nombre_siblings,
             'etapa': etapa_siblings,
             'curso' : curso_siblings,
-            'clase': clase_siblings}
+            'clase': clase_siblings,
+            'hermano de': hermanos}
        
-        df_siblings = pd.DataFrame(data, columns = ['nombre','etapa', 'curso', 'clase'])
+        df_siblings = pd.DataFrame(data, columns = ['nombre','etapa', 'curso', 'clase', 'hermano de'])
+        print(df_siblings)
+        df_siblings.to_csv('siblings.csv')
         
         return df_siblings
     
