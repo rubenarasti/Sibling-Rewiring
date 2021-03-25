@@ -237,7 +237,6 @@ class RandomNet:
             else:
                 self.schoolyear_class.edges[sibling1_name, sibling2_name]["peso"] += 1
         
-        print(type(self.schoolyear_class))
         return self.schoolyear_class
         
 

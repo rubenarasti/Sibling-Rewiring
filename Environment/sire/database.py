@@ -109,6 +109,26 @@ def addFile(_filename, _directory):
 	finally:
 		mydb.commit()
 
+def get_penultimate_file():
+	try:
+		mycursor.execute('SELECT file_directory FROM tbl_file WHERE file_id = ((SELECT max(file_id) FROM tbl_file) - 1)')
+		_d = mycursor.fetchone()
+		_directory = _d[0]
+		
+		mycursor.execute('SELECT file_name FROM tbl_file WHERE file_id = ((SELECT max(file_id) FROM tbl_file) - 1 )')
+		_n = mycursor.fetchone()
+		_name = _n[0]
+		
+		if _directory == '' or _name == '':
+			return json.dumps({'error'})
+		else: 
+			return _name, _directory
+	except Exception as e:
+		return json.dumps({'error':str(e)})
+		
+	finally:
+		mydb.commit()
+
 def get_last_file():
 	try:
 		mycursor.execute('SELECT file_directory FROM tbl_file WHERE file_id = (SELECT max(file_id) FROM tbl_file)')
