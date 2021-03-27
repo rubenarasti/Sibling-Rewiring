@@ -37,13 +37,18 @@
 </head>
 <body>
 	<div class="container">
-		<div class="form">
+		<div class="container">
 			<h1>Se muestra la red de clases y hermanos</h1>
 
 			<img src={{ name }}  height="42" width="42">
 			
-			<a href="{{ url_for('show_random_advanced')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:400px; height:450px' align='center' ">
-        CONTINUAR</button></a> 
+			<h3> Los nodos del vecino inicial son {{ initial_neighbour }} </h3>
+			<h3> Fmax =  {{ ini_fmax }} </h3>
+			<h3> Los nodos del mejor vecino encontrado son {{ best_neighbour }} </h3>
+			<h3> Fmax =  {{ current_fmax }} </h3>
+			
+			<a href="{{ url_for('show_download')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:400px; height:450px' align='center' >
+        DESCARGAR</button></a> 
 			
 		</div>
 	</div>
