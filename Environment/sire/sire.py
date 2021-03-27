@@ -34,7 +34,7 @@ def logInDB():
 def showSignUp():
     return render_template('register.html')
 
-@app.route('/showLogin/register', methods=['POST','GET'])
+@app.route('/showSingup/register', methods=['POST','GET'])
 def register():
 	user_created = signUp()
 	if user_created == json.dumps({'message':'User created successfully !'}):
@@ -90,7 +90,7 @@ def upload_file():
 					filename = secure_filename(file.filename)
 					file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 				else:
-					flash('Los archivos permitidos son .gexf o .graphml')
+					flash('Los archivos permitidos son .gexf y .csv')
 					return render_template('upload.html')
 		else:
 			flash('Debe introducir un .csv y un grafo.')
@@ -123,7 +123,6 @@ def upload_file():
 			node_labels = nx.get_node_attributes(schoolyear_class,'Nombre')
 			nx.draw_networkx_labels(schoolyear_class, pos, labels = node_labels)
 			
-		flash('Archivo subido con éxito.')
 		return render_template('success.html', name=plt.show())
 
 	
@@ -161,6 +160,23 @@ def addNetwork():
 	
 	return render_template('success.html', name = plt.show())
 	
+@app.route('/showSelection')
+def show_random_advanced():
+    return render_template('random_advanced.html')
+
+@app.route('/showSelection/randomAdvanced', methods=['POST', 'GET'])
+def pick_option():
+	selected_option = None
+	selected_option = request.form.get('options')
+	
+	if selected_option == 'default':
+		return jsonify('default')
+	elif selected_option == 'advanced':
+		return jsonify('advanced')
+	
+	if selected_option == None:
+		flash('Debe seleccionar una opción')
+		return render_template('random_advanced.html')	
 
 
 @app.route('/logout')

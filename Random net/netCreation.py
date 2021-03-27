@@ -141,8 +141,8 @@ class RandomNet:
         plt.show()
         
         
-        nx.write_gexf(self.initial_network, "randomGraph.gexf")
-        nx.write_gexf(self.initial_network, "randomGraphuploaded.gexf")
+        #nx.write_gexf(self.initial_network, "randomGraph.gexf")
+        #nx.write_gexf(self.initial_network, "randomGraphuploaded.gexf")
         
         
     def create_siblings_matrix(self):
@@ -194,8 +194,8 @@ class RandomNet:
             'hermano de': hermanos}
        
         df_siblings = pd.DataFrame(data, columns = ['nombre','etapa', 'curso', 'clase', 'hermano de'])
-        print(df_siblings)
-        df_siblings.to_csv('siblings.csv')
+        
+        #df_siblings.to_csv('siblings.csv')
         
         return df_siblings
     

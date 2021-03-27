@@ -42,16 +42,39 @@
 <body>
     <div class="container aling-items: center; justify-content: center">
         
-		<h2>SELECCIONE LA OPCIÓN DESEADA</h2>
-		<div class="btn-group" style="text-align: center;">
-		      
-			<p><a href="{{ url_for('show_introduce_data')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:300px' align='center' >
-        ALEATORIO</button></a> 
-		
-			<a href="{{ url_for('upload_form')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:300px' align='center'> 
-			USANDO FICHERO</button> </a></p> 
-			  
+		<h1>Seleccione la opción deseada</h1>
+			
+			<div>
+			  <button onClick="alert('En las opciones avanzadas se escogerán los valores necesarios para hallar la solución: para el recocido simulado y la secuencia de enfriamiento')">
+
+			   ¿Cuál escoger?
+
+			   </button>
+			</div>
+			
+			<p>
+					{% with messages = get_flashed_messages() %}
+					  {% if messages %}
+						<ul class=flashes>
+						{% for message in messages %}
+						  <li>{{ message }}</li>
+						{% endfor %}
+						</ul>
+					  {% endif %}
+					{% endwith %}
+				</p>
+			
+			<form action="{{ url_for('pick_option') }}"  method="post">
+				<input type="radio" name="options" id="default" value="default"> Opciones por defecto </input><br>
+				
+				<input type="radio" name="options" id="advanced" value="advanced"> Opciones avanzadas </input><br>
+			<br>
+			
+			<p><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:50px' align='center' >
+					CONTINUAR</button></a>
+			</form>
 		</div> 
+		
     </div>
 </body>
 {% endblock %}
