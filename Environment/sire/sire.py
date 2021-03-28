@@ -1,4 +1,5 @@
 import os
+import random
 from flask import Flask, render_template, request, flash, redirect, jsonify, send_file
 from flask_bootstrap import Bootstrap
 import networkx as nx
@@ -8,9 +9,13 @@ from werkzeug.utils import secure_filename
 from database import *
 from randomNetCreation import RandomNet
 from fileNetCreation import FileNet
+from function import SimulatedAnnealing
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
+ 
+schyear_class = nx.Graph() 
+matrix_siblings = []
 
 @app.route('/')
 def index():
@@ -57,7 +62,9 @@ def upload_form():
 def upload_file():
 	path = os.getcwd()
 	UPLOAD_FOLDER = os.path.join(path, 'uploads')
-    
+	global schyear_class
+	global matrix_siblings
+	
 	if not os.path.isdir(UPLOAD_FOLDER):
 		os.mkdir(UPLOAD_FOLDER)
     
@@ -116,14 +123,17 @@ def upload_file():
 				df = pd.read_csv(file2_directory, index_col=0)
 		
 			net = FileNet(df, G)
-			schoolyear_class = net.create_schoolyear_class_network()
-					
-			pos=nx.circular_layout(schoolyear_class)
-			nx.draw(schoolyear_class, pos)
-			node_labels = nx.get_node_attributes(schoolyear_class,'Nombre')
-			nx.draw_networkx_labels(schoolyear_class, pos, labels = node_labels)
 			
-		return render_template('success.html', name=plt.show())
+			schoolyear_class = net.create_schoolyear_class_network()
+			schyear_class = schoolyear_class
+			matrix_siblings = df.values
+			
+			_totalStudents = len(G.nodes())
+			_numberSiblings = len(df)
+			
+			addNet(_totalStudents, _numberSiblings)
+			
+		return render_template('random_advanced.html')
 
 	
 @app.route("/downloadfile", methods=['GET'])
@@ -144,21 +154,22 @@ def show_introduce_data():
 	
 @app.route('/showData/data', methods=['POST', 'GET'])
 def addNetwork():
-	_totalStudents = request.form['totalStudents']
-	_numberSiblings = request.form['numberSiblings']
-		
-	totalStudents, numberSiblings = addNet(_totalStudents, _numberSiblings)
+	global schyear_class
+	global matrix_siblings
 	
-	net = RandomNet(totalStudents,numberSiblings)
+	_totalStudents = int(request.form['totalStudents'])
+	_numberSiblings = int(request.form['numberSiblings'])
+		
+	addNet(_totalStudents, _numberSiblings)
+	
+	net = RandomNet(_totalStudents,_numberSiblings)
 	net.create_initial_network()
 	schoolyear_class = net.create_schoolyear_class_network()
+	schyear_class = schoolyear_class
+	net.create_siblings_matrix()
+	matrix_siblings = net.siblingsMatrix
 	
-	pos=nx.kamada_kawai_layout(schoolyear_class)
-	nx.draw(schoolyear_class, pos)
-	node_labels = nx.get_node_attributes(schoolyear_class,'Nombre')
-	nx.draw_networkx_labels(schoolyear_class, pos, labels = node_labels)
-	
-	return render_template('success.html', name = plt.show())
+	return render_template('random_advanced.html')
 	
 @app.route('/showSelection')
 def show_random_advanced():
@@ -168,17 +179,99 @@ def show_random_advanced():
 def pick_option():
 	selected_option = None
 	selected_option = request.form.get('options')
+	simAn = SimulatedAnnealing()
+	values = []
 	
 	if selected_option == 'default':
-		return jsonify('default')
+		tf = random.uniform(0.05, 0.01)
+		alpha = random.uniform(0.8, 0.99)
+		l = random.randint(10,50)
+		option_cooling = 6
+		seed_value = random.randint(0,10)
+		percentage_component = 60
+		
+		cooling_sequence = change_number_to_cooling_sequence(option_cooling)
+		
+		net_id, totalStudents, numberSiblings = returnNet()
+		
+		initial_t, initial_neighbour, ini_fmax, best_neighbour, current_fmax = simAn.solve_simulated_annealing(schyear_class,matrix_siblings,numberSiblings,totalStudents,l,tf, alpha ,int(option_cooling), seed_value, percentage_component)
+		
+		introduce_net_data(net_id, l, initial_t, tf, alpha, cooling_sequence, seed_value)
+		
+		pos=nx.kamada_kawai_layout(schyear_class)
+		nx.draw(schyear_class, pos)
+		node_labels = nx.get_node_attributes(schyear_class,'Nombre')
+		nx.draw_networkx_labels(schyear_class, pos, labels = node_labels)
+		
+		return render_template('results.html', name = plt.show(), initial_neighbour = initial_neighbour, ini_fmax = ini_fmax, best_neighbour = best_neighbour, current_fmax = current_fmax)
 	elif selected_option == 'advanced':
-		return jsonify('advanced')
+		return render_template('advanced.html')
 	
 	if selected_option == None:
 		flash('Debe seleccionar una opción')
 		return render_template('random_advanced.html')	
 
+@app.route('/advancedOptions', methods=['POST', 'GET'])
+def advanced_option():
+	simAn = SimulatedAnnealing()
+	alpha = 0
+	seed_value = random.randint(0,10)
+	
+	_l = request.form['l']
+	_tf = request.form['tf']
+	_coolingSeq = request.form['cooling_sequence']
+	_percentage = request.form['percentage_component']
+	
+	l = int(_l)
+	tf = float(_tf)
+	option_cooling = int(_coolingSeq)
+	percentage_component = int(_percentage)
+	
+	if l < 0:
+		flash('L debe ser entero positivo')
+		return render_template('advanced.html')
+	
+	if tf == 0:
+		flash('tf no puede ser 0')
+		return render_template('advanced.html')
+		
+	if percentage_component > 100:
+		flash('El porcentaje no puede ser mayor de 100')
+		return render_template('advanced.html')
+	
+	if option_cooling == 3:
+		alpha = 20 
+	elif option_cooling == 6:
+		alpha = random.uniform(0.8, 0.99)
+	
+	cooling_sequence = change_number_to_cooling_sequence(option_cooling)
+	net_id, totalStudents, numberSiblings = returnNet()
+		
+	initial_t, initial_neighbour, ini_fmax, best_neighbour, current_fmax = simAn.solve_simulated_annealing(schyear_class,matrix_siblings,numberSiblings,totalStudents,l,tf, alpha ,int(option_cooling), seed_value, percentage_component)
+		
+	introduce_net_data(net_id, l, initial_t, tf, alpha, cooling_sequence, seed_value)
+		
+	pos=nx.kamada_kawai_layout(schyear_class)
+	nx.draw(schyear_class, pos)
+	node_labels = nx.get_node_attributes(schyear_class,'Nombre')
+	nx.draw_networkx_labels(schyear_class, pos, labels = node_labels)
+		
+	return render_template('results.html', name = plt.show(), initial_neighbour = initial_neighbour, ini_fmax = ini_fmax, best_neighbour = best_neighbour, current_fmax = current_fmax)
 
+def change_number_to_cooling_sequence(number):
+	if number == 1:        
+		cooling_sequence = 'linear_cooling_sequence'
+	elif number == 3:
+		cooling_sequence = 'logarithmic_cooling_sequence'
+	elif number == 4:
+		cooling_sequence = 'cauchy_cooling_sequence'
+	elif number == 5:
+		cooling_sequence = 'modified_cauchy_cooling_sequence'
+	elif number == 6:
+		cooling_sequence = 'geometrical_cooling_sequence'
+	
+	return cooling_sequence
+	
 @app.route('/logout')
 def logout():
 	session.clear()
