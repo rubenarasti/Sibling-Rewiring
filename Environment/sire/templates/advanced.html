@@ -53,12 +53,14 @@
 					{% endwith %}
 				</p>
 			<form method="POST" action="{{ url_for('advanced_option') }}">
-				<button onClick="alert('El valor de L debe ser un entero positivo')">¿?</button> <br><br>
+				<h4>L será el número de iteraciones que realizaremos durante la búsqueda de la solución en cada temperatura</h4>
+				<h5>-El valor de L debe ser un entero positivo-</h5> 
 				
 				<label for="l"></label>
 				<input type="number" name="l" placeholder="Valor de L" id="l" required>
 				<br><br>
-				<button onClick="alert('Se recomienda que el valor de la temperatura final esté próximo a 0 (no 0)')">¿?</button> <br><br>
+				<h4>La temperatura final será el valor final que hará parar las iteraciones</h4>
+				<h5>-Se recomienda que el valor de la temperatura final esté próximo a 0 (no 0)-</h5> 
 				
 				<label for="tf"></label>
 				<input type="float" name="tf" placeholder="Temperatura final" id="tf" required>
@@ -78,7 +80,7 @@
 				
 				<h4>Se introduce el valor de los porcentajes para hallar la solución')"</h4>
 				
-				<button onClick="alert('Se va a pedir la importancia que tiene la probabilidad de contagio por componente, el resto será la probabilidad individual')">Porcentaje</button> <br><br>
+				<h5>Se va a pedir la importancia que tiene la probabilidad de contagio por componente, el resto será la probabilidad individual</h5> 
 				
 				<label for="l"></label>
 				<input type="number" name="percentage_component" placeholder="Porcentaje de componente" id="percentage_component" required>

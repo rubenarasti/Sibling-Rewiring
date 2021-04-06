@@ -41,11 +41,13 @@
 			<h1>Introduce datos para crear la red aleatoria</h1>
 			
 			<form method="POST" action="{{ url_for('addNetwork') }}">
+				<h4>-- Número total de alumnos en el colegio ficticio --</h4>
 				<label for="totalStudents">
 					<i class="fas fa-users"></i>
 				</label>
 				<input type="number" name="totalStudents" placeholder="Total de Alumnos" id="totalStudents" required>
 				<br><br>
+				<h4>-- Número total de hermanos --</h4>
 				<label for="numberSiblings">
 					<i class="fas fa-user-friends"></i>
 				</label>
