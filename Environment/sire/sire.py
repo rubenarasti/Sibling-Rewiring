@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 from database import *
 from randomNetCreation import RandomNet
 from fileNetCreation import FileNet
-from function import SimulatedAnnealing
+from function import *
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -179,7 +179,6 @@ def show_random_advanced():
 def pick_option():
 	selected_option = None
 	selected_option = request.form.get('options')
-	simAn = SimulatedAnnealing()
 	values = []
 	
 	if selected_option == 'default':
@@ -194,7 +193,7 @@ def pick_option():
 		
 		net_id, totalStudents, numberSiblings = returnNet()
 		
-		initial_t, initial_neighbour, ini_fmax, best_neighbour, current_fmax = simAn.solve_simulated_annealing(schyear_class,matrix_siblings,numberSiblings,totalStudents,l,tf, alpha ,int(option_cooling), seed_value, percentage_component)
+		initial_t, initial_neighbour, ini_fmax, best_neighbour, current_fmax = solve_simulated_annealing(schyear_class,matrix_siblings,numberSiblings,totalStudents,l,tf, alpha ,int(option_cooling), seed_value, percentage_component)
 		
 		introduce_net_data(net_id, l, initial_t, tf, alpha, cooling_sequence, seed_value)
 		
@@ -213,7 +212,6 @@ def pick_option():
 
 @app.route('/advancedOptions', methods=['POST', 'GET'])
 def advanced_option():
-	simAn = SimulatedAnnealing()
 	alpha = 0
 	seed_value = random.randint(0,10)
 	
@@ -247,7 +245,7 @@ def advanced_option():
 	cooling_sequence = change_number_to_cooling_sequence(option_cooling)
 	net_id, totalStudents, numberSiblings = returnNet()
 		
-	initial_t, initial_neighbour, ini_fmax, best_neighbour, current_fmax = simAn.solve_simulated_annealing(schyear_class,matrix_siblings,numberSiblings,totalStudents,l,tf, alpha ,int(option_cooling), seed_value, percentage_component)
+	initial_t, initial_neighbour, ini_fmax, best_neighbour, current_fmax = solve_simulated_annealing(schyear_class,matrix_siblings,numberSiblings,totalStudents,l,tf, alpha ,int(option_cooling), seed_value, percentage_component)
 		
 	introduce_net_data(net_id, l, initial_t, tf, alpha, cooling_sequence, seed_value)
 		
