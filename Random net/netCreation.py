@@ -281,6 +281,66 @@ class RandomNet:
         
         plt.show()
 
+    def generate_similar_net(self):
+        net = nx.Graph()
+        net = self.schoolyear_class.copy()
+        
+        pos = 0
+        for sibling in self.siblingsMatrix:
+            
+            edges_to_remove = []
+            new_class = random.choice(self.clase)
+            
+            sibling_to_change = sibling
+            edges_to_remove = []
+        
+        	
+            sibling_name = sibling_to_change[0]
+        		
+            name = []
+            name.append(sibling_to_change[1])
+            name.append(sibling_to_change[2])
+            name.append(sibling_to_change[3])
+            node_name_ini = ''.join(str(e) for e in name)
+            
+            self.siblingsMatrix[pos][3] = new_class
+        		
+            name = []
+            name.append(sibling_to_change[1])
+            name.append(sibling_to_change[2])
+            name.append(sibling_to_change[3])
+            node_name_fin = ''.join(str(e) for e in name)
+            
+            dicEstudiantes = nx.get_node_attributes(net,'Estudiantes')
+         
+            dicEstudiantes[node_name_ini].remove(sibling_name)
+            dicEstudiantes[node_name_fin].append(sibling_name)
+            for edge in net.edges:
+            	if node_name_ini in edge:
+            		edges_to_remove.append(edge)
+            		peso = net.edges[edge[0], edge[1]]["peso"] 
+            		if peso > 0:
+            			net.edges[edge[0], edge[1]]["peso"] -= 1
+        					
+            for rem in edges_to_remove:  
+                net.remove_edge(rem[0], rem[1])
+        			
+                if rem[0] == node_name_ini:
+                    if (node_name_fin, rem[1]) not in net.edges():
+                        net.add_edge(node_name_fin, rem[1])
+                        net.edges[node_name_fin, rem[1]]["peso"] = 0
+                    else:
+                        net.edges[node_name_fin, rem[1]]["peso"] += 1
+                elif rem[1] == node_name_ini:
+                    if (rem[0], node_name_fin) not in net.edges():
+                        net.add_edge(rem[0], node_name_fin)
+                        net.edges[rem[0], node_name_fin]["peso"] = 0
+                    else:
+                        net.edges[rem[0], node_name_fin]["peso"] += 1	
+            pos += 1
+        return net
+
+        
 
 #n = RandomNet()
 #n.create_initial_network()
@@ -288,3 +348,4 @@ class RandomNet:
 #print(dataframe, n.siblings, n.siblingsMatrix)
 #n.create_schoolyear_class_network()
 #print(n.schoolyear_class.edges)
+#n.generate_similar_net()
