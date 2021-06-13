@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from werkzeug.utils import secure_filename
 from database import *
-from randomNetCreation import RandomNet
-from fileNetCreation import FileNet
+import randomNetCreation as randomNet
+import fileNetCreation as fileNet
 from function import *
 
 app = Flask(__name__)
@@ -122,9 +122,8 @@ def upload_file():
 			elif ext2 == '.csv':
 				df = pd.read_csv(file2_directory, index_col=0)
 		
-			net = FileNet(df, G)
 			
-			schoolyear_class = net.create_schoolyear_class_network()
+			schoolyear_class = fileNet.create_schoolyear_class_network(df, G)
 			schyear_class = schoolyear_class
 			matrix_siblings = df.values
 			
@@ -162,12 +161,11 @@ def addNetwork():
 		
 	addNet(_totalStudents, _numberSiblings)
 	
-	net = RandomNet(_totalStudents,_numberSiblings)
-	net.create_initial_network()
-	schoolyear_class = net.create_schoolyear_class_network()
+	randomNet.create_initial_network(_totalStudents,_numberSiblings)
+	schoolyear_class = randomNet.create_schoolyear_class_network()
 	schyear_class = schoolyear_class
-	net.create_siblings_matrix()
-	matrix_siblings = net.siblingsMatrix
+	randomNet.create_siblings_matrix()
+	matrix_siblings = randomNet.__siblingsMatrix
 	
 	return render_template('random_advanced.html')
 	

@@ -3,20 +3,6 @@ import networkx as nx
 from math import e, log
 import numpy as np
 
-"""
-SimulatedAnnealing
-
-A class used to solve SimulatedAnnealing. 
-
-Methods
--------
-generate_neighbor(matrix, net, int)
-	Generates a new net changing one of the edges
-solve(net, int, int, int)
-	Generates a solution based of the introduced net
-solve_simulated_annealing(net, matrix, int, int, float, int, float)
-	Solves the Flow Shop problem with simulated annealing
-"""
 
 def generate_neighbor(matrix, net_to_change, numberSiblings, seed_value):
 	"""
