@@ -10,6 +10,8 @@ from database import *
 import randomNetCreation as randomNet
 import fileNetCreation as fileNet
 from function import *
+import multiObjectiveEvolutive as moe
+from deap import base
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
@@ -166,6 +168,9 @@ def addNetwork():
 	schyear_class = schoolyear_class
 	randomNet.create_siblings_matrix()
 	matrix_siblings = randomNet.__siblingsMatrix
+	
+	#toolbox = base.Toolbox()
+	#moe.configurePopulation(toolbox)
 	
 	return render_template('random_advanced.html')
 	
