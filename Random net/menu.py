@@ -1,6 +1,6 @@
 import os
 from netCreation import RandomNet
-from function import SimulatedAnnealing
+import function as simAn
 import platform
 import random
 
@@ -35,7 +35,6 @@ class Menu:
                 net.create_initial_network()
                 net.create_schoolyear_class_network()
                 net.create_siblings_matrix()
-                simAn = SimulatedAnnealing()
             
             self.print_menu()
             option = input('Selecciona una opción: ')
