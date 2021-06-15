@@ -3,6 +3,7 @@ from deap import tools
 from deap import algorithms
 import random
 import randomNetCreation as rN
+import function as fn
 
 def configurePopulation(toolbox):
     
@@ -13,15 +14,22 @@ def configurePopulation(toolbox):
         
     creator.create("Individual", list, fitness=creator.FitnessMin)
     
-    toolbox.register("network", random.randint, 0,rN.generate_similar_net() )
+    toolbox.register("network", random.randint, 0,rN.generate_similar_net())
     
     ''' El individuo se crea como una lista (o repeticion) de "network", definido justo antes
 	Tendrá una longitud igual al numero deseado'''
-    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.network, n=50)
+    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.network, n=10)
      
     ''' La población se crea como una lista de "individual", definido justo antes'''
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
+def evaluation(individual):
+	totalStudents = rN.__initial_network.nodes()
+	percentage_component = 0.5
+	percentage_individual = 0.5
+	score = fn.solve(individual, percentage_component, percentage_individual, totalStudents)
+	
+	return score, totalStudents
 
 def configureAlgorithm(toolbox):
     toolbox.register("mate", tools.cxOnePoint)
@@ -32,18 +40,19 @@ def configureAlgorithm(toolbox):
     
     
 def doEvolution (toolbox, stats):
-    configurePopulation(toolbox)
+	configurePopulation(toolbox)
+	configureAlgorithm(toolbox)
+	population = toolbox.population(n=50)
+	population, logbook = algorithms.eaMuPlusLambda(population, toolbox, mu=150,lambda_=100, cxpb=0.5, mutpb=0.2, ngen=50, verbose=False, stats=stats)
+	
+	print("\nEl resultado de la evolución es: ")
+	print(logbook,"\n")
+
+	print("\nLa mejor solucion encontrada es: ")
+	print(tools.selBest(population,1)[0])
     
-    configureAlgorithm(toolbox)
-    
-    population = toolbox.population(n=300)
-    
-    population, logbook = algorithms.eaMuPlusLambda(population, toolbox, mu=150,
-                                                    lambda_=100, cxpb=0.5, mutpb=0.2,
-                                                    ngen=50, verbose=False, stats=stats)
-    
-    return logbook, tools.selBest(population,1)[0], population
+	return logbook, tools.selBest(population,1)[0], population
 
 
 toolbox = base.Toolbox()
-configurePopulation(toolbox)
+doEvolution(toolbox, None)
