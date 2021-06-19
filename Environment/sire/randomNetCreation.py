@@ -1,6 +1,5 @@
 import networkx as nx
 import random
-from matplotlib import pyplot as plt
 import pandas as pd
 
 
@@ -206,72 +205,71 @@ def create_schoolyear_class_network():
     return __schoolyear_class
     
 def generate_similar_net():
-    """
-    Generates a similar net to schoolyear_Class, where edges are siblings.
+	"""
+	Generates a similar net to schoolyear_Class, where edges are siblings.
 
-    Returns
-    -------
-    network
-        Net of schoolYear-class.
-    """
+	Returns
+	-------
+	network
+		Net of schoolYear-class.
+	"""
+	
+	net = nx.Graph()
+	net = __schoolyear_class.copy()
+	pos = 0
+	for sibling in __siblingsMatrix:
+		print(sibling)
+		
+		edges_to_remove = []
+		new_class = random.choice(__class)
+		sibling_to_change = sibling
+		edges_to_remove = []
     
-    net = nx.Graph()
-    net = __schoolyear_class.copy()
-    
-    pos = 0
-    for sibling in __siblingsMatrix:
+		sibling_name = sibling_to_change[0]
+		
+		name = []
+		name.append(sibling_to_change[1])
+		name.append(sibling_to_change[2])
+		name.append(sibling_to_change[3])
+		node_name_ini = ''.join(str(e) for e in name)
         
-        edges_to_remove = []
-        new_class = random.choice(__class)
-        
-        sibling_to_change = sibling
-        edges_to_remove = []
-    
-    	
-        sibling_name = sibling_to_change[0]
-    		
-        name = []
-        name.append(sibling_to_change[1])
-        name.append(sibling_to_change[2])
-        name.append(sibling_to_change[3])
-        node_name_ini = ''.join(str(e) for e in name)
-        
-        __siblingsMatrix[pos][3] = new_class
-    		
-        name = []
-        name.append(sibling_to_change[1])
-        name.append(sibling_to_change[2])
-        name.append(sibling_to_change[3])
-        node_name_fin = ''.join(str(e) for e in name)
-        
-        dicEstudiantes = nx.get_node_attributes(net,'Estudiantes')
-     
-        dicEstudiantes[node_name_ini].remove(sibling_name)
-        dicEstudiantes[node_name_fin].append(sibling_name)
-        for edge in net.edges:
-        	if node_name_ini in edge:
-        		edges_to_remove.append(edge)
-        		peso = net.edges[edge[0], edge[1]]["peso"] 
-        		if peso > 0:
-        			net.edges[edge[0], edge[1]]["peso"] -= 1
+		__siblingsMatrix[pos][3] = new_class
+		
+		name = []
+		name.append(sibling_to_change[1])
+		name.append(sibling_to_change[2])
+		name.append(sibling_to_change[3])
+		node_name_fin = ''.join(str(e) for e in name)
+		
+		dicEstudiantes = nx.get_node_attributes(net,'Estudiantes')
+		
+		dicEstudiantes[node_name_ini].remove(sibling_name)
+		dicEstudiantes[node_name_fin].append(sibling_name)
+		for edge in net.edges:
+			if node_name_ini in edge:
+				edges_to_remove.append(edge)
+				peso = net.edges[edge[0], edge[1]]["peso"] 
+				if peso > 0:
+					net.edges[edge[0], edge[1]]["peso"] -= 1
     					
-        for rem in edges_to_remove:  
-            net.remove_edge(rem[0], rem[1])
+		for rem in edges_to_remove:  
+			net.remove_edge(rem[0], rem[1])
     			
-            if rem[0] == node_name_ini:
-                if (node_name_fin, rem[1]) not in net.edges():
-                    net.add_edge(node_name_fin, rem[1])
-                    net.edges[node_name_fin, rem[1]]["peso"] = 0
-                else:
-                    net.edges[node_name_fin, rem[1]]["peso"] += 1
-            elif rem[1] == node_name_ini:
-                if (rem[0], node_name_fin) not in net.edges():
-                    net.add_edge(rem[0], node_name_fin)
-                    net.edges[rem[0], node_name_fin]["peso"] = 0
-                else:
-                    net.edges[rem[0], node_name_fin]["peso"] += 1	
-        pos += 1
-    return net
+			if rem[0] == node_name_ini:
+				if (node_name_fin, rem[1]) not in net.edges():
+					net.add_edge(node_name_fin, rem[1])
+					net.edges[node_name_fin, rem[1]]["peso"] = 0
+				else:
+					net.edges[node_name_fin, rem[1]]["peso"] += 1
+			elif rem[1] == node_name_ini:
+				if (rem[0], node_name_fin) not in net.edges():
+					net.add_edge(rem[0], node_name_fin)
+					net.edges[rem[0], node_name_fin]["peso"] = 0
+				else:
+					net.edges[rem[0], node_name_fin]["peso"] += 1	
+		pos += 1
+	print('llego al final')
+	return net
 
 
 #n = RandomNet()

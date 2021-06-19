@@ -3,6 +3,8 @@ import random
 from flask import Flask, render_template, request, flash, redirect, jsonify, send_file
 from flask_bootstrap import Bootstrap
 import networkx as nx
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
 from werkzeug.utils import secure_filename
@@ -10,7 +12,6 @@ from database import *
 import randomNetCreation as randomNet
 import fileNetCreation as fileNet
 from function import *
-import multiObjectiveEvolutive as moe
 from deap import base
 
 app = Flask(__name__)
@@ -169,9 +170,6 @@ def addNetwork():
 	randomNet.create_siblings_matrix()
 	matrix_siblings = randomNet.__siblingsMatrix
 	
-	#toolbox = base.Toolbox()
-	#moe.configurePopulation(toolbox)
-	
 	return render_template('random_advanced.html')
 	
 @app.route('/showSelection')
@@ -205,7 +203,10 @@ def pick_option():
 		node_labels = nx.get_node_attributes(schyear_class,'Nombre')
 		nx.draw_networkx_labels(schyear_class, pos, labels = node_labels)
 		
-		return render_template('results.html', name = plt.show(), initial_neighbour = initial_neighbour, ini_fmax = ini_fmax, best_neighbour = best_neighbour, current_fmax = current_fmax)
+		plt.savefig('schyear_class_default', dpi=None, facecolor='w', edgecolor='w', orientation='portrait')
+		plt.close('all')
+		
+		return render_template('results.html', name = 'JOLA', initial_neighbour = initial_neighbour, ini_fmax = ini_fmax, best_neighbour = best_neighbour, current_fmax = current_fmax)
 	elif selected_option == 'advanced':
 		return render_template('advanced.html')
 	
@@ -257,7 +258,10 @@ def advanced_option():
 	node_labels = nx.get_node_attributes(schyear_class,'Nombre')
 	nx.draw_networkx_labels(schyear_class, pos, labels = node_labels)
 		
-	return render_template('results.html', name = plt.show(), initial_neighbour = initial_neighbour, ini_fmax = ini_fmax, best_neighbour = best_neighbour, current_fmax = current_fmax)
+	plt.savefig('schyear_class_advanced', dpi=None, facecolor='w', edgecolor='w', orientation='portrait')
+	plt.close('all')
+	
+	return render_template('results.html', name = '', initial_neighbour = initial_neighbour, ini_fmax = ini_fmax, best_neighbour = best_neighbour, current_fmax = current_fmax)
 
 def change_number_to_cooling_sequence(number):
 	if number == 1:        

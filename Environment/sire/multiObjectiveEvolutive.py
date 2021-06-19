@@ -7,21 +7,22 @@ import function as fn
 
 def configurePopulation(toolbox):
     
-    ''' Al configurar el fitness que se va a emplear, se configuraría para:
-        1. buscar un objetivo único
-        2. Minimizar tanto el riesgo individual como el colectivo '''
-    creator.create("FitnessMin", base.Fitness, weights=(-1.0,-1.0))
-        
-    creator.create("Individual", list, fitness=creator.FitnessMin)
+	''' Al configurar el fitness que se va a emplear, se configuraría para:
+		1. buscar un objetivo único
+		2. Minimizar tanto el riesgo individual como el colectivo '''
+	print('Entra a la población')
+	creator.create("FitnessMin", base.Fitness, weights=(-1.0,-1.0))
     
-    toolbox.register("network", random.randint, 0,rN.generate_similar_net())
-    
-    ''' El individuo se crea como una lista (o repeticion) de "network", definido justo antes
+	creator.create("Individual", list, fitness=creator.FitnessMin)
+	print('Entra a la network')
+	toolbox.register("network", rN.generate_similar_net())
+	print('acaba')
+	''' El individuo se crea como una lista (o repeticion) de "network", definido justo antes
 	Tendrá una longitud igual al numero deseado'''
-    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.network, n=10)
-     
-    ''' La población se crea como una lista de "individual", definido justo antes'''
-    toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+	toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.network)
+	print('Entra a la population') 
+	''' La población se crea como una lista de "individual", definido justo antes'''
+	toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 def evaluation(individual):
 	totalStudents = rN.__initial_network.nodes()
@@ -53,6 +54,8 @@ def doEvolution (toolbox, stats):
     
 	return logbook, tools.selBest(population,1)[0], population
 
-
+rN.create_initial_network(100,5)
+schoolyear_class = rN.create_schoolyear_class_network()
+rN.create_siblings_matrix()
 toolbox = base.Toolbox()
 doEvolution(toolbox, None)
