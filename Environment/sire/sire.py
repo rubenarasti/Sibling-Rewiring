@@ -125,7 +125,6 @@ def upload_file():
 			elif ext2 == '.csv':
 				df = pd.read_csv(file2_directory, index_col=0)
 		
-			
 			schoolyear_class = fileNet.create_schoolyear_class_network(df, G)
 			schyear_class = schoolyear_class
 			matrix_siblings = df.values

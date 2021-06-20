@@ -13,6 +13,7 @@ def create_schoolyear_class_network(siblings_df, initial_network):
 	initial = initial_network
 	df_siblings = siblings_df
 	siblings = df_siblings.values
+	schoolyear_class = nx.Graph()
 	
 	dicNombre = {}
 	dicEtapa = {}
@@ -45,7 +46,7 @@ def create_schoolyear_class_network(siblings_df, initial_network):
 	nx.set_node_attributes(schoolyear_class, dicEstudiantes, 'Estudiantes')
 	
 		
-	for sib in self.siblings: 
+	for sib in siblings: 
 		sibling = []
 		sibling.append(etapas[str(sib[0])])
 		sibling.append(cursos[str(sib[0])])
