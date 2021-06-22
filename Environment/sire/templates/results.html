@@ -19,9 +19,17 @@
 
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		  <ul class="nav navbar-nav navbar-right">
+			<li><a href="{{ url_for('show_introduce_data')}}">Red Aleatoria</a></li>
 			<li><a href="{{ url_for('upload_form')}}">Subida Archivo</a></li>
 			<li><a href="{{ url_for('show_download')}}">Descarga</a></li>
-			<li><a href="{{ url_for('logout')}}">Desconectar</a></li>
+			<li class="dropdown">
+			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Menú <span class="caret"></span></a>
+			  <ul class="dropdown-menu">
+				<li><a href="#">Repositorio</a></li>
+				<li><a href="#">Acerca De Sire</a></li>
+				<li><a href="#">Wiki - Manual Usuario</a></li>
+				<li role="separator" class="divider"></li>
+				<li><a href="{{ url_for('logout')}}">Desconectar</a></li>
 		  </ul>
 		</div>
 	  </div>
@@ -39,15 +47,20 @@
 	<div class="container">
 		<div class="container">
 			<h1>Se muestra la red de clases y hermanos</h1>
-
-			<img src={{ name }}  height="42" width="42">
 			
-			<h3> Los nodos del vecino inicial son {{ initial_neighbour }} </h3>
+			<picture>
+				<img src="schyear_class_default.jpg" />
+			</picture>
+			
+			
+			<h4> Los nodos del vecino inicial son </h4>
+			<h6> {{ initial_neighbour }} </h6>
 			<h3> Fmax =  {{ ini_fmax }} </h3>
-			<h3> Los nodos del mejor vecino encontrado son {{ best_neighbour }} </h3>
+			<h4> Los nodos del mejor vecino encontrado son </h4>
+			<h6> {{ best_neighbour }} </h6>
 			<h3> Fmax =  {{ current_fmax }} </h3>
 			
-			<a href="{{ url_for('show_download')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:400px; height:450px' align='center' >
+			<a href="{{ url_for('show_download')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:400px; height:100px; background-color:black' align='center' >
         DESCARGAR</button></a> 
 			
 		</div>

@@ -24,9 +24,17 @@
 
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		  <ul class="nav navbar-nav navbar-right">
+			<li><a href="{{ url_for('show_introduce_data')}}">Red Aleatoria</a></li>
 			<li><a href="{{ url_for('upload_form')}}">Subida Archivo</a></li>
 			<li><a href="{{ url_for('show_download')}}">Descarga</a></li>
-			<li><a href="{{ url_for('logout')}}">Desconectar</a></li>
+			<li class="dropdown">
+			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Menú <span class="caret"></span></a>
+			  <ul class="dropdown-menu">
+				<li><a href="#">Repositorio</a></li>
+				<li><a href="#">Acerca De Sire</a></li>
+				<li><a href="#">Wiki - Manual Usuario</a></li>
+				<li role="separator" class="divider"></li>
+				<li><a href="{{ url_for('logout')}}">Desconectar</a></li>
 		  </ul>
 		</div>
 	  </div>
@@ -47,10 +55,10 @@
 		Comenzar a trabajar con la red o mostrar antiguos resultados</h4>
 		<div class="btn-group" style="text-align: center;">
 		      
-			<p><a href="{{ url_for('show_selection_page')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:400px; height:450px' align='center' onclick="{{ url_for('upload_form')}}">
+			<p><a href="{{ url_for('show_selection_page')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:400px; height:450px; background-color:black' align='center' onclick="{{ url_for('upload_form')}}">
         COMIENZA A REORGANIZAR</button></a> 
 		
-			<a href="{{ url_for('show_download')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:400px; height:450px' align='center'> 
+			<a href="{{ url_for('show_download')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:400px; height:450px; background-color:black' align='center'> 
 			VISUALIZA TUS DATOS</button> </a></p> 
 			  
 		</div> 

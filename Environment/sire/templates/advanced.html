@@ -19,9 +19,17 @@
 
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		  <ul class="nav navbar-nav navbar-right">
+			<li><a href="{{  url_for('show_introduce_data') }}">Red Aleatoria</a></li>
 			<li><a href="{{ url_for('upload_form')}}">Subida Archivo</a></li>
 			<li><a href="{{ url_for('show_download')}}">Descarga</a></li>
-			<li><a href="{{ url_for('logout')}}">Desconectar</a></li>
+			<li class="dropdown">
+			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Menú <span class="caret"></span></a>
+			  <ul class="dropdown-menu">
+				<li><a href="#">Repositorio</a></li>
+				<li><a href="#">Acerca De Sire</a></li>
+				<li><a href="#">Wiki - Manual Usuario</a></li>
+				<li role="separator" class="divider"></li>
+				<li><a href="{{ url_for('logout')}}">Desconectar</a></li>
 		  </ul>
 		</div>
 	  </div>
@@ -54,13 +62,13 @@
 				</p>
 			<form method="POST" action="{{ url_for('advanced_option') }}">
 				<h4>L será el número de iteraciones que realizaremos durante la búsqueda de la solución en cada temperatura</h4>
-				<h5>-El valor de L debe ser un entero positivo-</h5> 
+				<h5>&nbsp&nbsp --El valor de L debe ser un entero positivo</h5> 
 				
 				<label for="l"></label>
 				<input type="number" name="l" placeholder="Valor de L" id="l" required>
 				<br><br>
 				<h4>La temperatura final será el valor final que hará parar las iteraciones</h4>
-				<h5>-Se recomienda que el valor de la temperatura final esté próximo a 0 (no 0)-</h5> 
+				<h5>&nbsp&nbsp --Se recomienda que el valor de la temperatura final esté próximo a 0 (no 0)</h5> 
 				
 				<label for="tf"></label>
 				<input type="float" name="tf" placeholder="Temperatura final" id="tf" required>
@@ -78,16 +86,16 @@
 				
 				<br><br>
 				
-				<h4>Se introduce el valor de los porcentajes para hallar la solución')"</h4>
+				<h4>Se introduce el valor de los porcentajes para hallar la solución</h4>
 				
-				<h5>Se va a pedir la importancia que tiene la probabilidad de contagio por componente, el resto será la probabilidad individual</h5> 
+				<h5>&nbsp&nbsp -- Se va a pedir la importancia que tiene la probabilidad de contagio por componente, el resto será la probabilidad individual</h5> 
 				
 				<label for="l"></label>
 				<input type="number" name="percentage_component" placeholder="Porcentaje de componente" id="percentage_component" required>
 				
 				<br><br>
 				
-				<p><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:50px' align='center' >
+				<p><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:50px; background-color:black' align='center' >
 					CONTINUAR</button></a>
 			</form>
 		</div>

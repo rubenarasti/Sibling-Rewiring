@@ -19,9 +19,17 @@
 
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 		  <ul class="nav navbar-nav navbar-right">
+			<li><a href="{{ url_for('show_introduce_data')}}">Red Aleatoria</a></li>
 			<li><a href="{{ url_for('upload_form')}}">Subida Archivo</a></li>
 			<li><a href="{{ url_for('show_download')}}">Descarga</a></li>
-			<li><a href="{{ url_for('logout')}}">Desconectar</a></li>
+			<li class="dropdown">
+			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Menú <span class="caret"></span></a>
+			  <ul class="dropdown-menu">
+				<li><a href="#">Repositorio</a></li>
+				<li><a href="#">Acerca De Sire</a></li>
+				<li><a href="#">Wiki - Manual Usuario</a></li>
+				<li role="separator" class="divider"></li>
+				<li><a href="{{ url_for('logout')}}">Desconectar</a></li>
 		  </ul>
 		</div>
 	  </div>
@@ -41,19 +49,21 @@
 			<h1>Introduce datos para crear la red aleatoria</h1>
 			
 			<form method="POST" action="{{ url_for('addNetwork') }}">
-				<h4>-- Número total de alumnos en el colegio ficticio --</h4>
+				<h4>Número total de alumnos en el colegio ficticio</h4>
+				<h6>&nbsp&nbsp -- Se considera esta variable el número total de alumnos que aparecerían en el colegio</h6>
 				<label for="totalStudents">
 					<i class="fas fa-users"></i>
 				</label>
 				<input type="number" name="totalStudents" placeholder="Total de Alumnos" id="totalStudents" required>
 				<br><br>
-				<h4>-- Número total de hermanos --</h4>
+				<h4>Número total de hermanos </h4>
+				<h6>&nbsp&nbsp -- Serán el número de parejas de hermanos </h6>
 				<label for="numberSiblings">
 					<i class="fas fa-user-friends"></i>
 				</label>
 				<input type="number" name="numberSiblings" placeholder="Número de hermanos" id="numberSiblings" required>
 				<br><br>
-				<p><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:50px' align='center' >
+				<p><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:50px; background-color:black' align='center' >
 					CONTINUAR</button></a>
 			</form>
 		</div>
