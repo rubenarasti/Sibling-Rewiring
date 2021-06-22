@@ -163,6 +163,7 @@ def addNetwork():
 	_numberSiblings = int(request.form['numberSiblings'])
 		
 	addNet(_totalStudents, _numberSiblings)
+	clean_variables()
 	
 	randomNet.create_initial_network(_totalStudents,_numberSiblings)
 	schoolyear_class = randomNet.create_schoolyear_class_network()
@@ -172,6 +173,12 @@ def addNetwork():
 	
 	return render_template('random_advanced.html')
 	
+def clean_variables():
+	randomNet.__initial_network = nx.Graph()
+	randomNet.__schoolyear_class = nx.Graph()
+	randomNet.__siblings = []
+	randomNet.__siblingsMatrix = []
+
 @app.route('/showSelection')
 def show_random_advanced():
     return render_template('random_advanced.html')
@@ -203,7 +210,7 @@ def pick_option():
 		node_labels = nx.get_node_attributes(schyear_class,'Nombre')
 		nx.draw_networkx_labels(schyear_class, pos, labels = node_labels)
 		
-		plt.savefig('schyear_class_default.jpg', dpi=None, facecolor='w', edgecolor='w', orientation='portrait')
+		plt.savefig('schyear_class_default', dpi=None, facecolor='w', edgecolor='w', orientation='portrait')
 		plt.close('all')
 		
 		return render_template('results.html', name = 'schyear_class_default.png', initial_neighbour = initial_neighbour, ini_fmax = ini_fmax, best_neighbour = best_neighbour, current_fmax = current_fmax)
