@@ -31,6 +31,10 @@ def index():
 @app.route('/login')
 def login():
     return render_template('login.html')
+	
+@app.route('/aboutapp')
+def aboutapp():
+    return render_template('aboutapp.html')
 
 @app.route('/login/LogInDB', methods=['POST', 'GET'])
 def logInDB():
