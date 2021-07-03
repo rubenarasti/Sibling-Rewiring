@@ -3,7 +3,7 @@ from flask_login import LoginManager
 from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
 
-mydb = mysql.connector.connect(host="localhost", user="root", passwd="Password", database="prueb")
+mydb = mysql.connector.connect(host="localhost", user="root", passwd="Password", database="sire")
 
 
 mycursor = mydb.cursor()
@@ -91,7 +91,6 @@ def returnNet():
 	try:
 		mycursor.execute('SELECT net_id, net_totalStudents, net_numberSiblings FROM tbl_network WHERE net_id = (SELECT max(net_id) FROM tbl_network)')
 		selection = mycursor.fetchone()
-		print(selection)
 		_netid = selection[0]
 		_totalStudents = selection[1]
 		_numberSiblings = selection[2]

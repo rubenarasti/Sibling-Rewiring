@@ -214,10 +214,10 @@ def pick_option():
 		node_labels = nx.get_node_attributes(schyear_class,'Nombre')
 		nx.draw_networkx_labels(schyear_class, pos, labels = node_labels)
 		
-		plt.savefig('schyear_class_default', dpi=None, facecolor='w', edgecolor='w', orientation='portrait')
+		plt.savefig('schyear_class_default.png')
 		plt.close('all')
 		
-		return render_template('results.html', name = 'schyear_class_default.png', initial_neighbour = initial_neighbour, ini_fmax = ini_fmax, best_neighbour = best_neighbour, current_fmax = current_fmax)
+		return render_template('results.html', initial_neighbour = initial_neighbour, ini_fmax = ini_fmax, best_neighbour = best_neighbour, current_fmax = current_fmax)
 	elif selected_option == 'advanced':
 		return render_template('advanced.html')
 	
