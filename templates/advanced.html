@@ -1,0 +1,109 @@
+{% extends 'bootstrap/base.html' %}
+{% block styles %}
+	{{super()}}
+{% endblock %}
+
+{% block navbar %}
+	<nav class="navbar navbar-inverse ">
+	 <div class="navbar-header">
+			<a class="navbar-brand" href="#">
+				<img src="https://raw.githubusercontent.com/Mariaojruiz/Sibling-Rewiring/main/Environment/sire/Imagenes%20documentacion/Logo.PNG" alt="Sire" style="width60px;height:30px;">
+			</a>
+		</div>
+	  <div class="container-fluid">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+		  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		  </button>
+		  <a class="navbar-brand" href="{{ url_for('show_user_home')}}">Sire</a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		  <ul class="nav navbar-nav navbar-right">
+			<li><a href="{{  url_for('show_introduce_data') }}">Red Aleatoria</a></li>
+			<li><a href="{{ url_for('upload_form')}}">Subida Archivo</a></li>
+			<li><a href="{{ url_for('show_download')}}">Descarga</a></li>
+			<li class="dropdown">
+			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Menú <span class="caret"></span></a>
+			  <ul class="dropdown-menu">
+				<li><a href="https://github.com/Mariaojruiz/Sibling-Rewiring" target="_blank">Repositorio</a></li>
+				<li><a href="{{ url_for('aboutapp') }}">Acerca De Sire</a></li>
+				<li><a href="https://github.com/Mariaojruiz/Sibling-Rewiring/wiki" target="_blank">Wiki - Manual Usuario</a></li>
+				<li role="separator" class="divider"></li>
+				<li><a href="{{ url_for('logout')}}">Desconectar</a></li>
+		  </ul>
+		</div>
+	  </div>
+	</nav>
+{% endblock %}
+
+{% block content %} 
+<head>
+<meta charset="utf-8">
+	<title>Introduce datos para crear la red aleatoria</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+</head>
+<body>
+	<div class="container">
+		<div class="form">
+			<h1>Introduce datos para resolver el recocido simulado</h1>
+			
+			<h4> En primer lugar escogemos el valor de L y la temperatura final </h4>
+			<p>
+					{% with messages = get_flashed_messages() %}
+					  {% if messages %}
+						<ul class=flashes>
+						{% for message in messages %}
+						  <li>{{ message }}</li>
+						{% endfor %}
+						</ul>
+					  {% endif %}
+					{% endwith %}
+				</p>
+			<form method="POST" action="{{ url_for('advanced_option') }}">
+				<h4>L será el número de iteraciones que realizaremos durante la búsqueda de la solución en cada temperatura</h4>
+				<h5>&nbsp&nbsp --El valor de L debe ser un entero positivo</h5> 
+				
+				<label for="l"></label>
+				<input type="number" name="l" placeholder="Valor de L" id="l" required>
+				<br><br>
+				<h4>La temperatura final será el valor final que hará parar las iteraciones</h4>
+				<h5>&nbsp&nbsp --Se recomienda que el valor de la temperatura final esté próximo a 0 (no 0)</h5> 
+				
+				<label for="tf"></label>
+				<input type="float" name="tf" placeholder="Temperatura final" id="tf" required>
+				<br><br>
+				
+				<h4> Seleccione la secuencia de enfriamiento </h4>
+				<select name="cooling_sequence">
+				  <option value="1">Secuencia de enfriamiento Lineal</option>
+				  <option value="6">Secuencia de enfriamiento Geometrica</option>
+				  <option value="3">Secuencia de enfriamiento Logarítimica</option>
+				  <option value="4">Secuencia de enfriamiento de Cauchy</option>
+				  <option value="5">Secuencia de enfriamiento de Cauchy modificado</option>
+				  <option  selected="selected" value="6">Se ecoge una secuencia de enfriamiento por defecto</option>
+				</select>
+				
+				<br><br>
+				
+				<h4>Se introduce el valor de los porcentajes para hallar la solución</h4>
+				
+				<h5>&nbsp&nbsp -- Se va a pedir la importancia que tiene la probabilidad de contagio por componente, el resto será la probabilidad individual</h5> 
+				
+				<label for="l"></label>
+				<input type="number" name="percentage_component" placeholder="Porcentaje de componente" id="percentage_component" required>
+				
+				<br><br>
+				
+				<p><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:50px; background-color:black' align='center' >
+					CONTINUAR</button></a>
+			</form>
+		</div>
+	</div>
+</body>
+{% endblock %}

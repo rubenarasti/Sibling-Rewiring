@@ -1,0 +1,91 @@
+{% extends 'bootstrap/base.html' %}
+{% block style%}
+	{{super()}}
+	<link rel="canonical" href="https://getbootstrap.com/docs/3.3/examples/cover/">
+	<link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+	<link href="cover.css" rel="stylesheet">
+	<script src="../../assets/js/ie-emulation-modes-warning.js"></script>
+{% endblock %}
+
+ {% block navbar %}
+	<nav class="navbar navbar-inverse ">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#">
+				<img src="https://raw.githubusercontent.com/Mariaojruiz/Sibling-Rewiring/main/Environment/sire/Imagenes%20documentacion/Logo.PNG" alt="Sire" style="width60px;height:30px;">
+			</a>
+		</div>
+	  <div class="container-fluid">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+		  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		  </button>
+		  <a class="navbar-brand" href="{{ url_for('show_user_home')}}">Sire</a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		  <ul class="nav navbar-nav navbar-right">
+			<li><a href="{{ url_for('show_introduce_data')}}">Red Aleatoria</a></li>
+			<li><a href="{{ url_for('upload_form')}}">Subida Archivo</a></li>
+			<li><a href="{{ url_for('show_download')}}">Descarga</a></li>
+			<li class="dropdown">
+			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Menú <span class="caret"></span></a>
+			  <ul class="dropdown-menu">
+				<li><a href="https://github.com/Mariaojruiz/Sibling-Rewiring" target="_blank">Repositorio</a></li>
+				<li><a href="{{ url_for('aboutapp') }}">Acerca De Sire</a></li>
+				<li><a href="https://github.com/Mariaojruiz/Sibling-Rewiring/wiki" target="_blank">Wiki - Manual Usuario</a></li>
+				<li role="separator" class="divider"></li>
+				<li><a href="{{ url_for('logout')}}">Desconectar</a></li>
+		  </ul>
+		</div>
+	  </div>
+	</nav>
+{% endblock %}
+	
+  
+{% block content %} 
+<head>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
+</head>
+
+<body>
+    <div class="container aling-items: center; justify-content: center">
+        
+		<h1>Seleccione la opción deseada</h1>
+			 <h4>Seleccionando las opciones por defecto los valores son preestablecidos por el programa</h4>
+				
+			  <h4>En las opciones avanzadas se escogerán los valores necesarios para hallar la solución: </h4>
+				 <h6>&nbsp&nbsp -- Del recocido simulado</h6>
+				 <h6>&nbsp&nbsp -- De la secuencia de enfriamiento </h6>
+			
+			
+			<p>
+					{% with messages = get_flashed_messages() %}
+					  {% if messages %}
+						<ul class=flashes>
+						{% for message in messages %}
+						  <li>{{ message }}</li>
+						{% endfor %}
+						</ul>
+					  {% endif %}
+					{% endwith %}
+				</p>
+			
+			<form action="{{ url_for('pick_option') }}"  method="post">
+				<input type="radio" name="options" id="default" value="default"> Opciones por defecto </input><br>
+				
+				<input type="radio" name="options" id="advanced" value="advanced"> Opciones avanzadas </input><br>
+			<br>
+			
+			<p><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:50px; background-color:black' align='center' >
+					CONTINUAR</button></a>
+			</form>
+		</div> 
+		
+    </div>
+</body>
+{% endblock %}
