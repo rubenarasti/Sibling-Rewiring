@@ -62,7 +62,7 @@ def logIn():
 				user_exist = True
 				
 	except Exception as e:
-		return json.dumps({'error':str(e)})
+		return json.dumps({'error':'El usuario especificado no existe, compruebe su mail y contraseña'})
 		
 	finally:
 		return user_exist

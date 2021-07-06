@@ -287,5 +287,5 @@ def solve_simulated_annealing(G, matrix, siblings, totalStudents, l, tf, alpha, 
 	initial_neighbour = G.edges
 	best_neighbour = current_solution.edges
 	
-	return initial_t, initial_neighbour, ini_fmax, best_neighbour, current_fmax
+	return initial_t, initial_neighbour, ini_fmax, best_neighbour, current_fmax, current_solution
 	
