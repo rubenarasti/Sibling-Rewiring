@@ -52,16 +52,21 @@
 <body>
 	<div class="container">
 		<div class="container">
-			<h4> Los nodos del vecino inicial son </h4>
+			<h2> Los nodos del vecino inicial son </h2>
 			<h6> {{ initial_neighbour }} </h6>
 			<h3> Fmax =  {{ ini_fmax }} </h3>
-			<h4> Los nodos del mejor vecino encontrado son </h4>
+			<h2> Los nodos del mejor vecino encontrado son </h2>
 			<h6> {{ best_neighbour }} </h6>
 			<h3> Fmax =  {{ current_fmax }} </h3>
+			<br><br><br>
+			<h2> Los nodos que se han modificado son: </h2>
+			<h6> Si no se encontrase un vecino mejor, los nodos modificados no será ninguno por lo que el espacio aparecerá vacío. </h6>
+			<h3> Nodos de la red incial que se eliminan ==>  {{ diff_ini }} </h3>
+			<h3> Nodos de la red procesada que se crean ==>  {{ diff_proc }} </h3>
 			
 			<a href="{{ url_for('show_download')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:400px; height:100px; background-color:black' align='center' >
         DESCARGAR</button></a> 
-			
+		<br><br><br>	
 		</div>
 	</div>
 </body>

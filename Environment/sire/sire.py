@@ -41,7 +41,7 @@ def logInDB():
 	exist = logIn()
 	if exist:
 		return render_template('user_home.html')
-	return jsonify({'message': exist})
+	return jsonify({'message': 'El usuario especificado no existe, compruebe su mail y contrasena'})
 
 @app.route('/showSignUp')
 def showSignUp():
@@ -163,25 +163,38 @@ def addNetwork():
 	global schyear_class
 	global matrix_siblings
 	
+	clean_variables()
+	
 	_totalStudents = int(request.form['totalStudents'])
 	_numberSiblings = int(request.form['numberSiblings'])
 		
 	addNet(_totalStudents, _numberSiblings)
-	clean_variables()
 	
 	randomNet.create_initial_network(_totalStudents,_numberSiblings)
 	schoolyear_class = randomNet.create_schoolyear_class_network()
 	schyear_class = schoolyear_class
+	pos=nx.kamada_kawai_layout(schyear_class)
+	nx.draw(schyear_class, pos)
+	node_labels = nx.get_node_attributes(schyear_class,'Nombre')
+	nx.draw_networkx_labels(schyear_class, pos, labels = node_labels)
+			
+	plt.savefig('Net_images/schyear_class_initial.png')
+	plt.close('all')
+	
 	randomNet.create_siblings_matrix()
 	matrix_siblings = randomNet.__siblingsMatrix
 	
 	return render_template('random_advanced.html')
 	
 def clean_variables():
+	global schyear_class
+	global matrix_siblings
 	randomNet.__initial_network = nx.Graph()
 	randomNet.__schoolyear_class = nx.Graph()
 	randomNet.__siblings = []
 	randomNet.__siblingsMatrix = []
+	schyear_class = nx.Graph() 
+	matrix_siblings = []
 
 @app.route('/showSelection')
 def show_random_advanced():
@@ -205,19 +218,22 @@ def pick_option():
 		
 		net_id, totalStudents, numberSiblings = returnNet()
 		
-		initial_t, initial_neighbour, ini_fmax, best_neighbour, current_fmax = solve_simulated_annealing(schyear_class,matrix_siblings,numberSiblings,totalStudents,l,tf, alpha ,int(option_cooling), seed_value, percentage_component)
+		initial_t, initial_neighbour, ini_fmax, best_neighbour, current_fmax, G = solve_simulated_annealing(schyear_class,matrix_siblings,numberSiblings,totalStudents,l,tf, alpha ,int(option_cooling), seed_value, percentage_component)
+		
+		pos=nx.kamada_kawai_layout(G)
+		nx.draw(G, pos)
+		node_labels = nx.get_node_attributes(G,'Nombre')
+		nx.draw_networkx_labels(G, pos, labels = node_labels)
+			
+		plt.savefig('Net_images/schyear_class_default_processed.png')
+		plt.close('all')
 		
 		introduce_net_data(net_id, l, initial_t, tf, alpha, cooling_sequence, seed_value)
 		
-		pos=nx.kamada_kawai_layout(schyear_class)
-		nx.draw(schyear_class, pos)
-		node_labels = nx.get_node_attributes(schyear_class,'Nombre')
-		nx.draw_networkx_labels(schyear_class, pos, labels = node_labels)
-		
-		plt.savefig('schyear_class_default.png')
-		plt.close('all')
-		
-		return render_template('results.html', initial_neighbour = initial_neighbour, ini_fmax = ini_fmax, best_neighbour = best_neighbour, current_fmax = current_fmax)
+		diff_ini = list(set(initial_neighbour) - set(best_neighbour))
+		diff_proc = list(set(best_neighbour) - set(initial_neighbour))
+	
+		return render_template('results.html', initial_neighbour = initial_neighbour, ini_fmax = ini_fmax, best_neighbour = best_neighbour, current_fmax = current_fmax, diff_ini = diff_ini, diff_proc = diff_proc)
 	elif selected_option == 'advanced':
 		return render_template('advanced.html')
 	
@@ -259,20 +275,23 @@ def advanced_option():
 	
 	cooling_sequence = change_number_to_cooling_sequence(option_cooling)
 	net_id, totalStudents, numberSiblings = returnNet()
-		
-	initial_t, initial_neighbour, ini_fmax, best_neighbour, current_fmax = solve_simulated_annealing(schyear_class,matrix_siblings,numberSiblings,totalStudents,l,tf, alpha ,int(option_cooling), seed_value, percentage_component)
+	
+	initial_t, initial_neighbour, ini_fmax, best_neighbour, current_fmax, G = solve_simulated_annealing(schyear_class,matrix_siblings,numberSiblings,totalStudents,l,tf, alpha ,int(option_cooling), seed_value, percentage_component)
 		
 	introduce_net_data(net_id, l, initial_t, tf, alpha, cooling_sequence, seed_value)
 		
-	pos=nx.kamada_kawai_layout(schyear_class)
-	nx.draw(schyear_class, pos)
-	node_labels = nx.get_node_attributes(schyear_class,'Nombre')
-	nx.draw_networkx_labels(schyear_class, pos, labels = node_labels)
+	pos=nx.kamada_kawai_layout(G)
+	nx.draw(G, pos)
+	node_labels = nx.get_node_attributes(G,'Nombre')
+	nx.draw_networkx_labels(G, pos, labels = node_labels)
 		
-	plt.savefig('schyear_class_advanced', dpi=None, facecolor='w', edgecolor='w', orientation='portrait')
+	plt.savefig('Net_images/schyear_class_advanced_processed.png')
 	plt.close('all')
 	
-	return render_template('results.html', name = '', initial_neighbour = initial_neighbour, ini_fmax = ini_fmax, best_neighbour = best_neighbour, current_fmax = current_fmax)
+	diff_ini = list(set(initial_neighbour) - set(best_neighbour))
+	diff_proc = list(set(best_neighbour) - set(initial_neighbour))
+	
+	return render_template('results.html', initial_neighbour = initial_neighbour, ini_fmax = ini_fmax, best_neighbour = best_neighbour, current_fmax = current_fmax, diff_ini=diff_ini, diff_proc=diff_proc)
 
 def change_number_to_cooling_sequence(number):
 	if number == 1:        
@@ -287,6 +306,14 @@ def change_number_to_cooling_sequence(number):
 		cooling_sequence = 'geometrical_cooling_sequence'
 	
 	return cooling_sequence
+
+@app.route('/show_previous')
+def show_previous():
+	return render_template('show_previous.html')
+	
+@app.route('/show_examples')
+def show_exaples():
+	return render_template('examples.html')
 	
 @app.route('/logout')
 def logout():
@@ -296,5 +323,5 @@ def logout():
 	
 	
 if __name__ == '__main__':
-    app.secret_key = os.urandom(24)
-    app.run()
+	app.secret_key = os.urandom(24)
+	app.run()
