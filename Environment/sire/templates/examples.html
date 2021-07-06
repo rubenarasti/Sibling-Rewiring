@@ -1,0 +1,102 @@
+{% extends 'bootstrap/base.html' %}
+{% block styles %}
+	{{super()}}
+{% endblock %}
+
+{% block navbar %}
+	<nav class="navbar navbar-inverse ">
+	<div class="navbar-header">
+			<a class="navbar-brand" href="#">
+				<img src="https://raw.githubusercontent.com/Mariaojruiz/Sibling-Rewiring/main/Environment/sire/templates/App_images/Logo.PNG" alt="Sire" style="width60px;height:30px;">
+			</a>
+		</div>
+	  <div class="container-fluid">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+		  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		  </button>
+		  <a class="navbar-brand" href="{{ url_for('show_user_home')}}">Sire</a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		  <ul class="nav navbar-nav navbar-right">
+			<li><a href="{{ url_for('show_introduce_data')}}">Red Aleatoria</a></li>
+			<li><a href="{{ url_for('upload_form')}}">Subida Archivo</a></li>
+			<li><a href="{{ url_for('show_download')}}">Descarga</a></li>
+			<li><a href="{{ url_for('show_exaples')}}">Ejemplos</a></li>
+			<li class="dropdown">
+			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Menú <span class="caret"></span></a>
+			  <ul class="dropdown-menu">
+				<li><a href="https://github.com/Mariaojruiz/Sibling-Rewiring" target="_blank">Repositorio</a></li>
+				<li><a href="{{ url_for('aboutapp') }}">Acerca De Sire</a></li>
+				<li><a href="https://github.com/Mariaojruiz/Sibling-Rewiring/wiki" target="_blank">Wiki - Manual Usuario</a></li>
+				<li role="separator" class="divider"></li>
+				<li><a href="{{ url_for('logout')}}">Desconectar</a></li>
+		  </ul>
+		</div>
+	  </div>
+	</nav>
+{% endblock %}
+
+{% block content %} 
+<head>
+<meta charset="utf-8">
+	<title>MOSTRAMOS ALGUNOS EJEMPLOS DEL FUNCIONAMIENTO DE SIRE</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+</head>
+<body>
+	<div class="container">
+		<div class="container">
+			<h6> Los ejemplos se muestran con redes de pequeño tamaño para ser más visuales.</h6>
+			<br> <br> 
+			<h2>Se muestra un ejemplo de uso de la aplicación con opciones por defecto</h2>
+			<h4> En primer lugar aparece una red según se obtendría del colegio junto a ella la red una vez se ha procesado</h4>
+			<center>
+				<left>
+				<img src= "https://raw.githubusercontent.com/Mariaojruiz/Sibling-Rewiring/main/Environment/sire/templates/App_images/schyear_class_default.png"  alt= "imagen de la red" style="width:320px;height:240px;">
+				</left>
+				<right>
+				<img src= "https://raw.githubusercontent.com/Mariaojruiz/Sibling-Rewiring/main/Environment/sire/templates/App_images/schyear_class_default_procesed.png"  alt= "imagen de la red" style="width:320px;height:240px;">			
+				</right>
+			</center>
+			<br><br>
+			<h4> En este caso se ha modificado un único enlace como se muestra a continuación</h4>
+			<h5> Se ha modificado el enlace [primaria6A - primaria6B] por [primaria6B - primaria6B].</h5>
+			<img src= "https://raw.githubusercontent.com/Mariaojruiz/Sibling-Rewiring/main/Environment/sire/templates/App_images/nodos%20cambio%20default.PNG"  alt= "imagen de la red" style="width:1020px;height:240px;">
+			
+			
+			<h2>Se muestra un ejemplo de uso de la aplicación con opciones avanzadas</h2>
+			<h4> En primer lugar aparece una red según se obtendría del colegio junto a ella la red una vez se ha procesado</h4>
+			<h5> Los parámetros utilizados han sido:</h5>
+			<h5> 	- L = </h5>
+			<h5> 	- Temperatura final = </h5>
+			<h5> 	- Secuencia de enfriamiento = </h5>
+			<h5> 	- Riesgo de contagio por componente = </h5>
+			<h5> 	- Riesgo de contagio individual = </h5>
+			<center>
+				<left>
+				<img src= "https://raw.githubusercontent.com/Mariaojruiz/Sibling-Rewiring/main/Environment/sire/templates/App_images/schyear_class_advanced.png"  alt= "imagen de la red" style="width:320px;height:240px;">
+				</left>
+				<right>
+				<img src= "https://raw.githubusercontent.com/Mariaojruiz/Sibling-Rewiring/main/Environment/sire/templates/App_images/schyear_class_advanced_processed.png"  alt= "imagen de la red" style="width:320px;height:240px;">			
+				</right>
+			</center>
+			<br><br>
+			<h4> En este caso se han modificado dos enlaces como se muestra a continuación</h4>
+			<h5> Se han modificado dos enlaces: [infantil3C - secundaria2B] por [infantil3B - secundaria2B] y [infantil3A - secundaria1A] por [infantil3B - secundaria1A].</h5>
+			<img src= "https://raw.githubusercontent.com/Mariaojruiz/Sibling-Rewiring/main/Environment/sire/templates/App_images/nodos%20cambio%20advanced.PNG"  alt= "imagen de la red" style="width:1020px;height:240px;">
+			
+			<br><br><br><br>
+			
+			<a href="{{ url_for('show_selection_page')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:400px; height:100px; background-color:black' align='center' >
+        Inténtelo usted mismo</button></a> 
+			<br><br><br><br>
+		</div>
+	</div>
+</body>
+{% endblock %}
