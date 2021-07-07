@@ -13,7 +13,6 @@ from database import *
 import randomNetCreation as randomNet
 import fileNetCreation as fileNet
 from function import *
-from deap import base
 
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
