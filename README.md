@@ -30,7 +30,9 @@ Sire (Sibling-Rewiring) es por tanto una aplicación concebida para minimizar lo
   
  ## Máquina virtual
  A continuación, se proporciona un enlace desde el cual descargar una imagen de máquina virtual. Para poder usar la aplicación con mayor facilidad únicamente habrá que descargar este '.ova' e importarla en un software de virtualización.
- [Descargar]( https://drive.google.com/file/d/1m80tRqFyrQ7NtrCyi66Gh09F_0OMwvf5/view?usp=sharing)
+ [Descargar]( https://drive.google.com/file/d/1pqplWOKvM_FgxKfGRe-RAzmfHlqa9RJm/view?usp=sharing)
+ 
+ Por si fuera necesario la contraseña = 'contraseña'
  
 Para ejecutarlo una vez alojada la imagen en la máquina virtual, habrá que seguir los pasos que encontramos en el README
 
@@ -72,7 +74,9 @@ Sire (Sibling-Rewiring) is therefore an application designed to minimize the ris
   
  ## Virtual machine
  Using the following link you can download a virtual machine image to could use the app easily. Just donwload the '.ova' file and import it to a virtual machine.
- [Download]( https://drive.google.com/file/d/1m80tRqFyrQ7NtrCyi66Gh09F_0OMwvf5/view?usp=sharing)
+ [Download]( https://drive.google.com/file/d/1pqplWOKvM_FgxKfGRe-RAzmfHlqa9RJm/view?usp=sharing)
+ 
+ If needed Password = 'contraseña' 
  
 To execute it, follow the steps at README.
 
