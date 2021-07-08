@@ -36,6 +36,10 @@ Para ejecutarlo una vez alojada la imagen en la máquina virtual, habrá que seg
 
 ## Vídeos
 
+[EJECUCIÓN RÁPIDA](https://youtu.be/seJjD0zPrdo)
+
+[MUESTRA DE TODAS LAS PANTALLAS](https://youtu.be/82mpQ9Rujvc)
+
 ##
 
 # TFG: Sibling-Rewiring
@@ -74,3 +78,6 @@ To execute it, follow the steps at README.
 
 ## Videos
 
+[QUICK EXECUTION](https://youtu.be/seJjD0zPrdo)
+
+[ALL SLIDES SIRE](https://youtu.be/82mpQ9Rujvc)
