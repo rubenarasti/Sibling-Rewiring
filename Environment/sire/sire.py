@@ -15,6 +15,7 @@ import fileNetCreation as fileNet
 from function import *
 
 app = Flask(__name__)
+app.debug = True
 bootstrap = Bootstrap(app)
  
 schyear_class = nx.Graph() 
@@ -138,7 +139,7 @@ def upload_file():
 			
 			addNet(_totalStudents, _numberSiblings)
 			
-		return render_template('random_advanced.html')
+		return render_template('choose_algorithm.html')
 
 	
 @app.route("/downloadfile", methods=['GET'])
@@ -147,15 +148,32 @@ def show_download():
 	
 @app.route("/download")
 def download():
+	#uploads = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
+    #return send_from_directory(uploads, filename)
 	path = os.getcwd()
 	UPLOAD_FOLDER = os.path.join(path, 'uploads')
 	app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-	p = "/randomGraphuploaded.gexf"
-	return send_file(app.config['UPLOAD_FOLDER']+ p, as_attachment=True)
+	p = "randomGraphuploaded.gexf"
+	print(path)
+	print(UPLOAD_FOLDER)
+	print(app.config['UPLOAD_FOLDER'])
+	file_path = os.path.join(app.config['UPLOAD_FOLDER'], p)
+	return send_file(file_path, as_attachment=True)
+
 
 @app.route('/showData')
 def show_introduce_data():
     return render_template('introduce_data.html')
+
+@app.route('/showData/chooseAlg', methods=['POST', 'GET'])
+def chooseAlg():
+	return render_template('choose_algorithm.html')
+
+@app.route('/showData/genetic', methods=['POST', 'GET'])
+def genetic_algorithm():
+	#TODO
+	return render_template('g_results.html')
+		
 	
 @app.route('/showData/data', methods=['POST', 'GET'])
 def addNetwork():

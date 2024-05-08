@@ -5,7 +5,7 @@
 
 {% block navbar %}
 	<nav class="navbar navbar-inverse ">
-		<div class="navbar-header">
+	<div class="navbar-header">
 			<a class="navbar-brand" href="#">
 				<img src="https://raw.githubusercontent.com/Mariaojruiz/Sibling-Rewiring/main/Environment/sire/templates/App_images/Logo.PNG" alt="Sire" style="width60px;height:30px;">
 			</a>
@@ -45,33 +45,18 @@
 {% block content %} 
 <head>
 <meta charset="utf-8">
-	<title>Introduce datos para crear la red aleatoria</title>
+	<title>MOSTRAMOS LA RED</title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
 </head>
 <body>
 	<div class="container">
-		<div class="form">
-			<h1>Introduce datos para crear la red aleatoria</h1>
+		<div class="container">
 			
-			<form method="POST" action="{{ url_for('chooseAlg') }}">
-				<h4>Número total de alumnos en el colegio ficticio</h4>
-				<h6>&nbsp&nbsp -- Se considera esta variable el número total de alumnos que aparecerían en el colegio</h6>
-				<label for="totalStudents">
-					<i class="fas fa-users"></i>
-				</label>
-				<input type="number" name="totalStudents" placeholder="Total de Alumnos" id="totalStudents" required>
-				<br><br>
-				<h4>Número total de hermanos </h4>
-				<h6>&nbsp&nbsp -- Serán el número de parejas de hermanos </h6>
-				<label for="numberSiblings">
-					<i class="fas fa-user-friends"></i>
-				</label>
-				<input type="number" name="numberSiblings" placeholder="Número de hermanos" id="numberSiblings" required>
-				<br><br>
-				<p><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:50px; background-color:black' align='center' >
-					CONTINUAR</button></a>
-			</form>
+			
+			<a href="{{ url_for('show_download')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:400px; height:100px; background-color:black' align='center' >
+        DESCARGAR</button></a> 
+		<br><br><br>	
 		</div>
 	</div>
 </body>

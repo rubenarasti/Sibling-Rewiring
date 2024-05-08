@@ -1,9 +1,14 @@
 {% extends 'bootstrap/base.html' %}
-{% block styles %}
+{% block style%}
 	{{super()}}
+	<link rel="canonical" href="https://getbootstrap.com/docs/3.3/examples/cover/">
+	<link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+	<link href="cover.css" rel="stylesheet">
+	<script src="../../assets/js/ie-emulation-modes-warning.js"></script>
 {% endblock %}
 
-{% block navbar %}
+ {% block navbar %}
 	<nav class="navbar navbar-inverse ">
 		<div class="navbar-header">
 			<a class="navbar-brand" href="#">
@@ -41,38 +46,26 @@
 	  </div>
 	</nav>
 {% endblock %}
-
+	
+  
 {% block content %} 
 <head>
-<meta charset="utf-8">
-	<title>Introduce datos para crear la red aleatoria</title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
 </head>
+
 <body>
-	<div class="container">
-		<div class="form">
-			<h1>Introduce datos para crear la red aleatoria</h1>
-			
-			<form method="POST" action="{{ url_for('chooseAlg') }}">
-				<h4>Número total de alumnos en el colegio ficticio</h4>
-				<h6>&nbsp&nbsp -- Se considera esta variable el número total de alumnos que aparecerían en el colegio</h6>
-				<label for="totalStudents">
-					<i class="fas fa-users"></i>
-				</label>
-				<input type="number" name="totalStudents" placeholder="Total de Alumnos" id="totalStudents" required>
-				<br><br>
-				<h4>Número total de hermanos </h4>
-				<h6>&nbsp&nbsp -- Serán el número de parejas de hermanos </h6>
-				<label for="numberSiblings">
-					<i class="fas fa-user-friends"></i>
-				</label>
-				<input type="number" name="numberSiblings" placeholder="Número de hermanos" id="numberSiblings" required>
-				<br><br>
-				<p><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:50px; background-color:black' align='center' >
-					CONTINUAR</button></a>
-			</form>
-		</div>
-	</div>
+    <div class="container aling-items: center; justify-content: center">
+        
+		<h2>SELECCIONE EL ALGORITMO DESEADO</h2>
+		<div class="btn-group" style="text-align: center;">
+		      
+			<p><a href="{{ url_for('genetic_algorithm')}}"><button type="submit" class="btn btn-primary btn-lg"  style='width:300px; height:300px; background-color:black' align='center' >
+        ALGORITMO GENÉTICO</button></a> 
+		
+			<a href="{{ url_for('addNetwork')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:300px; background-color:black' align='center'> 
+			RECOCIDO SIMULADO</button> </a></p> 
+			  
+		</div> 
+    </div>
 </body>
 {% endblock %}

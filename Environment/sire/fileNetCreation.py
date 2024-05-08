@@ -23,7 +23,7 @@ def create_schoolyear_class_network(siblings_df, initial_network):
 	etapas = nx.get_node_attributes(initial,'Etapa')
 	clases = nx.get_node_attributes(initial,'Clase')
 	cursos = nx.get_node_attributes(initial,'Curso')
-	
+
 	for node in initial.nodes():
 		name = []
 		name.append(etapas[node])
@@ -43,9 +43,9 @@ def create_schoolyear_class_network(siblings_df, initial_network):
 	nx.set_node_attributes(schoolyear_class, dicEtapa, 'Etapa')
 	nx.set_node_attributes(schoolyear_class, dicCurso, 'Curso')
 	nx.set_node_attributes(schoolyear_class, dicClase, 'Clase')
-	nx.set_node_attributes(schoolyear_class, dicEstudiantes, 'Estudiantes')
+	nx.set_node_attributes(schoolyear_class, dicEstudiantes, 'Estudiantes')	
 	
-		
+
 	for sib in siblings: 
 		sibling = []
 		sibling.append(etapas[str(sib[0])])
@@ -69,8 +69,7 @@ def create_schoolyear_class_network(siblings_df, initial_network):
 			schoolyear_class.edges[sibling1_name, sibling2_name]["peso"] = 0
 		else:
 			schoolyear_class.edges[sibling1_name, sibling2_name]["peso"] += 1
-		
-		
+
 	return schoolyear_class
 	
 	

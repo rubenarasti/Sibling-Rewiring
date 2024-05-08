@@ -56,7 +56,6 @@ def generate_neighbor(matrix, net_to_change, numberSiblings, seed_value):
 	node_name_fin = ''.join(str(e) for e in name)
 		
 	dicEstudiantes = nx.get_node_attributes(net,'Estudiantes')
-	 
    
 	if len(dicEstudiantes[node_name_fin]) < numberSiblings:
 		dicEstudiantes[node_name_ini].remove(sibling_name)

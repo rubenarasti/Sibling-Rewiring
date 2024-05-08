@@ -3,7 +3,7 @@ from flask_login import LoginManager
 from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
 
-mydb = mysql.connector.connect(host="localhost", user="root", passwd="Password", database="sire")
+mydb = mysql.connector.connect(host="localhost", user="root", passwd="root", database="sire")
 
 
 mycursor = mydb.cursor()
