@@ -3,14 +3,14 @@ import pandas as pd
 import networkx as nx
 import global_def as gd
 
-def load_data(siblings_df, graph, percentage_component):
+def load_data(siblings_df, graph):
 
     gd.initial_network = graph
-    gd.siblings_matrix = siblings_df.values
     gd.total_students = len(graph.nodes())
     gd.siblings_number = len(siblings_df)
-    gd.percentage_component = percentage_component
-    gd.percentage_individual = 100 - percentage_component
+
+    for index, row in siblings_df.iterrows():
+        gd.siblings_dict[row[1]] = [row[0]] + row[2:].tolist()
 
     dicNombre = {}
     dicEtapa = {}
@@ -57,5 +57,8 @@ if __name__ == "__main__":
     df = pd.read_csv("../uploads/siblings.csv")
     G = nx.read_gexf("../uploads/school_net.gexf")
 
-    load_data(df, G, 50)
+    load_data(df, G)
+    print("total students: ", gd.total_students)
+    print("siblings: ",gd.siblings_number)
+
 """
