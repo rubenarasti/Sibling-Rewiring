@@ -1,3 +1,5 @@
+import base64
+from io import BytesIO
 import random
 import os
 
@@ -12,9 +14,9 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 
-import global_def as gd
-import data_management as dm
-import individual_evaluation as eval
+from . import global_def as gd
+from . import data_management as dm
+from . import individual_evaluation as eval
 
 toolbox = base.Toolbox()
 logbook = tools.Logbook()
@@ -45,7 +47,7 @@ def configure_param():
     
     params = {}
     
-    params['NGEN'] = 1000
+    params['NGEN'] = 100
     params['PSIZE'] = 100
     params['CXPB'] = 0.5
     params['MUTPB'] = 0.5
@@ -62,6 +64,7 @@ def solve_genetic_algorithm(df,G):
     params = configure_param()
 
     population = toolbox.population(n=params['PSIZE'])
+    
     pareto_front = []
     population, logbook = algorithms.eaMuPlusLambda(
                                 population,
@@ -74,43 +77,23 @@ def solve_genetic_algorithm(df,G):
                                 verbose=False
                             )
 
-    pareto_front = tools.sortNondominated(population, len(population), first_front_only=True)[0] 
+    non_dominated = tools.sortNondominated(population, len(population), first_front_only=True)[0] 
 
-    """
-        i=0
-    for p in population:
-        print(i)
-        i+=1
-        print(eval.fitness(p))
-    population, logbook = algorithms.eaSimple(population, toolbox, 
-                                    cxpb=params['CXPB'], mutpb=params['MUTPB'], 
-                                    ngen=params["NGEN"], verbose=False, stats=stats
-                                    )
-    new_front = tools.sortNondominated(population, len(population), first_front_only=False)[0]
-        for ind in new_front:
-            pareto_front.append(ind)
-    for ind in population:
-        print(eval.fitness(ind))
-    best = eval.fitness(tools.selBest(population,1)[0])
+    unique_fitness = set()
 
-    
-    print(logbook)
-    print("mejor individuo",tools.selBest(population,1)[0])
-    
-    print("fitness mejor individuo",eval.fitness(tools.selBest(population,1)[0]))
-    
-    print("fitness frente de pareto")
-    for ind in pareto_front:
-        print(eval.fitness(ind))
-    
-    graph = eval.fenotype(tools.selBest(population,1)[0])
-    """
-    #print(pareto_front)
+    pareto_front = []
+
+    for ind in non_dominated:
+        fitness = eval.fitness(ind)
+        
+        if fitness not in unique_fitness:
+            pareto_front.append((ind,fitness))
+            unique_fitness.add(fitness)
+
     return pareto_front
 
 def plot_pareto_front(pareto_front):
-
-    pareto_fitness = [eval.fitness(ind) for ind in pareto_front]
+    pareto_fitness = [ind[1] for ind in pareto_front]
 
     fig, ax = plt.subplots()
 
@@ -123,12 +106,21 @@ def plot_pareto_front(pareto_front):
     ax.set_title('Frente de Pareto')
     ax.legend()
 
-    plt.show()
+    #plt.show()
+    img_buffer = BytesIO()
+    fig.savefig(img_buffer, format='png')
+    img_buffer.seek(0)
+    img_str = base64.b64encode(img_buffer.read()).decode('utf-8')
+    img_data = 'data:image/png;base64,' + img_str
+
+    plt.close(fig)
+    
+    return img_data
 
 
 
 """
-"""  
+
 if __name__ == "__main__":
     
     df = pd.read_csv("../uploads/siblings.csv")
@@ -136,8 +128,5 @@ if __name__ == "__main__":
 
     pareto_front = solve_genetic_algorithm(df, G)
     plot_pareto_front(pareto_front)
-    """
     
-
-    """
-  
+"""  

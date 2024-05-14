@@ -5,6 +5,8 @@ from flask import Flask, render_template, request, flash, redirect, jsonify, sen
 from flask_bootstrap import Bootstrap
 import networkx as nx
 import matplotlib
+
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -13,6 +15,8 @@ from database import *
 import randomNetCreation as randomNet
 import fileNetCreation as fileNet
 from function import *
+from genetic import *
+from genetic.algorithm_config import *
 
 app = Flask(__name__)
 app.debug = True
@@ -164,15 +168,6 @@ def download():
 @app.route('/showData')
 def show_introduce_data():
     return render_template('introduce_data.html')
-
-@app.route('/showData/chooseAlg', methods=['POST', 'GET'])
-def chooseAlg():
-	return render_template('choose_algorithm.html')
-
-@app.route('/showData/genetic', methods=['POST', 'GET'])
-def genetic_algorithm():
-	#TODO
-	return render_template('g_results.html')
 		
 	
 @app.route('/showData/data', methods=['POST', 'GET'])
@@ -201,7 +196,7 @@ def addNetwork():
 	randomNet.create_siblings_matrix()
 	matrix_siblings = randomNet.__siblingsMatrix
 	
-	return render_template('random_advanced.html')
+	return render_template('choose_algorithm.html')
 	
 def clean_variables():
 	global schyear_class
@@ -216,6 +211,26 @@ def clean_variables():
 @app.route('/showSelection')
 def show_random_advanced():
     return render_template('random_advanced.html')
+
+@app.route('/showData/genetic', methods=['POST', 'GET'])
+def genetic_algorithm():
+	
+	pareto_front = solve_genetic_algorithm(matrix_siblings, schyear_class)
+	img_data = plot_pareto_front(pareto_front)
+
+	solutions = []
+
+	for index, (individual, fitness) in enumerate(pareto_front):
+		
+		row = {
+			"Individual": "Solución {}".format(index + 1),
+			"Fitness": fitness,
+			"Individual_data": individual
+		}
+		
+		solutions.append(row)
+
+	return render_template('g_results.html', img_data=img_data, solutions=solutions)
 
 @app.route('/showSelection/randomAdvanced', methods=['POST', 'GET'])
 def pick_option():

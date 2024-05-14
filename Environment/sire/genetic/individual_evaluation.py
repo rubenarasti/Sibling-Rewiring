@@ -3,8 +3,8 @@ import numpy as np
 import networkx as nx
 import copy
 
-import global_def as gd
-import data_management as dm
+from . import global_def as gd
+from . import data_management as dm
 
 
 def fitness (individual):

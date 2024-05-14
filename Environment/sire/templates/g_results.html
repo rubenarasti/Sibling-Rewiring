@@ -44,20 +44,35 @@
 
 {% block content %} 
 <head>
-<meta charset="utf-8">
-	<title>MOSTRAMOS LA RED</title>
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+    <meta charset="utf-8">
+    <title>MOSTRAMOS EL FRENTE DE PARETO</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+
 </head>
 <body>
-	<div class="container">
-		<div class="container">
-			
-			
-			<a href="{{ url_for('show_download')}}"><button type="submit" class="btn btn-primary btn-lg" style='width:400px; height:100px; background-color:black' align='center' >
-        DESCARGAR</button></a> 
-		<br><br><br>	
-		</div>
-	</div>
+    <div class="container">
+        <div class="container">
+            <img src="{{ img_data }}" alt="Pareto Front">
+            <br><br><br>	
+            <h2>Lista de Soluciones</h2>
+            <table class="table">
+                <tr>
+                    <th>Individuo</th>
+                    <th>Fitness (riesgo individual, riesgo total)</th>
+                    <th>Descargar</th>
+                </tr>
+                {% for solution in solutions %}
+                <tr>
+                    <td class="center-align">{{ solution["Individual"] }}</td>
+                    <td class="center-align">{{ solution["Fitness"] }}</td>
+					<td><button class="download-btn" onclick="">Descargar</button></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+
 </body>
 {% endblock %}

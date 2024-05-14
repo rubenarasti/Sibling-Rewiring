@@ -1,16 +1,16 @@
 import numpy as np
 import pandas as pd
 import networkx as nx
-import global_def as gd
+from . import global_def as gd
 
-def load_data(siblings_df, graph):
+def load_data(siblings, graph):
 
     gd.initial_network = graph
     gd.total_students = len(graph.nodes())
-    gd.siblings_number = len(siblings_df)
+    gd.siblings_number = len(siblings)
 
-    for index, row in siblings_df.iterrows():
-        gd.siblings_dict[row[1]] = [row[0]] + row[2:].tolist()
+    for index, row in enumerate(siblings):
+        gd.siblings_dict[row[0]] = [index] + [str(item) for item in row[1:4]] + [row[4]]
 
     dicNombre = {}
     dicEtapa = {}
@@ -43,22 +43,17 @@ def load_data(siblings_df, graph):
     nx.set_node_attributes(gd.graph_eval_ini, dicEstudiantes, 'Estudiantes')
 
 
-def save(file_path, result):
-
-    with open(file_path, "w+") as file:
-        for r in result[1:]:
-            r_str = str(r)[1:-1].replace(',','')
-            file.write("{} {}\n".format(len(r), r_str))
-
 """
 
 
 if __name__ == "__main__":
     df = pd.read_csv("../uploads/siblings.csv")
+    mat = df.values
     G = nx.read_gexf("../uploads/school_net.gexf")
 
-    load_data(df, G)
+    load_data(mat, G)
+    print("Siblings: ", gd.siblings_dict)
     print("total students: ", gd.total_students)
     print("siblings: ",gd.siblings_number)
-
 """
+
