@@ -53,14 +53,16 @@
 <body>
     <div class="container">
         <div class="container">
-            <img src="{{ img_data }}" alt="Pareto Front">
+            <img src="{{ img_data1 }}" alt="Pareto Front1">
             <br><br><br>	
+			<img src="{{ img_data2 }}" alt="Pareto Front2">
+			<br><br><br>
             <h2>Lista de Soluciones</h2>
             <table class="table">
                 <tr>
-                    <th>Individuo</th>
-                    <th>Fitness (riesgo individual, riesgo total)</th>
-                    <th>Descargar</th>
+                    <th>Soluciones</th>
+                    <th>Fitness (riesgo total, riesgo individual)</th>
+                    <th>Descargas</th>
                 </tr>
                 {% for solution in solutions %}
                 <tr>

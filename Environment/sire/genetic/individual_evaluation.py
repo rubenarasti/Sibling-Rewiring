@@ -11,23 +11,28 @@ def fitness (individual):
 
     graph_eval = fenotype(individual)
 
-    components_size = []
+    components_sizes = []
+    components_edges = []
     contag_compo = 0
 
     for component in nx.connected_components(graph_eval):
         contag_compo += 1
-        components_size.append(len(component))
+        components_sizes.append(len(component))
+        subgraph = graph_eval.subgraph(component)
+        total_weight = subgraph.size(weight='weight')
+        components_edges.append(total_weight)
 
-    components_size_np = np.array(components_size)
-    contag_indiv = components_size_np.var()
-    #print(contag_compo, contag_indiv)
+    components_sizes_np = np.array(components_sizes)
+    comp_size_var = components_sizes_np.var()
 
-    return contag_compo, contag_indiv
+    components_edges_np = np.array(components_edges)
+    comp_edges_var = components_edges_np.var()
+
+    return contag_compo, comp_size_var, comp_edges_var
 
 def fenotype (individual):
 
     graph_eval = copy.deepcopy(gd.graph_eval_ini)
-    dicEstudiantes = nx.get_node_attributes(graph_eval, 'Estudiantes')
     seen = set() # Set to avoid repeating those already seen
 
     for (classroom1, (sib_name1, sib_data1)) in zip(individual, gd.siblings_dict.items()):
@@ -49,9 +54,7 @@ def fenotype (individual):
         sibling1.append(sib_data1[2]) # Obtain the year
         sibling1.append(gd.classrooms[classroom1])
         sibling1_class = ''.join(str(e) for e in sibling1)
-        if sib_name1 not in dicEstudiantes[sibling1_class]:
-            dicEstudiantes[sibling1_class].append(sib_name1)
-
+        
         sib_data2 = gd.siblings_dict[sib_name2]
         classroom2 = individual[sib_data2[0]] # Obtain the sibling2 classroom with the index
 
@@ -60,11 +63,12 @@ def fenotype (individual):
         sibling2.append(sib_data2[2])
         sibling2.append(gd.classrooms[classroom2])
         sibling2_class = ''.join(str(e) for e in sibling2)
-        if sib_name2 not in dicEstudiantes[sibling2_class]:
-            dicEstudiantes[sibling2_class].append(sib_name2)
 
-        #if (sibling1_class,sibling2_class) not in graph_eval.edges():
-        graph_eval.add_edge(sibling1_class, sibling2_class)
+        if graph_eval.has_edge(sibling1_class, sibling2_class):
+            graph_eval.edges[sibling1_class, sibling2_class]["weight"] += 1
+        else:
+            graph_eval.add_edge(sibling1_class, sibling2_class)
+            graph_eval.edges[sibling1_class, sibling2_class]["weight"] = 1
 
     return graph_eval
 
@@ -74,10 +78,10 @@ if __name__ == "__main__":
     import random
     df = pd.read_csv("../uploads/siblings.csv")
     G = nx.read_gexf("../uploads/school_net.gexf")
-
-    dm.load_data(df, G)
+    matriz = df.values
+    mat = matriz[:, 1:]
+    dm.load_data(mat, G)
     n= gd.siblings_number
-    
     indiv  = random.choices([0, 1, 2], k=n)
     indiv2 = [0] * n
     

@@ -43,6 +43,43 @@ def load_data(siblings, graph):
     nx.set_node_attributes(gd.graph_eval_ini, dicEstudiantes, 'Estudiantes')
 
 
+def final_graph(individual):
+
+    changed = set()
+    etapas = nx.get_node_attributes(gd.initial_network, 'Etapa')
+    cursos = nx.get_node_attributes(gd.initial_network, 'Curso')
+    clases = nx.get_node_attributes(gd.initial_network, 'Clase')
+    print(gd.initial_network.nodes())
+    for (classroom, (sib_name, sib_data)) in zip(individual, gd.siblings_dict.items()):
+        print(gd.initial_network.nodes())
+        if sib_name in changed:
+            # Enlace de hermano
+            gd.initial_network.add_edge(sib_name, sib_data[4])
+        else:
+            gd.initial_network.remove_edges_from(list(gd.initial_network.edges(str(sib_name))))
+            stage = sib_data[1]
+            year = sib_data[2]
+            group = gd.classrooms[classroom]
+            
+            matching_nodes = []
+            
+            
+            for node in gd.initial_network.nodes():
+                if etapas[str(node)]== stage and cursos[str(node)] == year and clases[str(node)] == group:
+                    matching_nodes.append(node)
+            print(matching_nodes)
+            
+            # Enlace de hermano
+            gd.initial_network.add_edge(sib_name, sib_data[4])
+            
+            # Enlaces de clase
+            for matching_node_id in matching_nodes:
+                gd.initial_network.add_edge(sib_name, matching_node_id)
+
+            changed.add(sib_name)
+
+    #print(gd.initial_network.edges)
+
 """
 
 
@@ -52,8 +89,10 @@ if __name__ == "__main__":
     G = nx.read_gexf("../uploads/school_net.gexf")
 
     load_data(mat, G)
-    print("Siblings: ", gd.siblings_dict)
-    print("total students: ", gd.total_students)
-    print("siblings: ",gd.siblings_number)
-"""
+    #print("Siblings: ", gd.siblings_dict)
+    #print("total students: ", gd.total_students)
+    #print("siblings: ",gd.siblings_number)
+    indiv2 = [0] * gd.siblings_number
+    final_graph(indiv2)
 
+"""

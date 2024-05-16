@@ -215,8 +215,9 @@ def show_random_advanced():
 @app.route('/showData/genetic', methods=['POST', 'GET'])
 def genetic_algorithm():
 	
-	pareto_front = solve_genetic_algorithm(matrix_siblings, schyear_class)
-	img_data = plot_pareto_front(pareto_front)
+	pareto_front, all_fitness = solve_genetic_algorithm(matrix_siblings, schyear_class)
+	img_data1 = plot_pareto_front2D1(pareto_front, all_fitness)
+	img_data2 = plot_pareto_front2D2(pareto_front, all_fitness)
 
 	solutions = []
 
@@ -230,7 +231,7 @@ def genetic_algorithm():
 		
 		solutions.append(row)
 
-	return render_template('g_results.html', img_data=img_data, solutions=solutions)
+	return render_template('g_results.html', img_data1=img_data1, img_data2=img_data2, solutions=solutions)
 
 @app.route('/showSelection/randomAdvanced', methods=['POST', 'GET'])
 def pick_option():
