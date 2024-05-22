@@ -14,9 +14,9 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 
-from . import global_def as gd
-from . import data_management as dm
-from . import individual_evaluation as eval
+import global_def as gd
+import data_management as dm
+import individual_evaluation as eval
 
 toolbox = base.Toolbox()
 logbook = tools.Logbook()
@@ -47,7 +47,7 @@ def configure_param():
     
     params = {}
     
-    params['NGEN'] = 200
+    params['NGEN'] = 100
     params['PSIZE'] = 100
     params['CXPB'] = 0.6
     params['MUTPB'] = 0.05
@@ -65,7 +65,7 @@ def solve_genetic_algorithm(df,G):
 
     population = toolbox.population(n=params['PSIZE'])
     #hof = tools.ParetoFront
-    hof = tools.HallOfFame(5)
+    hof = tools.ParetoFront()
     all_fitness = []
     pareto_front = []
     for gen in range(params['NGEN']):
@@ -73,9 +73,30 @@ def solve_genetic_algorithm(df,G):
                                     cxpb=params['CXPB'], mutpb=params['MUTPB'], 
                                     ngen=1, verbose=False, stats=[], halloffame=hof
                                     )
+        print("GEN ", gen)
+        for ind in population:
+            if eval.fitness(ind)[0]>14:
+                print(ind)
+            print(eval.fitness(ind))
+            all_fitness.append(eval.fitness(ind))
+    
+    """
+    for gen in range(params['NGEN']):
+        population, logbook = algorithms.eaMuPlusLambda(
+                                population,
+                                toolbox,
+                                mu = params['PSIZE'],
+                                lambda_ = 20,
+                                cxpb = params['CXPB'],
+                                mutpb = params['MUTPB'],
+                                ngen = 1,
+                                halloffame=hof,
+                                verbose=False
+                            )
+    
         for ind in population:
             all_fitness.append(eval.fitness(ind))
-    """
+
     population, logbook = algorithms.eaMuPlusLambda(
                                 population,
                                 toolbox,
@@ -104,33 +125,78 @@ def solve_genetic_algorithm(df,G):
         print(eval.fitness(ind))
     return pareto_front, all_fitness
 
-def plot_pareto_front(pareto_front, all_fitness):
-    pareto_fitness = [ind[1] for ind in pareto_front]
+
+
+
+def plot_pareto_front2D(pareto_front, all_fitness):
+    objective1 = [fit[0] for fit in all_fitness]
+    objective2 = [fit[1] for fit in all_fitness]
+    objective3 = [fit[2] for fit in all_fitness]
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5))
     
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-
-    all_fitness = np.array(list(all_fitness))
-    ax.scatter(all_fitness[:, 0], all_fitness[:, 1], all_fitness[:, 2], c='r', label='Individuos dominados')
-
-    pareto_fitness = np.array(pareto_fitness)
-    ax.scatter(pareto_fitness[:, 0], pareto_fitness[:, 1], pareto_fitness[:, 2], c='b', label='Frente de Pareto')
-
-    ax.set_xlabel('Número de componentes')
-    ax.set_ylabel('Variación del tamaño de los componentes')
-    ax.set_zlabel('Variación del número de enlaces de los componentes')
-    ax.set_title('Frente de Pareto')
-    ax.legend()
+    # Objetivo 1 vs Objetivo 2
+    # Objetivo 1 vs Objetivo 2
     
-    img_buffer = BytesIO()
-    fig.savefig(img_buffer, format='png')
-    img_buffer.seek(0)
-    img_str = base64.b64encode(img_buffer.read()).decode('utf-8')
-    img_data = 'data:image/png;base64,' + img_str
 
-    plt.close(fig)
+    # Objetivo 1 vs Objetivo 3
+    
 
-    return img_data
+    # Objetivo 2 vs Objetivo 3
+    axs[0].scatter(objective1, objective2, c='r', label='Individuos dominados')
+    
+    pareto_fitness = np.array([(ind[1][0], ind[1][1]) for ind in pareto_front])
+    axs[0].scatter(pareto_fitness[:, 0], pareto_fitness[:, 1], c='b', label='Frente de Pareto')
+    axs[0].set_title('Frente de Pareto (Objetivo 1 vs Objetivo 2)')
+    axs[0].set_xlabel('Objetivo 1')
+    axs[0].set_ylabel('Objetivo 2')
+    axs[0].legend()
+
+    # Objetivo 1 vs Objetivo 3
+    axs[1].scatter(objective1, objective3, c='r', label='Individuos dominados')
+    pareto_fitness = np.array([(ind[1][0], ind[1][2]) for ind in pareto_front])
+    axs[1].scatter(pareto_fitness[:, 0], pareto_fitness[:, 1], c='b', label='Frente de Pareto')
+    axs[1].set_title('Frente de Pareto (Objetivo 1 vs Objetivo 3)')
+    axs[1].set_xlabel('Objetivo 1')
+    axs[1].set_ylabel('Objetivo 3')
+    axs[1].legend()
+
+    # Objetivo 2 vs Objetivo 3
+    axs[2].scatter(objective2, objective3, c='r', label='Individuos dominados')
+    pareto_fitness = np.array([(ind[1][1], ind[1][2]) for ind in pareto_front])
+    axs[2].scatter(pareto_fitness[:, 0], pareto_fitness[:, 1], c='b', label='Frente de Pareto')
+    axs[2].set_title('Frente de Pareto (Objetivo 2 vs Objetivo 3)')
+    axs[2].set_xlabel('Objetivo 2')
+    axs[2].set_ylabel('Objetivo 3')
+    axs[2].legend()
+
+    plt.tight_layout()
+    plt.show()
+
+def is_pareto_efficient_simple(costs):
+    """
+    Find the pareto-efficient points
+    :param costs: An (n_points, n_costs) array
+    :return: A (n_points, ) boolean array, indicating whether each point is Pareto efficient
+    """
+    is_efficient = np.ones(costs.shape[0], dtype = bool)
+    for i, c in enumerate(costs):
+        if is_efficient[i]:
+            is_efficient[is_efficient] = np.any(costs[is_efficient]<c, axis=1)  # Keep any point with a lower cost
+            is_efficient[i] = True  # And keep self
+    return is_efficient
+
+"""
+""" 
+if __name__ == "__main__":
+    
+    df = pd.read_csv("../uploads/siblings.csv")
+    G = nx.read_gexf("../uploads/school_net.gexf")    
+    mat = df.values
+    mat1 = [row[1:] for row in mat]
+    pareto_front, all_f = solve_genetic_algorithm(mat1, G)
+    plot_pareto_front2D(pareto_front, all_f)
+ 
+"""
 
 def plot_pareto_front2D1(pareto_front, all_fitness):
     # Extraer los primeros y terceros valores de las tuplas de pareto_fitness
@@ -189,28 +255,4 @@ def plot_pareto_front2D2(pareto_front, all_fitness):
 
     plt.close(fig)
     return img_data
-
-def is_pareto_efficient_simple(costs):
-    """
-    Find the pareto-efficient points
-    :param costs: An (n_points, n_costs) array
-    :return: A (n_points, ) boolean array, indicating whether each point is Pareto efficient
-    """
-    is_efficient = np.ones(costs.shape[0], dtype = bool)
-    for i, c in enumerate(costs):
-        if is_efficient[i]:
-            is_efficient[is_efficient] = np.any(costs[is_efficient]<c, axis=1)  # Keep any point with a lower cost
-            is_efficient[i] = True  # And keep self
-    return is_efficient
-
 """
-
-if __name__ == "__main__":
-    
-    df = pd.read_csv("../uploads/siblings.csv")
-    G = nx.read_gexf("../uploads/school_net.gexf")
-
-    pareto_front = solve_genetic_algorithm(df, G)
-    plot_pareto_front(pareto_front)
-    
-"""  

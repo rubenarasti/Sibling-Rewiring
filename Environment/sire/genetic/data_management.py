@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import networkx as nx
-from . import global_def as gd
+import global_def as gd
 
 def load_data(siblings, graph):
 

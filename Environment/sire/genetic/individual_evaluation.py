@@ -3,8 +3,8 @@ import numpy as np
 import networkx as nx
 import copy
 
-from . import global_def as gd
-from . import data_management as dm
+import global_def as gd
+import data_management as dm
 
 
 def fitness (individual):
@@ -22,17 +22,17 @@ def fitness (individual):
         total_weight = subgraph.size(weight='weight')
         components_edges.append(total_weight)
 
-    components_sizes_np = np.array(components_sizes)
-    comp_size_var = components_sizes_np.var()
+    #components_sizes_np = np.array(components_sizes)
+    comp_size_var = np.var(components_sizes)
 
-    components_edges_np = np.array(components_edges)
-    comp_edges_var = components_edges_np.var()
+    #components_edges_np = np.array(components_edges)
+    comp_edges_var = np.var(components_edges)
 
     return contag_compo, comp_size_var, comp_edges_var
 
 def fenotype (individual):
 
-    graph_eval = copy.deepcopy(gd.graph_eval_ini)
+    graph_eval = gd.graph_eval_ini.copy()
     seen = set() # Set to avoid repeating those already seen
 
     for (classroom1, (sib_name1, sib_data1)) in zip(individual, gd.siblings_dict.items()):
