@@ -1,5 +1,7 @@
 import base64
 from io import BytesIO
+import io
+import os
 import matplotlib.pyplot as plt
 
 import numpy as np
@@ -25,7 +27,7 @@ def load_data(siblings, graph):
     clases = nx.get_node_attributes(graph,'Clase')
 
     gd.classrooms = sorted(set(clases.values()))
-    
+
     cursos = nx.get_node_attributes(graph,'Curso')
 
     for node in graph.nodes():
@@ -93,39 +95,107 @@ def plot_pareto_front2D(pareto_front, all_fitness):
     return img_data
 
 def solution_files(individual):
+    
+    graph_eval = gd.graph_eval_ini.copy()
+    seen = set() # Set to avoid repeating those already seen
+    graph_students = gd.initial_network.copy()
 
-    changed = set()
-    etapas = nx.get_node_attributes(gd.initial_network, 'Etapa')
-    cursos = nx.get_node_attributes(gd.initial_network, 'Curso')
-    clases = nx.get_node_attributes(gd.initial_network, 'Clase')
-    print(gd.initial_network.nodes())
-    for (classroom, (sib_name, sib_data)) in zip(individual, gd.siblings_dict.items()):
-        print(gd.initial_network.nodes())
-        if sib_name in changed:
-            # Enlace de hermano
-            gd.initial_network.add_edge(sib_name, sib_data[4])
+    students_by_edge = {}
+
+    for (classroom1, (sib_name1, sib_data1)) in zip(individual, gd.siblings_dict.items()):
+
+        sib_name2 = sib_data1[4]
+        # Order the pair 
+        if sib_name2 > sib_name1:
+            siblings_pair = (sib_name1, sib_name2)
         else:
-            gd.initial_network.remove_edges_from(list(gd.initial_network.edges(str(sib_name))))
-            stage = sib_data[1]
-            year = sib_data[2]
-            group = gd.classrooms[classroom]
-            
-            matching_nodes = []
-            
-            
-            for node in gd.initial_network.nodes():
-                if etapas[str(node)]== stage and cursos[str(node)] == year and clases[str(node)] == group:
-                    matching_nodes.append(node)
-            print(matching_nodes)
-            
-            # Enlace de hermano
-            gd.initial_network.add_edge(sib_name, sib_data[4])
-            
-            # Enlaces de clase
-            for matching_node_id in matching_nodes:
-                gd.initial_network.add_edge(sib_name, matching_node_id)
+            siblings_pair = (sib_name2, sib_name1)
 
-            changed.add(sib_name)
+        if siblings_pair in seen:
+            continue
 
-    #print(gd.initial_network.edges)
+        seen.add(siblings_pair)
 
+        sibling1_class = f"{sib_data1[1]}{sib_data1[2]}{gd.classrooms[classroom1]}"
+        
+        sib_data2 = gd.siblings_dict[sib_name2]
+        classroom2 = individual[sib_data2[0]]
+
+        sibling2_class = f"{sib_data2[1]}{sib_data2[2]}{gd.classrooms[classroom2]}"
+
+        graph_students.nodes[sib_name1]["Clase"] = gd.classrooms[classroom1]
+        graph_students.nodes[sib_name2]["Clase"] = gd.classrooms[classroom2]
+        
+        if sibling1_class < sibling2_class:
+            edge = (sibling1_class, sibling2_class)
+        else:
+            edge = (sibling2_class, sibling1_class)
+        if edge not in students_by_edge:
+            students_by_edge[edge] = set()
+
+        students_by_edge[edge].update([sib_name1, sib_name2])
+
+        if graph_eval.has_edge(sibling1_class, sibling2_class):
+            graph_eval.edges[sibling1_class, sibling2_class]["weight"] += 1
+        else:
+            graph_eval.add_edge(sibling1_class, sibling2_class)
+            graph_eval.edges[sibling1_class, sibling2_class]["weight"] = 1
+
+    df = pd.DataFrame(columns=["Clase 1", "Clase 2", "Estudiantes"])
+
+    
+    for edge, students in students_by_edge.items():
+        df = df.append({
+            "Nodo 1": edge[0], 
+            "Nodo 2": edge[1], 
+            "Estudiantes": ", ".join(str(student) for student in sorted(students))
+        }, ignore_index=True)
+    df = df.sort_values(by=["Nodo 1", "Nodo 2"])
+    connections_buffer = io.StringIO()
+    df.to_csv(connections_buffer, index=False)
+    connections_buffer.seek(0)
+
+    data = []
+    for nodo, datos in graph_students.nodes(data=True):
+        row = {
+            "Nombre": datos.get("Nombre"),
+            "Etapa": datos.get("Etapa"),
+            "Curso": datos.get("Curso"),
+            "Clase": datos.get("Clase")
+        }
+        data.append(row)
+
+    df = pd.DataFrame(data)
+    attributes_buffer = io.StringIO()
+    data.to_csv(attributes_buffer, index=False)
+    attributes_buffer.seek(0)
+    
+    plt.figure(figsize=(12, 12))
+    pos = nx.circular_layout(graph_eval)
+    nx.draw(graph_eval, pos, with_labels=True, node_size=1000, node_color='skyblue', font_size=10, font_color='black', edge_color='gray')
+    edge_labels = nx.get_edge_attributes(graph_eval, 'weight')
+    nx.draw_networkx_edge_labels(graph_eval, pos, edge_labels=edge_labels)
+    
+    graph_image_buffer = BytesIO()
+    plt.savefig(graph_image_buffer, format="PNG")
+    plt.close()
+    graph_image_buffer.seek(0)
+    
+    return connections_buffer, attributes_buffer, graph_image_buffer
+
+"""
+if __name__ == "__main__":
+
+
+    df_path = os.path.join("files to upload", "siblings.csv")
+    df = pd.read_csv(df_path)
+    mat = df.values[:, 1:]
+    # Leer el grafo desde el archivo GEXF
+    gexf_path = os.path.join("files to upload", "school_net.gexf")
+    G = nx.read_gexf(gexf_path)
+    load_data(mat, G)
+
+    ind = [0]*gd.siblings_number
+    solution_files(ind)
+
+"""
