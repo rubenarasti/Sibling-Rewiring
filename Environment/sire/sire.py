@@ -16,7 +16,7 @@ import randomNetCreation as randomNet
 import fileNetCreation as fileNet
 from function import *
 from genetic import *
-from genetic.algorithm_config import *
+import genetic_algorithm as ga
 
 app = Flask(__name__)
 app.debug = True
@@ -215,9 +215,8 @@ def show_random_advanced():
 @app.route('/showData/genetic', methods=['POST', 'GET'])
 def genetic_algorithm():
 	
-	pareto_front, all_fitness = solve_genetic_algorithm(matrix_siblings, schyear_class)
-	img_data1 = plot_pareto_front2D1(pareto_front, all_fitness)
-	img_data2 = plot_pareto_front2D2(pareto_front, all_fitness)
+	pareto_front, all_fitness = ga.solve_genetic_algorithm(matrix_siblings, schyear_class)
+	img_data = ga.plot_pareto_front2D(pareto_front, all_fitness)
 
 	solutions = []
 
@@ -231,7 +230,9 @@ def genetic_algorithm():
 		
 		solutions.append(row)
 
-	return render_template('g_results.html', img_data1=img_data1, img_data2=img_data2, solutions=solutions)
+	return render_template('g_results.html', 
+						img_data1=img_data, 
+						solutions=solutions)
 
 @app.route('/showSelection/randomAdvanced', methods=['POST', 'GET'])
 def pick_option():

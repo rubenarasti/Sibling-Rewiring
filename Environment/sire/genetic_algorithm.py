@@ -1,267 +1,163 @@
-import copy
+import base64
+from io import BytesIO
 import random
-import pymoo
+import os
+import time
 
+import matplotlib.pyplot as plt
+
+from deap import base
+from deap import creator
+from deap import algorithms
+
+from deap import tools
 import numpy as np
 import pandas as pd
 import networkx as nx
-import matplotlib.pyplot as plt
+
 import global_def as gd
+import data_management as dm
+import individual_evaluation as eval
 
-from pymoo.core.problem import ElementwiseProblem
-from pymoo.core.problem import Problem
-from pymoo.algorithms.moo.nsga2 import NSGA2
-from pymoo.operators.crossover.sbx import SBX
-from pymoo.operators.mutation.pm import PM
-from pymoo.operators.mutation.bitflip import BitflipMutation
-from pymoo.operators.crossover.pntx import PointCrossover, SinglePointCrossover
-from pymoo.operators.sampling.rnd import IntegerRandomSampling
-from pymoo.operators.repair.rounding import RoundingRepair
-from pymoo.optimize import minimize
-from pymoo.termination import get_termination
-from pymoo.visualization.scatter import Scatter
-from pymoo.core.mutation import Mutation
+toolbox = base.Toolbox()
+logbook = tools.Logbook()
 
 
+def configure_solution():
+    # Maximize the first objetive and minimize the 2 other objetives
+    creator.create("FitnessMulti", base.Fitness, weights=(1.0, -1.0, -1.0))
+    creator.create("Individual", list, fitness=creator.FitnessMulti)
 
-class MyMutFlipBit(Mutation):
+    toolbox = base.Toolbox()
+    # Create the values ​​that the individual's attributes can take
+    toolbox.register("attr_int", random.randint, 0, len(gd.classrooms)-1)
 
-    def __init__(self, prob=0.1, prob_var=0.9):
-        super().__init__()
-        self.prob = prob
-        self.prob_var = prob_var
-
-    def _do(self, problem, X, **kwargs):
-        # Para cada individuo en la población
-        for i in range(len(X)):
-            # Decidir si este individuo será mutado basado en prob_var
-            if random.random() < self.prob_var:
-                # Para cada variable del individuo
-                for j in range(problem.n):
-                    # Decidir si esta variable será mutada basado en prob
-                    if random.random() < self.prob:
-                        # Mutar la variable
-                        X[i][j] = random.randint(0, problem.c)
-        return X
-
-
-def load_data(siblings, graph):
-
-    gd.initial_network = graph
-    gd.total_students = len(graph.nodes())
-    gd.siblings_number = len(siblings)
+    # Create the attribute array of the individual with length equal to the number of siblings
+    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_int, gd.siblings_number)
+    toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     
-    for index, row in enumerate(siblings):
-        gd.siblings_dict[row[0]] = [index] + [str(item) for item in row[1:4]] + [row[4]]
-
-    dicNombre = {}
-    dicEtapa = {}
-    dicCurso = {}
-    dicClase = {}
-    dicEstudiantes = {}
-    etapas = nx.get_node_attributes(graph,'Etapa')
-    clases = nx.get_node_attributes(graph,'Clase')
-    cursos = nx.get_node_attributes(graph,'Curso')
-
-    for node in graph.nodes():
-        name = []
-        name.append(etapas[node])
-        name.append(cursos[node])
-        name.append(clases[node])
-        node_name = ''.join(str(e) for e in name)
-	
-        if node_name not in gd.graph_eval_ini.nodes():
-            gd.graph_eval_ini.add_node(node_name)
-            dicNombre[node_name] = node_name
-            dicEtapa[node_name] = etapas[node]
-            dicCurso[node_name] = cursos[node]
-            dicClase[node_name] = clases[node]
-            dicEstudiantes[node_name] = []    
-			
-    nx.set_node_attributes(gd.graph_eval_ini, dicNombre, 'Nombre')
-    nx.set_node_attributes(gd.graph_eval_ini, dicEtapa, 'Etapa')
-    nx.set_node_attributes(gd.graph_eval_ini, dicCurso, 'Curso')
-    nx.set_node_attributes(gd.graph_eval_ini, dicClase, 'Clase')
-    nx.set_node_attributes(gd.graph_eval_ini, dicEstudiantes, 'Estudiantes')
-
-
-
-def fitness (individual):
+    toolbox.register("evaluate", eval.fitness)
+    toolbox.register("mate", tools.cxOnePoint)
+    toolbox.register("mutate", tools.mutFlipBit, indpb=0.9)
+    toolbox.register("select", tools.selNSGA2)   
     
-    graph_eval = fenotype(individual)
-    #print(list(nx.connected_components(graph_eval)))
-    components_sizes = []
-    components_edges = []
-    contag_compo = 0
-
-    for component in nx.connected_components(graph_eval):
-        contag_compo += 1
-        components_sizes.append(len(component))
-        subgraph = graph_eval.subgraph(component)
-        total_weight = subgraph.size(weight='weight')
-        components_edges.append(total_weight)
-
-    components_sizes_np = np.array(components_sizes)
-    comp_size_var = components_sizes_np.var()
-
-    components_edges_np = np.array(components_edges)
-    comp_edges_var = components_edges_np.var()
-
-    return -contag_compo, comp_size_var, comp_edges_var
-
-def fenotype (individual):
-    graph_eval = copy.deepcopy(gd.graph_eval_ini)
-    seen = set() # Set to avoid repeating those already seen
+    return toolbox
+ 
+def configure_param():
     
-    for (classroom1, (sib_name1, sib_data1)) in zip(individual, gd.siblings_dict.items()):
-
-        sib_name2 = sib_data1[4]
-        # Order the pair 
-        if sib_name2 > sib_name1:
-            siblings_pair = (sib_name1, sib_name2)
-        else:
-            siblings_pair = (sib_name2, sib_name1)
-
-        if siblings_pair in seen:
-            continue
-
-        seen.add(siblings_pair)
-        
-        sibling1 = []
-        sibling1.append(sib_data1[1]) # Obtain the stage
-        sibling1.append(sib_data1[2]) # Obtain the year
-        sibling1.append(gd.classrooms[classroom1])
-        sibling1_class = ''.join(str(e) for e in sibling1)
-        
-        sib_data2 = gd.siblings_dict[sib_name2]
-        classroom2 = individual[sib_data2[0]] # Obtain the sibling2 classroom with the index
-
-        sibling2 = []
-        sibling2.append(sib_data2[1])
-        sibling2.append(sib_data2[2])
-        sibling2.append(gd.classrooms[classroom2])
-        sibling2_class = ''.join(str(e) for e in sibling2)
-
-        if graph_eval.has_edge(sibling1_class, sibling2_class):
-            graph_eval.edges[sibling1_class, sibling2_class]["weight"] += 1
-        else:
-            graph_eval.add_edge(sibling1_class, sibling2_class)
-            graph_eval.edges[sibling1_class, sibling2_class]["weight"] = 1
-
-    return graph_eval
-
-
-class MyMultiObjectiveProblem(ElementwiseProblem):
+    params = {}
     
-    def __init__(self, n, c):
-        self.n = n  # Number of variables
-        self.c = c  # Upper value of each variable
-        super().__init__(
-                        n_var=n,
-                        n_obj=3, # Number of objetives
-                        n_ieq_constr=0,
-                        xl=np.zeros(n),
-                        xu=np.full(n, c),
-                        vtype=int)
+    params['NGEN'] = 200
+    params['PSIZE'] = 200
+    params['CXPB'] = 0.6
+    params['MUTPB'] = 0.05
+    
+    return params
 
-    def _evaluate(self, x, out, *args, **kwargs):
-        
-        f1, f2 ,f3 = fitness(x)
-        if f1 < -1:
-            print(x)
-            print([f1, f2, f3])
-        
-        out["F"] = [f1, f2, f3]  # Store the 3 objetives
 
 def solve_genetic_algorithm(df,G):
     
-    load_data(df, G)
+    dm.load_data(df, G)
+
+    #start_time = time.time()
     
-    problem = MyMultiObjectiveProblem(gd.siblings_number, len(gd.classrooms)-1)
+    toolbox = base.Toolbox()
+
+    toolbox = configure_solution()
+    params = configure_param()
+
+    population = toolbox.population(n=params['PSIZE'])
     
-    #crossover=SBX(prob=0.5, eta=1, vtype=float)
-    crossover=SinglePointCrossover(prob=0.6)
-    #mutation=PM(prob=0.2, eta=1, vtype=float, repair=RoundingRepair())
-    #mutation = BitflipMutation(prob=0.5, prob_var=0.9)
-    mutation = MyMutFlipBit(prob = 0.05, prob_var=0.9)
-    pop = 20000
-    algorithm = NSGA2(
-                    pop_size=pop,  # Tamaño de la población
-                    sampling=IntegerRandomSampling(),
-                    mutation=mutation,
-                    crossover=crossover
-                    )
+    all_fitness = []
     
-    # Definir el criterio de terminación
-    termination = get_termination("n_gen", 10)
-    #termination = get_termination("time", "01:00:00")
+    fits = toolbox.map(toolbox.evaluate, population)
+    for fit, ind in zip(fits, population):
+        ind.fitness.values = fit
+        all_fitness.append(fit)
 
-    res = minimize(problem,
-                algorithm,
-                termination,
-                pf=True,
-                save_history=True,
-                verbose=True
-                )
-    
-    #Scatter().add(res.F).show()
-    hist = res.history
+    for gen in range(params['NGEN']):
+        offspring = algorithms.varOr(population, 
+                                     toolbox, 
+                                     lambda_=params['PSIZE'], 
+                                     cxpb=params['CXPB'], 
+                                     mutpb=params['MUTPB'])
+        
+        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+        fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
+        for ind, fit in zip(invalid_ind, fitnesses):
+            ind.fitness.values = fit
 
-    all_individuals = []
-    all_objectives = []
+        for ind in offspring:
+            all_fitness.append(ind.fitness.values)
+        population = toolbox.select(offspring + population, k=params['PSIZE'])
 
-    for entry in hist:
-        pop = entry.pop
-        X = pop.get("X")
-        F = pop.get("F")
-        all_individuals.extend(X)
-        all_objectives.extend(F)
-    
-    print(f"Total de individuos: {len(all_individuals)}")
+                
 
-    # Convertir listas a numpy arrays para facilitar el manejo
-    import numpy as np
-    all_individuals = np.array(all_individuals)
-    all_objectives = np.array(all_objectives)
+    #end_time = time.time()
 
-    # Graficar todos los individuos del historial en gráficos 2D
-    plt.figure(figsize=(18, 5))
+    #elapsed_time = end_time - start_time
 
-    # Comparar Objetivo 1 vs Objetivo 2
-    plt.subplot(1, 3, 1)
-    plt.scatter(all_objectives[:, 0], all_objectives[:, 1], s=10, facecolors='none', edgecolors='b')
-    plt.title("Objetivo 1 vs Objetivo 2")
-    plt.xlabel("Objetivo 1")
-    plt.ylabel("Objetivo 2")
+    non_dominated = tools.sortNondominated(population, len(population), first_front_only=True)[0]
 
-    # Comparar Objetivo 1 vs Objetivo 3
-    plt.subplot(1, 3, 2)
-    plt.scatter(all_objectives[:, 0], all_objectives[:, 2], s=10, facecolors='none', edgecolors='r')
-    plt.title("Objetivo 1 vs Objetivo 3")
-    plt.xlabel("Objetivo 1")
-    plt.ylabel("Objetivo 3")
+    pareto_front = [] # list to store non_duplicate individuals and their fitnesses
 
-    # Comparar Objetivo 2 vs Objetivo 3
-    plt.subplot(1, 3, 3)
-    plt.scatter(all_objectives[:, 1], all_objectives[:, 2], s=10, facecolors='none', edgecolors='g')
-    plt.title("Objetivo 2 vs Objetivo 3")
-    plt.xlabel("Objetivo 2")
-    plt.ylabel("Objetivo 3")
+    for ind in non_dominated:
+        fitness = ind.fitness.values
+        if (ind,fitness) not in pareto_front:
+             pareto_front.append((ind,fitness))
 
+    #print("Total time: ", elapsed_time, "s")
+
+    return pareto_front, all_fitness
+
+
+def plot_pareto_front2D(pareto_front, all_fitness):
+    objective1 = [fit[0] for fit in all_fitness]
+    objective2 = [fit[1] for fit in all_fitness]
+    objective3 = [fit[2] for fit in all_fitness]
+
+    # Crear una figura con tres subgráficos
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+
+    # Primer gráfico
+    axs[0].scatter(objective1, objective2, c='r', label='Individuos dominados')
+    pareto_fitness1 = np.array([(ind[1][0], ind[1][1]) for ind in pareto_front])
+    axs[0].scatter(pareto_fitness1[:, 0], pareto_fitness1[:, 1], c='b', label='Frente de Pareto')
+    axs[0].set_title('Objetivo 1 (Max) vs Objetivo 2 (Min)')
+    axs[0].set_xlabel('Número de componentes')
+    axs[0].set_ylabel('Variabilidad del tamaño de componentes')
+    axs[0].legend()
+
+    # Segundo gráfico
+    axs[1].scatter(objective1, objective3, c='r', label='Individuos dominados')
+    pareto_fitness2 = np.array([(ind[1][0], ind[1][2]) for ind in pareto_front])
+    axs[1].scatter(pareto_fitness2[:, 0], pareto_fitness2[:, 1], c='b', label='Frente de Pareto')
+    axs[1].set_title('Objetivo 1 (Max) vs Objetivo 3 (Min)')
+    axs[1].set_xlabel('Número de componentes')
+    axs[1].set_ylabel('Variabilidad del número de enlaces')
+    axs[1].legend()
+
+    # Tercer gráfico
+    axs[2].scatter(objective2, objective3, c='r', label='Individuos dominados')
+    pareto_fitness3 = np.array([(ind[1][1], ind[1][2]) for ind in pareto_front])
+    axs[2].scatter(pareto_fitness3[:, 0], pareto_fitness3[:, 1], c='b', label='Frente de Pareto')
+    axs[2].set_title('Objetivo 2 (Min) vs Objetivo 3 (Min)')
+    axs[2].set_xlabel('Variabilidad del tamaño de componentes')
+    axs[2].set_ylabel('Variabilidad del número de enlaces')
+    axs[2].legend()
+
+    # Ajustar el diseño de la figura
     plt.tight_layout()
-    plt.show()
-    
-    return 
 
-"""
-"""
-if __name__ == "__main__":
-    
-    df = pd.read_csv("uploads/siblings.csv")
-    mat = df.values
-    mat1 = [row[1:] for row in mat]
-    G = nx.read_gexf("uploads/school_net.gexf")
+    # Guardar la figura en un buffer
+    img_buffer = BytesIO()
+    fig.savefig(img_buffer, format='png')
+    img_buffer.seek(0)
+    img_str = base64.b64encode(img_buffer.read()).decode('utf-8')
+    img_data = 'data:image/png;base64,' + img_str
 
-    solve_genetic_algorithm(mat1, G)
-    
+    plt.close(fig)
+
+    # Devolver la cadena de imagen base64
+    return img_data
 

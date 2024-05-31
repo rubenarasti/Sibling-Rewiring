@@ -49,21 +49,13 @@ def fenotype (individual):
 
         seen.add(siblings_pair)
         
-        sibling1 = []
-        sibling1.append(sib_data1[1]) # Obtain the stage
-        sibling1.append(sib_data1[2]) # Obtain the year
-        sibling1.append(gd.classrooms[classroom1])
-        sibling1_class = ''.join(str(e) for e in sibling1)
+        sibling1_class = f"{sib_data1[1]}{sib_data1[2]}{gd.classrooms[classroom1]}"
         
         sib_data2 = gd.siblings_dict[sib_name2]
-        classroom2 = individual[sib_data2[0]] # Obtain the sibling2 classroom with the index
+        classroom2 = individual[sib_data2[0]]
 
-        sibling2 = []
-        sibling2.append(sib_data2[1])
-        sibling2.append(sib_data2[2])
-        sibling2.append(gd.classrooms[classroom2])
-        sibling2_class = ''.join(str(e) for e in sibling2)
-
+        sibling2_class = f"{sib_data2[1]}{sib_data2[2]}{gd.classrooms[classroom2]}"
+        #CUIDADO CON EL ORDEN CREO QUE NO SE ESTA HACIENDO BIEN 
         if graph_eval.has_edge(sibling1_class, sibling2_class):
             graph_eval.edges[sibling1_class, sibling2_class]["weight"] += 1
         else:
