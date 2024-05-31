@@ -22,10 +22,8 @@ def fitness (individual):
         total_weight = subgraph.size(weight='weight')
         components_edges.append(total_weight)
 
-    #components_sizes_np = np.array(components_sizes)
     comp_size_var = np.var(components_sizes)
 
-    #components_edges_np = np.array(components_edges)
     comp_edges_var = np.var(components_edges)
 
     return contag_compo, comp_size_var, comp_edges_var
@@ -64,21 +62,6 @@ def fenotype (individual):
 
     return graph_eval
 
-"""
 
-if __name__ == "__main__":
-    import random
-    df = pd.read_csv("../uploads/siblings.csv")
-    G = nx.read_gexf("../uploads/school_net.gexf")
-    matriz = df.values
-    mat = matriz[:, 1:]
-    dm.load_data(mat, G)
-    n= gd.siblings_number
-    indiv  = random.choices([0, 1, 2], k=n)
-    indiv2 = [0] * n
-    
-    print('fitness:',fitness(indiv2))
-    
-"""
 
 

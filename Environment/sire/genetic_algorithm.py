@@ -1,27 +1,17 @@
-import base64
-from io import BytesIO
 import random
-import os
 import time
-
-import matplotlib.pyplot as plt
 
 from deap import base
 from deap import creator
 from deap import algorithms
 
 from deap import tools
-import numpy as np
-import pandas as pd
-import networkx as nx
 
 import global_def as gd
 import data_management as dm
 import individual_evaluation as eval
 
 toolbox = base.Toolbox()
-logbook = tools.Logbook()
-
 
 def configure_solution():
     # Maximize the first objetive and minimize the 2 other objetives
@@ -91,7 +81,6 @@ def solve_genetic_algorithm(df,G):
             all_fitness.append(ind.fitness.values)
         population = toolbox.select(offspring + population, k=params['PSIZE'])
 
-                
 
     #end_time = time.time()
 
@@ -110,54 +99,4 @@ def solve_genetic_algorithm(df,G):
 
     return pareto_front, all_fitness
 
-
-def plot_pareto_front2D(pareto_front, all_fitness):
-    objective1 = [fit[0] for fit in all_fitness]
-    objective2 = [fit[1] for fit in all_fitness]
-    objective3 = [fit[2] for fit in all_fitness]
-
-    # Crear una figura con tres subgráficos
-    fig, axs = plt.subplots(1, 3, figsize=(15, 5))
-
-    # Primer gráfico
-    axs[0].scatter(objective1, objective2, c='r', label='Individuos dominados')
-    pareto_fitness1 = np.array([(ind[1][0], ind[1][1]) for ind in pareto_front])
-    axs[0].scatter(pareto_fitness1[:, 0], pareto_fitness1[:, 1], c='b', label='Frente de Pareto')
-    axs[0].set_title('Objetivo 1 (Max) vs Objetivo 2 (Min)')
-    axs[0].set_xlabel('Número de componentes')
-    axs[0].set_ylabel('Variabilidad del tamaño de componentes')
-    axs[0].legend()
-
-    # Segundo gráfico
-    axs[1].scatter(objective1, objective3, c='r', label='Individuos dominados')
-    pareto_fitness2 = np.array([(ind[1][0], ind[1][2]) for ind in pareto_front])
-    axs[1].scatter(pareto_fitness2[:, 0], pareto_fitness2[:, 1], c='b', label='Frente de Pareto')
-    axs[1].set_title('Objetivo 1 (Max) vs Objetivo 3 (Min)')
-    axs[1].set_xlabel('Número de componentes')
-    axs[1].set_ylabel('Variabilidad del número de enlaces')
-    axs[1].legend()
-
-    # Tercer gráfico
-    axs[2].scatter(objective2, objective3, c='r', label='Individuos dominados')
-    pareto_fitness3 = np.array([(ind[1][1], ind[1][2]) for ind in pareto_front])
-    axs[2].scatter(pareto_fitness3[:, 0], pareto_fitness3[:, 1], c='b', label='Frente de Pareto')
-    axs[2].set_title('Objetivo 2 (Min) vs Objetivo 3 (Min)')
-    axs[2].set_xlabel('Variabilidad del tamaño de componentes')
-    axs[2].set_ylabel('Variabilidad del número de enlaces')
-    axs[2].legend()
-
-    # Ajustar el diseño de la figura
-    plt.tight_layout()
-
-    # Guardar la figura en un buffer
-    img_buffer = BytesIO()
-    fig.savefig(img_buffer, format='png')
-    img_buffer.seek(0)
-    img_str = base64.b64encode(img_buffer.read()).decode('utf-8')
-    img_data = 'data:image/png;base64,' + img_str
-
-    plt.close(fig)
-
-    # Devolver la cadena de imagen base64
-    return img_data
 

@@ -15,7 +15,7 @@ from database import *
 import randomNetCreation as randomNet
 import fileNetCreation as fileNet
 from function import *
-from genetic import *
+import data_management as dm
 import genetic_algorithm as ga
 
 app = Flask(__name__)
@@ -216,7 +216,7 @@ def show_random_advanced():
 def genetic_algorithm():
 	
 	pareto_front, all_fitness = ga.solve_genetic_algorithm(matrix_siblings, schyear_class)
-	img_data = ga.plot_pareto_front2D(pareto_front, all_fitness)
+	img_data = dm.plot_pareto_front2D(pareto_front, all_fitness)
 
 	solutions = []
 

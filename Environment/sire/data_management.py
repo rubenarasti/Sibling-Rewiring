@@ -1,3 +1,7 @@
+import base64
+from io import BytesIO
+import matplotlib.pyplot as plt
+
 import numpy as np
 import pandas as pd
 import networkx as nx
@@ -19,6 +23,9 @@ def load_data(siblings, graph):
     dicEstudiantes = {}
     etapas = nx.get_node_attributes(graph,'Etapa')
     clases = nx.get_node_attributes(graph,'Clase')
+
+    gd.classrooms = sorted(set(clases.values()))
+    
     cursos = nx.get_node_attributes(graph,'Curso')
 
     for node in graph.nodes():
@@ -42,8 +49,50 @@ def load_data(siblings, graph):
     nx.set_node_attributes(gd.graph_eval_ini, dicClase, 'Clase')
     nx.set_node_attributes(gd.graph_eval_ini, dicEstudiantes, 'Estudiantes')
 
+def plot_pareto_front2D(pareto_front, all_fitness):
+    objective1 = [fit[0] for fit in all_fitness]
+    objective2 = [fit[1] for fit in all_fitness]
+    objective3 = [fit[2] for fit in all_fitness]
 
-def final_graph(individual):
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+
+    axs[0].scatter(objective1, objective2, c='r', label='Individuos dominados')
+    pareto_fitness1 = np.array([(ind[1][0], ind[1][1]) for ind in pareto_front])
+    axs[0].scatter(pareto_fitness1[:, 0], pareto_fitness1[:, 1], c='b', label='Frente de Pareto')
+    axs[0].set_title('Objetivo 1 (Max x) vs Objetivo 2 (Min y)')
+    axs[0].set_xlabel('Número de componentes')
+    axs[0].set_ylabel('Variabilidad del tamaño de componentes')
+    axs[0].legend()
+
+    axs[1].scatter(objective1, objective3, c='r', label='Individuos dominados')
+    pareto_fitness2 = np.array([(ind[1][0], ind[1][2]) for ind in pareto_front])
+    axs[1].scatter(pareto_fitness2[:, 0], pareto_fitness2[:, 1], c='b', label='Frente de Pareto')
+    axs[1].set_title('Objetivo 1 (Max x) vs Objetivo 3 (Min y)')
+    axs[1].set_xlabel('Número de componentes')
+    axs[1].set_ylabel('Variabilidad del número de enlaces')
+    axs[1].legend()
+
+    axs[2].scatter(objective2, objective3, c='r', label='Individuos dominados')
+    pareto_fitness3 = np.array([(ind[1][1], ind[1][2]) for ind in pareto_front])
+    axs[2].scatter(pareto_fitness3[:, 0], pareto_fitness3[:, 1], c='b', label='Frente de Pareto')
+    axs[2].set_title('Objetivo 2 (Min x) vs Objetivo 3 (Min y)')
+    axs[2].set_xlabel('Variabilidad del tamaño de componentes')
+    axs[2].set_ylabel('Variabilidad del número de enlaces')
+    axs[2].legend()
+
+    plt.tight_layout()
+
+    img_buffer = BytesIO()
+    fig.savefig(img_buffer, format='png')
+    img_buffer.seek(0)
+    img_str = base64.b64encode(img_buffer.read()).decode('utf-8')
+    img_data = 'data:image/png;base64,' + img_str
+
+    plt.close(fig)
+
+    return img_data
+
+def solution_files(individual):
 
     changed = set()
     etapas = nx.get_node_attributes(gd.initial_network, 'Etapa')
@@ -80,19 +129,3 @@ def final_graph(individual):
 
     #print(gd.initial_network.edges)
 
-"""
-
-
-if __name__ == "__main__":
-    df = pd.read_csv("../uploads/siblings.csv")
-    mat = df.values
-    G = nx.read_gexf("../uploads/school_net.gexf")
-
-    load_data(mat, G)
-    #print("Siblings: ", gd.siblings_dict)
-    #print("total students: ", gd.total_students)
-    #print("siblings: ",gd.siblings_number)
-    indiv2 = [0] * gd.siblings_number
-    final_graph(indiv2)
-
-"""
