@@ -123,8 +123,8 @@ def solution_files(individual):
 
         sibling2_class = f"{sib_data2[1]}{sib_data2[2]}{gd.classrooms[classroom2]}"
 
-        graph_students.nodes[sib_name1]["Clase"] = gd.classrooms[classroom1]
-        graph_students.nodes[sib_name2]["Clase"] = gd.classrooms[classroom2]
+        graph_students.nodes[str(sib_name1)]["Clase"] = gd.classrooms[classroom1]
+        graph_students.nodes[str(sib_name2)]["Clase"] = gd.classrooms[classroom2]
         
         if sibling1_class < sibling2_class:
             edge = (sibling1_class, sibling2_class)
@@ -146,14 +146,15 @@ def solution_files(individual):
     
     for edge, students in students_by_edge.items():
         df = df.append({
-            "Nodo 1": edge[0], 
-            "Nodo 2": edge[1], 
+            "Clase 1": edge[0], 
+            "Clase 2": edge[1], 
             "Estudiantes": ", ".join(str(student) for student in sorted(students))
         }, ignore_index=True)
-    df = df.sort_values(by=["Nodo 1", "Nodo 2"])
-    connections_buffer = io.StringIO()
+    df = df.sort_values(by=["Clase 1", "Clase 2"])
+    connections_buffer = BytesIO()
     df.to_csv(connections_buffer, index=False)
     connections_buffer.seek(0)
+    connections_str = base64.b64encode(connections_buffer.read())
 
     data = []
     for nodo, datos in graph_students.nodes(data=True):
@@ -165,11 +166,12 @@ def solution_files(individual):
         }
         data.append(row)
 
-    df = pd.DataFrame(data)
-    attributes_buffer = io.StringIO()
-    data.to_csv(attributes_buffer, index=False)
+    df_attributes = pd.DataFrame(data)
+    attributes_buffer = BytesIO()
+    df_attributes.to_csv(attributes_buffer, index=False)
     attributes_buffer.seek(0)
-    
+    attributes_str = base64.b64encode(attributes_buffer.read())
+
     plt.figure(figsize=(12, 12))
     pos = nx.circular_layout(graph_eval)
     nx.draw(graph_eval, pos, with_labels=True, node_size=1000, node_color='skyblue', font_size=10, font_color='black', edge_color='gray')
@@ -180,8 +182,13 @@ def solution_files(individual):
     plt.savefig(graph_image_buffer, format="PNG")
     plt.close()
     graph_image_buffer.seek(0)
+    graph_image_str = base64.b64encode(graph_image_buffer.read())
     
-    return connections_buffer, attributes_buffer, graph_image_buffer
+    return {
+    "estudiantes.csv": attributes_str,
+    "grafo.png": graph_image_str,
+    "par_clases.csv": connections_str
+    }
 
 """
 if __name__ == "__main__":

@@ -67,7 +67,12 @@
                 <tr>
                     <td class="center-align">{{ solution["Individual"] }}</td>
                     <td class="center-align">{{ solution["Fitness"] }}</td>
-					<td><button class="download-btn" onclick="">Descargar</button></td>
+					<td>
+                        <form action="/download_solution" method="post">
+                            <input type="hidden" name="individual" value="{{ solution["Individual_data"] }}">
+                            <button type="submit" class="download-btn">Descargar</button>
+                        </form>
+                    </td>
                 </tr>
                 {% endfor %}
             </table>

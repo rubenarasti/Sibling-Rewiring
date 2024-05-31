@@ -1,4 +1,8 @@
+import ast
+import base64
+from io import BytesIO
 import os
+import zipfile
 import matplotlib.image as mpimg
 import random
 from flask import Flask, render_template, request, flash, redirect, jsonify, send_file
@@ -76,6 +80,7 @@ def upload_file():
 	UPLOAD_FOLDER = os.path.join(path, 'uploads')
 	global schyear_class
 	global matrix_siblings
+	global G
 	
 	if not os.path.isdir(UPLOAD_FOLDER):
 		os.mkdir(UPLOAD_FOLDER)
@@ -212,10 +217,27 @@ def clean_variables():
 def show_random_advanced():
     return render_template('random_advanced.html')
 
+@app.route('/download_solution', methods=['POST'])
+def download_solution():
+	individual_string = request.form.get('individual')
+	individual = ast.literal_eval(individual_string)
+	files = dm.solution_files(individual)
+    
+	zip_buffer = BytesIO()
+    
+	with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+		for filename, file_content in files.items():
+			file_data = base64.b64decode(file_content)
+			zip_file.writestr(filename, file_data)
+    
+	zip_buffer.seek(0)
+    
+	return send_file(zip_buffer, mimetype='application/zip', as_attachment=True, attachment_filename='solution_files.zip')
+
 @app.route('/showData/genetic', methods=['POST', 'GET'])
 def genetic_algorithm():
 	
-	pareto_front, all_fitness = ga.solve_genetic_algorithm(matrix_siblings, schyear_class)
+	pareto_front, all_fitness = ga.solve_genetic_algorithm(matrix_siblings, G)
 	img_data = dm.plot_pareto_front2D(pareto_front, all_fitness)
 
 	solutions = []
