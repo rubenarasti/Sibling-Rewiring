@@ -217,6 +217,10 @@ def clean_variables():
 def show_random_advanced():
     return render_template('random_advanced.html')
 
+@app.route('/showGeneticSelection')
+def show_ga_selection():
+    return render_template('ga_selection.html')
+
 @app.route('/download_solution', methods=['POST'])
 def download_solution():
 	individual_string = request.form.get('individual')
@@ -234,27 +238,85 @@ def download_solution():
     
 	return send_file(zip_buffer, mimetype='application/zip', as_attachment=True, attachment_filename='solution_files.zip')
 
-@app.route('/showData/genetic', methods=['POST', 'GET'])
+@app.route('/showData/genetic_results', methods=['POST', 'GET'])
 def genetic_algorithm():
+	selected_option = None
+	selected_option = request.form.get('options')
 	
-	pareto_front, all_fitness = ga.solve_genetic_algorithm(matrix_siblings, G)
+	if selected_option == 'default':
+		pareto_front, all_fitness = ga.solve_genetic_algorithm(matrix_siblings, G, 200, 200, 0.6, 0.05, "one_point")
+		img_data = dm.plot_pareto_front2D(pareto_front, all_fitness)
+
+		solutions = []
+
+		for index, (individual, fitness) in enumerate(pareto_front):
+			
+			row = {
+				"Individual": "Solución {}".format(index + 1),
+				"Fitness": fitness,
+				"Individual_data": individual
+			}
+			
+			solutions.append(row)
+
+		return render_template('ga_results.html', 
+							img_data=img_data, 
+							solutions=solutions)
+	elif selected_option == 'advanced':
+		return render_template('ga_advanced.html')
+	else:
+		flash('Debe seleccionar una opción')
+		return render_template('ga_selection.html')
+	
+@app.route('/advanced_ga_options', methods=['POST', 'GET'])
+def advanced_ga_options():
+	
+	_generations = request.form['generations']
+	_population_size = request.form['population_size']
+	_crossover_probability = request.form['crossover_probability']
+	_mutation_probability = request.form['mutation_probability']
+	_crossover_operator = request.form['crossover_operator']
+	
+	try:
+		generations = int(_generations)
+		population_size = int(_population_size)
+		crossover_probability = float(_crossover_probability)
+		mutation_probability = float(_mutation_probability)
+	except ValueError:
+		flash('Por favor, introduce valores válidos.')
+		return render_template('advanced_ga_options.html')
+	
+	if generations < 0 or population_size < 0:
+		flash('El número de generaciones y el tamaño de la población deben ser enteros positivos')
+		return render_template('advanced.html')
+	
+	if not((0 <= crossover_probability <= 1) and (0 <= mutation_probability <= 1)):
+		flash('Las probabilidade deben estar entre 0 y 1.')
+		return render_template('advanced.html')
+
+	pareto_front, all_fitness = ga.solve_genetic_algorithm(matrix_siblings, G, 
+														generations, population_size, 
+														crossover_probability, mutation_probability, 
+														_crossover_operator)
 	img_data = dm.plot_pareto_front2D(pareto_front, all_fitness)
 
 	solutions = []
 
 	for index, (individual, fitness) in enumerate(pareto_front):
-		
+			
 		row = {
 			"Individual": "Solución {}".format(index + 1),
 			"Fitness": fitness,
 			"Individual_data": individual
 		}
-		
+			
 		solutions.append(row)
 
-	return render_template('g_results.html', 
-						img_data1=img_data, 
+	return render_template('ga_results.html', 
+						img_data=img_data, 
 						solutions=solutions)
+	
+
 
 @app.route('/showSelection/randomAdvanced', methods=['POST', 'GET'])
 def pick_option():

@@ -1,0 +1,104 @@
+{% extends 'bootstrap/base.html' %}
+{% block styles %}
+	{{super()}}
+{% endblock %}
+
+{% block navbar %}
+	<nav class="navbar navbar-inverse ">
+	 <div class="navbar-header">
+			<a class="navbar-brand" href="#">
+				<img src="https://raw.githubusercontent.com/Mariaojruiz/Sibling-Rewiring/main/Environment/sire/templates/App_images/Logo.PNG" alt="Sire" style="width60px;height:30px;">
+			</a>
+		</div>
+	  <div class="container-fluid">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+		  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		  </button>
+		  <a class="navbar-brand" href="{{ url_for('show_user_home')}}">Sire</a>
+		</div>
+
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		  <ul class="nav navbar-nav navbar-right">
+			<li><a href="{{  url_for('show_introduce_data') }}">Red Aleatoria</a></li>
+			<li><a href="{{ url_for('upload_form')}}">Subida Archivo</a></li>
+			<li><a href="{{ url_for('show_download')}}">Descarga</a></li>
+			<li><a href="{{ url_for('show_exaples')}}">Ejemplos</a></li>
+			<li class="dropdown">
+			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Menú <span class="caret"></span></a>
+			  <ul class="dropdown-menu">
+				<li><a href="https://github.com/Mariaojruiz/Sibling-Rewiring" target="_blank">Repositorio</a></li>
+				<li><a href="{{ url_for('aboutapp') }}">Acerca De Sire</a></li>
+				<li><a href="https://github.com/Mariaojruiz/Sibling-Rewiring/wiki" target="_blank">Wiki - Manual Usuario</a></li>
+				<li role="separator" class="divider"></li>
+				<li><a href="{{ url_for('logout')}}">Desconectar</a></li>
+		  </ul>
+		</div>
+	  </div>
+	</nav>
+{% endblock %}
+
+{% block content %} 
+<head>
+<meta charset="utf-8">
+	<title>Introduce datos para crear la red aleatoria</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/loginstyle.css') }}">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form">
+            <h1>Configuración del Algoritmo Genético</h1>
+            
+            <p>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flashes">
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% endwith %}
+            </p>
+
+            <form method="POST" action="{{ url_for('advanced_ga_options') }}">
+                <h4>Número de Generaciones</h4>
+                <p>El número de iteraciones que el algoritmo realizará. Se recomienda un valor mayor para asegurar una convergencia adecuada.</p>
+                <input type="number" name="generations" placeholder="Número de generaciones" id="generations" required>
+                <br><br>
+
+                <h4>Tamaño de la Población</h4>
+                <p>El número de individuos en cada generación. Un tamaño mayor puede ayudar a explorar más el espacio de soluciones, pero aumentará el tiempo de cómputo.</p>
+                <input type="number" name="population_size" placeholder="Tamaño de la población" id="population_size" required>
+                <br><br>
+
+                <h4>Probabilidad de Cruce</h4>
+                <p>La probabilidad con la que dos individuos se combinarán para producir descendencia. Se recomiendan valores entre 0.5 y 1.</p>
+                <input type="number" name="crossover_probability" placeholder="Probabilidad de cruce (0-1)" id="crossover_probability" step="0.01" required>
+                <br><br>
+
+                <h4>Probabilidad de Mutación</h4>
+                <p>La probabilidad con la que un individuo sufrirá una mutación en sus genes. Se recomiendan valores entre 0.05 y 0.005.</p>
+                <input type="number" name="mutation_probability" placeholder="Probabilidad de mutación (0-1)" id="mutation_probability" step="0.01" required>
+                <br><br>
+
+                <h4>Operador de Cruce</h4>
+                <p>Selecciona el operador de cruce que se usará para combinar individuos. Cada operador tiene diferentes características y efectos sobre la descendencia.</p>
+                <select name="crossover_operator">
+                    <option value="one_point">Cruce de Punto Único</option>
+                    <option value="two_point">Cruce de Dos Puntos</option>
+                    <option value="uniform">Cruce Uniforme</option>
+                </select>
+                <br><br>
+
+                <p><button type="submit" class="btn btn-primary btn-lg" style='width:300px; height:50px; background-color:black' align='center'>CONTINUAR</button></p>
+            </form>
+        </div>
+    </div>
+</body>
+{% endblock %}

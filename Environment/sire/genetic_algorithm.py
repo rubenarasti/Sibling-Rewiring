@@ -13,7 +13,7 @@ import individual_evaluation as eval
 
 toolbox = base.Toolbox()
 
-def configure_solution():
+def configure_solution(crossover_operator):
     # Maximize the first objetive and minimize the 2 other objetives
     creator.create("FitnessMulti", base.Fitness, weights=(1.0, -1.0, -1.0))
     creator.create("Individual", list, fitness=creator.FitnessMulti)
@@ -27,50 +27,43 @@ def configure_solution():
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     
     toolbox.register("evaluate", eval.fitness)
-    toolbox.register("mate", tools.cxOnePoint)
-    toolbox.register("mutate", tools.mutFlipBit, indpb=0.9)
+
+    if crossover_operator == 'one_point':
+        toolbox.register("mate", tools.cxOnePoint)
+    elif crossover_operator == 'two_point':
+        toolbox.register("mate", tools.cxTwoPoint)
+    elif crossover_operator == 'uniform':
+        toolbox.register("mate", tools.cxUniform, indpb=0.5)
+
+    toolbox.register("mutate", tools.mutUniformInt, low=0, up=len(gd.classrooms)-1, indpb=0.2)
     toolbox.register("select", tools.selNSGA2)   
     
     return toolbox
  
-def configure_param():
-    
-    params = {}
-    
-    params['NGEN'] = 200
-    params['PSIZE'] = 200
-    params['CXPB'] = 0.6
-    params['MUTPB'] = 0.05
-    
-    return params
 
+def solve_genetic_algorithm(siblings_matrix, school_graph, ngen, psize, cxpb, mutpb, cx_op):
 
-def solve_genetic_algorithm(df,G):
-    
-    dm.load_data(df, G)
-
-    #start_time = time.time()
+    dm.load_data(siblings_matrix, school_graph)
     
     toolbox = base.Toolbox()
 
-    toolbox = configure_solution()
-    params = configure_param()
+    toolbox = configure_solution(cx_op)
 
-    population = toolbox.population(n=params['PSIZE'])
+    population = toolbox.population(n=psize)
     
-    all_fitness = []
+    unique_fitnesses = set()
     
     fits = toolbox.map(toolbox.evaluate, population)
     for fit, ind in zip(fits, population):
         ind.fitness.values = fit
-        all_fitness.append(fit)
+        unique_fitnesses.add(fit)
 
-    for gen in range(params['NGEN']):
+    for gen in range(ngen):
         offspring = algorithms.varOr(population, 
                                      toolbox, 
-                                     lambda_=params['PSIZE'], 
-                                     cxpb=params['CXPB'], 
-                                     mutpb=params['MUTPB'])
+                                     lambda_=psize, 
+                                     cxpb=cxpb, 
+                                     mutpb=mutpb)
         
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
         fitnesses = toolbox.map(toolbox.evaluate, invalid_ind)
@@ -78,13 +71,9 @@ def solve_genetic_algorithm(df,G):
             ind.fitness.values = fit
 
         for ind in offspring:
-            all_fitness.append(ind.fitness.values)
-        population = toolbox.select(offspring + population, k=params['PSIZE'])
+            unique_fitnesses.add(ind.fitness.values)
+        population = toolbox.select(offspring + population, k=psize)
 
-
-    #end_time = time.time()
-
-    #elapsed_time = end_time - start_time
 
     non_dominated = tools.sortNondominated(population, len(population), first_front_only=True)[0]
 
@@ -95,8 +84,6 @@ def solve_genetic_algorithm(df,G):
         if (ind,fitness) not in pareto_front:
              pareto_front.append((ind,fitness))
 
-    #print("Total time: ", elapsed_time, "s")
-
-    return pareto_front, all_fitness
+    return pareto_front, unique_fitnesses
 
 
