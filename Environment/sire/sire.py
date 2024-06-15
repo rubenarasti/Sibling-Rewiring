@@ -179,6 +179,7 @@ def show_introduce_data():
 def addNetwork():
 	global schyear_class
 	global matrix_siblings
+	global G
 	
 	clean_variables()
 	
@@ -200,6 +201,10 @@ def addNetwork():
 	
 	randomNet.create_siblings_matrix()
 	matrix_siblings = randomNet.__siblingsMatrix
+
+	mapping = {node: str(node) for node in randomNet.__initial_network.nodes()}
+	randomNet.__initial_network = nx.relabel_nodes(randomNet.__initial_network, mapping)
+	G = randomNet.__initial_network
 	
 	return render_template('choose_algorithm.html')
 	

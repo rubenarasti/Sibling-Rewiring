@@ -122,7 +122,7 @@ def solution_files(individual):
         classroom2 = individual[sib_data2[0]]
 
         sibling2_class = f"{sib_data2[1]}{sib_data2[2]}{gd.classrooms[classroom2]}"
-
+        
         graph_students.nodes[str(sib_name1)]["Clase"] = gd.classrooms[classroom1]
         graph_students.nodes[str(sib_name2)]["Clase"] = gd.classrooms[classroom2]
         

@@ -82,15 +82,17 @@ def create_initial_network(totalStudents, numberSiblings):
                     __initial_network.add_edge(nodex,nodey)
                       
     copy = list(__initial_network.nodes())
-    
+
     for i in range(0,numberSiblings):
         node1 = random.choice(copy)
         node2 = random.choice(copy)
+        while node1 == node2:
+            node2 = random.choice(copy)
         edge = (node1,node2)
         if edge not in __initial_network.edges():
             __initial_network.add_edge(node1,node2)
             __siblings.append(edge)
-    
+
     return __initial_network
     
 def create_siblings_matrix():
@@ -108,6 +110,7 @@ def create_siblings_matrix():
     etapa_siblings = []
     curso_siblings = []
     clase_siblings = []
+    hermano_de = []
     
     nombres = nx.get_node_attributes(__initial_network,'Nombre')
     etapas = nx.get_node_attributes(__initial_network,'Etapa')
@@ -115,25 +118,35 @@ def create_siblings_matrix():
     clases = nx.get_node_attributes(__initial_network,'Clase')
     
     for edge in __siblings:
-        for ed in edge:
-            if ed not in siblings:
-                siblings.append(ed)
-                nombre_siblings.append(nombres[ed])
-                etapa_siblings.append(etapas[ed])
-                curso_siblings.append(cursos[ed])
-                clase_siblings.append(clases[ed])
-                
-    for i in range(0,len(nombre_siblings)):
-        __siblingsMatrix.append([nombre_siblings[i],etapa_siblings[i],curso_siblings[i],clase_siblings[i]])
-    #print('Es la matriz de hermanos')   
-    #print(matriz_hermanos)
+        node1, node2 = edge
+        if node1 not in siblings:
+            siblings.append(node1)
+            nombre_siblings.append(nombres[node1])
+            etapa_siblings.append(etapas[node1])
+            curso_siblings.append(cursos[node1])
+            clase_siblings.append(clases[node1])
+            hermano_de.append(nombres[node2])
+            
+        if node2 not in siblings:
+            siblings.append(node2)
+            nombre_siblings.append(nombres[node2])
+            etapa_siblings.append(etapas[node2])
+            curso_siblings.append(cursos[node2])
+            clase_siblings.append(clases[node2])
+            hermano_de.append(nombres[node1])
+
+    for i in range(len(nombre_siblings)):
+        __siblingsMatrix.append([nombre_siblings[i], etapa_siblings[i], curso_siblings[i], clase_siblings[i], hermano_de[i]])
     
-    data = {'nombre': nombre_siblings,
+    data = {
+        'nombre': nombre_siblings,
         'etapa': etapa_siblings,
-        'curso' : curso_siblings,
-        'clase': clase_siblings}
+        'curso': curso_siblings,
+        'clase': clase_siblings,
+        'hermano de': hermano_de
+    }
    
-    df_siblings = pd.DataFrame(data, columns = ['nombre','etapa', 'curso', 'clase'])
+    df_siblings = pd.DataFrame(data, columns=['nombre', 'etapa', 'curso', 'clase', 'hermano de'])
     
     return df_siblings
 
@@ -271,10 +284,3 @@ def generate_similar_net():
 	print('llego al final')
 	return net
 
-
-#n = RandomNet()
-#n.create_initial_network()
-#dataframe = n.create_siblings_matrix()
-#print(dataframe, n.siblings, n.siblingsMatrix)
-#n.create_schoolyear_class_network()
-#print(n.schoolyear_class.edges)
