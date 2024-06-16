@@ -3,7 +3,7 @@ import random
 import pandas as pd
 
 
-__stage = (['infantil', 'primaria', 'secundaria'])
+__stage = (['infantil', 'primaria'])
 __class = (['A', 'B', 'C'])
 
 __initial_network = nx.Graph()
@@ -17,14 +17,14 @@ def create_initial_network(totalStudents, numberSiblings):
     Creates the initial network
     
     """
-    if totalStudents < (3*len(__class)+6*len(__class)+4*len(__class)):
-        totalStudents = (3*len(__class)+6*len(__class)+4*len(__class))
+    if totalStudents < (3*len(__class)+6*len(__class)):
+        totalStudents = (3*len(__class)+6*len(__class))
     dicNombre = {}
     dicEtapa = {}
     dicCurso = {}
     dicClase = {}
     alumnos_clase = 0
-    var = 3*len(__class)+6*len(__class)+4*len(__class)
+    var = 3*len(__class)+6*len(__class)
     if totalStudents//var == totalStudents/var:
         alumnos_clase = totalStudents//var
     else:
@@ -52,17 +52,7 @@ def create_initial_network(totalStudents, numberSiblings):
                         dicCurso[x] = curso
                         dicClase[x] = letra 
                         dicNombre[x] = x
-                        x += 1
-        elif et==__stage[2]:
-            for curso in range(1,5):
-                for alumno3 in range(alumnos_clase):
-                    for letra in __class:
-                        dicEtapa[x] = et
-                        dicCurso[x] = curso
-                        dicClase[x] = letra 
-                        dicNombre[x] = x
-                        x += 1
-            
+                        x += 1        
             
     nx.set_node_attributes(__initial_network, dicNombre, 'Nombre')
     nx.set_node_attributes(__initial_network, dicEtapa, 'Etapa')
