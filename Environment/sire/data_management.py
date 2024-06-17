@@ -1,6 +1,7 @@
 import base64
 from io import BytesIO
 import io
+import math
 import os
 import matplotlib.pyplot as plt
 
@@ -18,16 +19,14 @@ def load_data(siblings, graph):
     for index, row in enumerate(siblings):
         gd.siblings_dict[row[0]] = [index] + [str(item) for item in row[1:4]] + [row[4]]
 
+    students_count = {}
     dicNombre = {}
     dicEtapa = {}
     dicCurso = {}
     dicClase = {}
-    dicEstudiantes = {}
     etapas = nx.get_node_attributes(graph,'Etapa')
     clases = nx.get_node_attributes(graph,'Clase')
-
     gd.classrooms = sorted(set(clases.values()))
-
     cursos = nx.get_node_attributes(graph,'Curso')
 
     for node in graph.nodes():
@@ -43,13 +42,22 @@ def load_data(siblings, graph):
             dicEtapa[node_name] = etapas[node]
             dicCurso[node_name] = cursos[node]
             dicClase[node_name] = clases[node]
-            dicEstudiantes[node_name] = []    
+
+        course_key = (etapas[node], cursos[node])
+        if course_key not in students_count:
+            students_count[course_key] = 0
+        students_count[course_key] += 1
 			
     nx.set_node_attributes(gd.graph_eval_ini, dicNombre, 'Nombre')
     nx.set_node_attributes(gd.graph_eval_ini, dicEtapa, 'Etapa')
     nx.set_node_attributes(gd.graph_eval_ini, dicCurso, 'Curso')
     nx.set_node_attributes(gd.graph_eval_ini, dicClase, 'Clase')
-    nx.set_node_attributes(gd.graph_eval_ini, dicEstudiantes, 'Estudiantes')
+
+    for num_students in students_count.values():
+        course_capacity = math.ceil(num_students / len(gd.classrooms))
+        if course_capacity > gd.capacity:
+            gd.capacity = course_capacity
+            
 
 def plot_pareto_front2D(pareto_front, all_fitness):
     objective1 = [fit[0] for fit in all_fitness]
@@ -122,7 +130,7 @@ def solution_files(individual):
         classroom2 = individual[sib_data2[0]]
 
         sibling2_class = f"{sib_data2[1]}{sib_data2[2]}{gd.classrooms[classroom2]}"
-        
+
         graph_students.nodes[str(sib_name1)]["Clase"] = gd.classrooms[classroom1]
         graph_students.nodes[str(sib_name2)]["Clase"] = gd.classrooms[classroom2]
         
@@ -172,12 +180,25 @@ def solution_files(individual):
     attributes_buffer.seek(0)
     attributes_str = base64.b64encode(attributes_buffer.read())
 
+
+    components = list(nx.connected_components(graph_eval))
+
+    color_map = {}
+    color_leyend = {}
+    for i, component in enumerate(components):
+        color = plt.cm.tab20(i / len(components))
+        for node in component:
+            color_map[node] = color
+
+    node_colors = [color_map[node] for node in graph_eval.nodes()]
+
     plt.figure(figsize=(12, 12))
     pos = nx.circular_layout(graph_eval)
-    nx.draw(graph_eval, pos, with_labels=True, node_size=1000, node_color='skyblue', font_size=10, font_color='black', edge_color='gray')
+    nx.draw(graph_eval, pos, with_labels=True, node_size=1000, node_color=node_colors, 
+            font_size=10, font_color='black', edge_color='gray')
     edge_labels = nx.get_edge_attributes(graph_eval, 'weight')
     nx.draw_networkx_edge_labels(graph_eval, pos, edge_labels=edge_labels)
-    
+
     graph_image_buffer = BytesIO()
     plt.savefig(graph_image_buffer, format="PNG")
     plt.close()
