@@ -57,7 +57,22 @@ def load_data(siblings, graph):
         course_capacity = math.ceil(num_students / len(gd.classrooms))
         if course_capacity > gd.capacity:
             gd.capacity = course_capacity
-            
+
+def convert_to_base64(data, data_type, format=None):
+
+    buffer = BytesIO()
+
+    if data_type == 'csv':
+        data.to_csv(buffer, index=False)
+    elif data_type == 'image':
+        data.savefig(buffer, format=format)
+
+    buffer.seek(0)
+    data_str = base64.b64encode(buffer.read()).decode('utf-8')    
+    if data_type == 'image':
+        data_str = f'data:image/{format};base64,' + data_str
+
+    return data_str            
 
 def plot_pareto_front2D(pareto_front, all_fitness):
     objective1 = [fit[0] for fit in all_fitness]
@@ -92,11 +107,7 @@ def plot_pareto_front2D(pareto_front, all_fitness):
 
     plt.tight_layout()
 
-    img_buffer = BytesIO()
-    fig.savefig(img_buffer, format='png')
-    img_buffer.seek(0)
-    img_str = base64.b64encode(img_buffer.read()).decode('utf-8')
-    img_data = 'data:image/png;base64,' + img_str
+    img_data = convert_to_base64(fig, data_type='image', format='png')
 
     plt.close(fig)
 
@@ -149,22 +160,19 @@ def solution_files(individual):
             graph_eval.add_edge(sibling1_class, sibling2_class)
             graph_eval.edges[sibling1_class, sibling2_class]["weight"] = 1
 
-    df = pd.DataFrame(columns=["Clase 1", "Clase 2", "Estudiantes"])
 
-    
+    df_connections = pd.DataFrame(columns=["Clase 1", "Clase 2", "Estudiantes"])
     for edge, students in students_by_edge.items():
-        df = df.append({
+        df_connections = df_connections.append({
             "Clase 1": edge[0], 
             "Clase 2": edge[1], 
             "Estudiantes": ", ".join(str(student) for student in sorted(students))
         }, ignore_index=True)
-    df = df.sort_values(by=["Clase 1", "Clase 2"])
-    connections_buffer = BytesIO()
-    df.to_csv(connections_buffer, index=False)
-    connections_buffer.seek(0)
-    connections_str = base64.b64encode(connections_buffer.read())
+    df_connections = df_connections.sort_values(by=["Clase 1", "Clase 2"])
 
-    data = []
+    connections_str = convert_to_base64(df_connections, data_type='csv')
+
+    students = []
     for nodo, datos in graph_students.nodes(data=True):
         row = {
             "Nombre": datos.get("Nombre"),
@@ -172,14 +180,10 @@ def solution_files(individual):
             "Curso": datos.get("Curso"),
             "Clase": datos.get("Clase")
         }
-        data.append(row)
+        students.append(row)
 
-    df_attributes = pd.DataFrame(data)
-    attributes_buffer = BytesIO()
-    df_attributes.to_csv(attributes_buffer, index=False)
-    attributes_buffer.seek(0)
-    attributes_str = base64.b64encode(attributes_buffer.read())
-
+    df_students = pd.DataFrame(students)
+    students_str = convert_to_base64(df_students, data_type='csv')
 
     components = list(nx.connected_components(graph_eval))
 
@@ -206,7 +210,7 @@ def solution_files(individual):
     graph_image_str = base64.b64encode(graph_image_buffer.read())
     
     return {
-    "estudiantes.csv": attributes_str,
+    "estudiantes.csv": students_str,
     "grafo.png": graph_image_str,
     "par_clases.csv": connections_str
     }
