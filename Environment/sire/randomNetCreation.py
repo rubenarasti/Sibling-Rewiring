@@ -73,12 +73,18 @@ def create_initial_network(totalStudents, numberSiblings):
                       
     copy = list(__initial_network.nodes())
 
+    used_pairs = set()
+
     for i in range(0,numberSiblings):
         node1 = random.choice(copy)
         node2 = random.choice(copy)
-        while node1 == node2:
+        while node1 == node2 or (node1, node2) in used_pairs or (node2, node1) in used_pairs:
+            node1 = random.choice(copy)
             node2 = random.choice(copy)
+        
         edge = (node1,node2)
+        used_pairs.add(edge)
+        
         if edge not in __initial_network.edges():
             __initial_network.add_edge(node1,node2)
             __siblings.append(edge)
