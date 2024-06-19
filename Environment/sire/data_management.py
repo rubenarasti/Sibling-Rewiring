@@ -1,7 +1,9 @@
 import base64
+import colorsys
 from io import BytesIO
 import io
 import math
+import random
 import os
 import matplotlib.pyplot as plt
 
@@ -9,6 +11,7 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 import global_def as gd
+import individual_evaluation as ie
 
 def load_data(siblings, graph):
 
@@ -16,14 +19,16 @@ def load_data(siblings, graph):
     gd.total_students = len(graph.nodes())
     gd.siblings_number = len(siblings)
 
+    # dict to access siblings fastly
     for index, row in enumerate(siblings):
-        gd.siblings_dict[row[0]] = [index] + [str(item) for item in row[1:4]] + [row[4]]
+        gd.siblings_dict[str(row[0])] = [index] + [str(item) for item in row[1:5]]
 
     students_count = {}
     dicNombre = {}
     dicEtapa = {}
     dicCurso = {}
     dicClase = {}
+    dicEstudiantes = {}
     etapas = nx.get_node_attributes(graph,'Etapa')
     clases = nx.get_node_attributes(graph,'Clase')
     gd.classrooms = sorted(set(clases.values()))
@@ -42,6 +47,7 @@ def load_data(siblings, graph):
             dicEtapa[node_name] = etapas[node]
             dicCurso[node_name] = cursos[node]
             dicClase[node_name] = clases[node]
+            dicEstudiantes[node_name] = []  
 
         course_key = (etapas[node], cursos[node])
         if course_key not in students_count:
@@ -52,6 +58,7 @@ def load_data(siblings, graph):
     nx.set_node_attributes(gd.graph_eval_ini, dicEtapa, 'Etapa')
     nx.set_node_attributes(gd.graph_eval_ini, dicCurso, 'Curso')
     nx.set_node_attributes(gd.graph_eval_ini, dicClase, 'Clase')
+    nx.set_node_attributes(gd.graph_eval_ini, dicEstudiantes, 'Estudiantes')	
 
     for num_students in students_count.values():
         course_capacity = math.ceil(num_students / len(gd.classrooms))
@@ -115,50 +122,52 @@ def plot_pareto_front2D(pareto_front, all_fitness):
 
 def solution_files(individual):
     
-    graph_eval = gd.graph_eval_ini.copy()
-    seen = set() # Set to avoid repeating those already seen
-    graph_students = gd.initial_network.copy()
+    # graph_eval = gd.graph_eval_ini.copy()
+    # seen = set() # Set to avoid repeating those already seen
+    # graph_students = gd.initial_network.copy()
 
-    students_by_edge = {}
+    # students_by_edge = {}
 
-    for (classroom1, (sib_name1, sib_data1)) in zip(individual, gd.siblings_dict.items()):
+    graph_eval, students_by_edge, students_list, modified = ie.create_solution(individual)
 
-        sib_name2 = sib_data1[4]
-        # Order the pair 
-        if sib_name2 > sib_name1:
-            siblings_pair = (sib_name1, sib_name2)
-        else:
-            siblings_pair = (sib_name2, sib_name1)
+    # for (classroom1, (sib_name1, sib_data1)) in zip(individual, gd.siblings_dict.items()):
 
-        if siblings_pair in seen:
-            continue
+    #     sib_name2 = sib_data1[4]
+    #     # Order the pair 
+    #     if sib_name2 > sib_name1:
+    #         siblings_pair = (sib_name1, sib_name2)
+    #     else:
+    #         siblings_pair = (sib_name2, sib_name1)
 
-        seen.add(siblings_pair)
+    #     if siblings_pair in seen:
+    #         continue
 
-        sibling1_class = f"{sib_data1[1]}{sib_data1[2]}{gd.classrooms[classroom1]}"
+    #     seen.add(siblings_pair)
+
+    #     sibling1_class = f"{sib_data1[1]}{sib_data1[2]}{gd.classrooms[classroom1]}"
         
-        sib_data2 = gd.siblings_dict[sib_name2]
-        classroom2 = individual[sib_data2[0]]
+    #     sib_data2 = gd.siblings_dict[sib_name2]
+    #     classroom2 = individual[sib_data2[0]]
 
-        sibling2_class = f"{sib_data2[1]}{sib_data2[2]}{gd.classrooms[classroom2]}"
+    #     sibling2_class = f"{sib_data2[1]}{sib_data2[2]}{gd.classrooms[classroom2]}"
 
-        graph_students.nodes[str(sib_name1)]["Clase"] = gd.classrooms[classroom1]
-        graph_students.nodes[str(sib_name2)]["Clase"] = gd.classrooms[classroom2]
+    #     graph_students.nodes[sib_name1]["Clase"] = gd.classrooms[classroom1]
+    #     graph_students.nodes[sib_name2]["Clase"] = gd.classrooms[classroom2]
         
-        if sibling1_class < sibling2_class:
-            edge = (sibling1_class, sibling2_class)
-        else:
-            edge = (sibling2_class, sibling1_class)
-        if edge not in students_by_edge:
-            students_by_edge[edge] = set()
+    #     if sibling1_class < sibling2_class:
+    #         edge = (sibling1_class, sibling2_class)
+    #     else:
+    #         edge = (sibling2_class, sibling1_class)
+    #     if edge not in students_by_edge:
+    #         students_by_edge[edge] = set()
 
-        students_by_edge[edge].update([sib_name1, sib_name2])
+    #     students_by_edge[edge].update([sib_name1, sib_name2])
 
-        if graph_eval.has_edge(sibling1_class, sibling2_class):
-            graph_eval.edges[sibling1_class, sibling2_class]["weight"] += 1
-        else:
-            graph_eval.add_edge(sibling1_class, sibling2_class)
-            graph_eval.edges[sibling1_class, sibling2_class]["weight"] = 1
+    #     if graph_eval.has_edge(sibling1_class, sibling2_class):
+    #         graph_eval.edges[sibling1_class, sibling2_class]["weight"] += 1
+    #     else:
+    #         graph_eval.add_edge(sibling1_class, sibling2_class)
+    #         graph_eval.edges[sibling1_class, sibling2_class]["weight"] = 1
 
 
     df_connections = pd.DataFrame(columns=["Clase 1", "Clase 2", "Estudiantes"])
@@ -166,31 +175,32 @@ def solution_files(individual):
         df_connections = df_connections.append({
             "Clase 1": edge[0], 
             "Clase 2": edge[1], 
-            "Estudiantes": ", ".join(str(student) for student in sorted(students))
+            "Estudiantes": ", ".join(student for student in sorted(students))
         }, ignore_index=True)
     df_connections = df_connections.sort_values(by=["Clase 1", "Clase 2"])
 
     connections_str = convert_to_base64(df_connections, data_type='csv')
 
-    students = []
-    for nodo, datos in graph_students.nodes(data=True):
-        row = {
-            "Nombre": datos.get("Nombre"),
-            "Etapa": datos.get("Etapa"),
-            "Curso": datos.get("Curso"),
-            "Clase": datos.get("Clase")
-        }
-        students.append(row)
+    # students = []
+    # for nodo, datos in graph_students.nodes(data=True):
+    #     row = {
+    #         "Nombre": datos.get("Nombre"),
+    #         "Etapa": datos.get("Etapa"),
+    #         "Curso": datos.get("Curso"),
+    #         "Clase": datos.get("Clase")
+    #     }
+        # students.append(row)
 
-    df_students = pd.DataFrame(students)
+    df_students = pd.DataFrame(students_list)
     students_str = convert_to_base64(df_students, data_type='csv')
 
     components = list(nx.connected_components(graph_eval))
+    unique_colors = generate_unique_colors(len(components))
 
     color_map = {}
-    color_leyend = {}
+
     for i, component in enumerate(components):
-        color = plt.cm.tab20(i / len(components))
+        color = unique_colors[i]
         for node in component:
             color_map[node] = color
 
@@ -215,6 +225,10 @@ def solution_files(individual):
     "par_clases.csv": connections_str
     }
 
+def generate_unique_colors(num_colors):
+    hues = [i / num_colors for i in range(num_colors)]
+    random.shuffle(hues)  
+    return [colorsys.hsv_to_rgb(hue, 0.7, 1.0) for hue in hues]
 """
 if __name__ == "__main__":
 

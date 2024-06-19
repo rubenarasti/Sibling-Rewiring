@@ -1,6 +1,7 @@
 import networkx as nx
 
-classrooms = []
+classrooms = [] # Groups
+capacity = 0
 
 initial_network = nx.Graph()
 siblings_dict = {}

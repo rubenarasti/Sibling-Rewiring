@@ -205,7 +205,7 @@ def addNetwork():
 	mapping = {node: str(node) for node in randomNet.__initial_network.nodes()}
 	randomNet.__initial_network = nx.relabel_nodes(randomNet.__initial_network, mapping)
 	G = randomNet.__initial_network
-	
+
 	return render_template('choose_algorithm.html')
 	
 def clean_variables():
@@ -249,7 +249,8 @@ def genetic_algorithm():
 	selected_option = request.form.get('options')
 	
 	if selected_option == 'default':
-		pareto_front, all_fitness = ga.solve_genetic_algorithm(matrix_siblings, G, 200, 200, 0.6, 0.05, "one_point")
+		pareto_front, all_fitness = ga.solve_genetic_algorithm(matrix_siblings, G, 
+														 200, 200, 0.6, 0.05, "one_point")
 		img_data = dm.plot_pareto_front2D(pareto_front, all_fitness)
 
 		solutions = []
