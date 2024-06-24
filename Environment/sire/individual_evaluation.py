@@ -31,7 +31,7 @@ def fitness (individual):
 def fenotype (individual):
 
     graph_eval = copy.deepcopy(gd.graph_eval_ini)
-    seen = set() # Set to avoid repeating those already seen
+    seen = set() # Set to avoid repeating those pairs already seen
     dicEstudiantes = nx.get_node_attributes(graph_eval,'Estudiantes')
 
     for (sib_name1, sib_data1) in gd.siblings_dict.items():
@@ -103,7 +103,7 @@ def convert_to_feasible(individual):
 def create_solution(individual):
 
     individual, graph_eval, modified = convert_to_feasible(individual)
-    seen = set() # Set to avoid repeating those already seen
+    seen = set() # Set to avoid repeating those pairs already seen
     graph_students = gd.initial_network.copy()
     students_by_edge = {}
     dicEstudiantes = nx.get_node_attributes(graph_eval,'Estudiantes')

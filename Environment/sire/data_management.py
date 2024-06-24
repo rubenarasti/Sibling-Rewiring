@@ -85,21 +85,20 @@ def load_data(siblings, graph):
         if course_capacity > gd.capacity:
             gd.capacity = course_capacity
 
-def convert_to_base64(data, data_type, format=None):
-
+def convert_to_base64(data, data_type):
     buffer = BytesIO()
 
     if data_type == 'csv':
         data.to_csv(buffer, index=False)
     elif data_type == 'image':
-        data.savefig(buffer, format=format)
-
+        data.savefig(buffer, format='png')
+    elif data_type == 'graph':
+        nx.write_gexf(data, buffer, prettyprint=True)
+    
     buffer.seek(0)
-    data_str = base64.b64encode(buffer.read()).decode('utf-8')    
-    if data_type == 'image':
-        data_str = f'data:image/{format};base64,' + data_str
-
-    return data_str            
+    data_str = base64.b64encode(buffer.read()).decode('utf-8')
+    
+    return data_str  
 
 def plot_pareto_front2D(pareto_front, all_fitness):
     objective1 = [fit[0] for fit in all_fitness]
@@ -134,7 +133,9 @@ def plot_pareto_front2D(pareto_front, all_fitness):
 
     plt.tight_layout()
 
-    img_data = convert_to_base64(fig, data_type='image', format='png')
+    data_str = convert_to_base64(fig, data_type='image')
+
+    img_data = 'data:image/png;base64,' + data_str
 
     plt.close(fig)
 
@@ -144,6 +145,13 @@ def solution_files(individual):
     
     graph_eval, students_by_edge, students_list, modified = ie.create_solution(individual)
 
+    for node in graph_eval.nodes:
+        graph_eval.nodes[node]['Estudiantes'] = ', '.join(graph_eval.nodes[node]['Estudiantes'])
+
+    graph_eval_str = convert_to_base64(graph_eval, 'graph')
+    
+    #prettyprint=True
+    
     df_connections = pd.DataFrame(columns=["Clase 1", "Clase 2", "Estudiantes"])
     for edge, students in students_by_edge.items():
         df_connections = df_connections.append({
@@ -179,13 +187,12 @@ def solution_files(individual):
     edge_labels = nx.get_edge_attributes(graph_eval, 'weight')
     nx.draw_networkx_edge_labels(graph_eval, pos, edge_labels=edge_labels)
 
-    graph_image_buffer = BytesIO()
-    plt.savefig(graph_image_buffer, format="PNG")
+    graph_image_str = convert_to_base64(plt, data_type='image')
+    
     plt.close()
-    graph_image_buffer.seek(0)
-    graph_image_str = base64.b64encode(graph_image_buffer.read())
     
     return {
+    "Grafo_clases.gexf": graph_eval_str,
     "estudiantes.csv": students_str,
     "grafo.png": graph_image_str,
     "par_clases.csv": connections_str
