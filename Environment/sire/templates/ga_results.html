@@ -70,6 +70,9 @@
 					<td>
                         <form action="/download_solution" method="post">
                             <input type="hidden" name="individual" value="{{ solution["Individual_data"] }}">
+							<input type="hidden" name="id" value="{{ solution["Id"] }}">
+							<input type="hidden" name="fitness" value="{{ solution["Fitness"] }}">
+							<input type="hidden" name="modified" value="{{ solution["Modified"] }}">
                             <button type="submit" class="download-btn">Descargar</button>
                         </form>
                     </td>

@@ -93,7 +93,7 @@ def convert_to_base64(data, data_type):
     elif data_type == 'image':
         data.savefig(buffer, format='png')
     elif data_type == 'graph':
-        nx.write_gexf(data, buffer, prettyprint=True)
+        nx.write_gexf(data, buffer)
     
     buffer.seek(0)
     data_str = base64.b64encode(buffer.read()).decode('utf-8')
@@ -150,8 +150,6 @@ def solution_files(individual):
 
     graph_eval_str = convert_to_base64(graph_eval, 'graph')
     
-    #prettyprint=True
-    
     df_connections = pd.DataFrame(columns=["Clase 1", "Clase 2", "Estudiantes"])
     for edge, students in students_by_edge.items():
         df_connections = df_connections.append({
@@ -192,9 +190,9 @@ def solution_files(individual):
     plt.close()
     
     return {
-    "Grafo_clases.gexf": graph_eval_str,
+    "grafo_clases.gexf": graph_eval_str,
     "estudiantes.csv": students_str,
-    "grafo.png": graph_image_str,
+    "grafo_clases.png": graph_image_str,
     "par_clases.csv": connections_str
     }
 

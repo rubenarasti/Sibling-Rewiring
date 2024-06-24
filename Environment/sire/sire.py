@@ -228,20 +228,28 @@ def show_ga_selection():
 
 @app.route('/download_solution', methods=['POST'])
 def download_solution():
-	individual_string = request.form.get('individual')
-	individual = ast.literal_eval(individual_string)
-	files = dm.solution_files(individual)
+    individual_string = request.form.get('individual')
+    individual = ast.literal_eval(individual_string)
+    id = request.form.get('id')
+    fitness = request.form.get('fitness')
+    modified = request.form.get('modified')
     
-	zip_buffer = BytesIO()
-    
-	with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-		for filename, file_content in files.items():
-			file_data = base64.b64decode(file_content)
-			zip_file.writestr(filename, file_data)
-    
-	zip_buffer.seek(0)
-    
-	return send_file(zip_buffer, mimetype='application/zip', as_attachment=True, attachment_filename='solution_files.zip')
+    files = dm.solution_files(individual)
+
+    modified_flag = "modified_" if modified == "True" else ""
+    zip_filename = f"{modified_flag}solution{id}_{fitness}.zip"
+
+    zip_buffer = BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for filename, file_content in files.items():
+            file_data = base64.b64decode(file_content)
+            zip_file.writestr(filename, file_data)
+
+    zip_buffer.seek(0)
+
+    return send_file(zip_buffer, mimetype='application/zip', as_attachment=True, attachment_filename=zip_filename)
+
 
 @app.route('/showData/genetic_results', methods=['POST', 'GET'])
 def genetic_algorithm():
@@ -256,10 +264,12 @@ def genetic_algorithm():
 		solutions = []
 
 		for index, (individual, fitness) in enumerate(pareto_front):
-			
+			id = index + 1
+			rounded_fitness = (int(fitness[0]), round(fitness[1], 2), round(fitness[2], 2))
 			row = {
-				"Individual": "Solución {}".format(index + 1),
-				"Fitness": fitness,
+				"Id": id,
+				"Individual": "Solución {}".format(id),
+				"Fitness": rounded_fitness,
 				"Individual_data": individual
 			}
 			
