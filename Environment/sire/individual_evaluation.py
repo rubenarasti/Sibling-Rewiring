@@ -34,37 +34,38 @@ def fenotype (individual):
     seen = set() # Set to avoid repeating those already seen
     dicEstudiantes = nx.get_node_attributes(graph_eval,'Estudiantes')
 
-    for (classroom1, (sib_name1, sib_data1)) in zip(individual, gd.siblings_dict.items()):
+    for (sib_name1, sib_data1) in gd.siblings_dict.items():
 
-        sib_name2 = sib_data1[4]
-        
-        # Order the pair 
-        if sib_name2 > sib_name1:
-            siblings_pair = (sib_name1, sib_name2)
-        else:
-            siblings_pair = (sib_name2, sib_name1)
-
-        if siblings_pair in seen:
-            continue
-
-        seen.add(siblings_pair)
-        
+        classroom1 = individual[sib_data1[0]]
         sibling1_class = f"{sib_data1[1]}{sib_data1[2]}{gd.classrooms[classroom1]}"
         if sib_name1 not in dicEstudiantes[sibling1_class]:
             dicEstudiantes[sibling1_class].append(sib_name1)
 
-        sib_data2 = gd.siblings_dict[sib_name2]
-        classroom2 = individual[sib_data2[0]]
+        sib_names = sib_data1[4]
+        for sib_name2 in sib_names:
+            # Order the pair 
+            if sib_name2 > sib_name1:
+                siblings_pair = (sib_name1, sib_name2)
+            else:
+                siblings_pair = (sib_name2, sib_name1)
 
-        sibling2_class = f"{sib_data2[1]}{sib_data2[2]}{gd.classrooms[classroom2]}"
-        if sib_name2 not in dicEstudiantes[sibling2_class]:
-            dicEstudiantes[sibling2_class].append(sib_name2)
-        
-        if graph_eval.has_edge(sibling1_class, sibling2_class):
-            graph_eval.edges[sibling1_class, sibling2_class]["weight"] += 1
-        else:
-            graph_eval.add_edge(sibling1_class, sibling2_class)
-            graph_eval.edges[sibling1_class, sibling2_class]["weight"] = 1
+            if siblings_pair in seen:
+                continue
+
+            seen.add(siblings_pair)
+
+            sib_data2 = gd.siblings_dict[sib_name2]
+            classroom2 = individual[sib_data2[0]]
+
+            sibling2_class = f"{sib_data2[1]}{sib_data2[2]}{gd.classrooms[classroom2]}"
+            if sib_name2 not in dicEstudiantes[sibling2_class]:
+                dicEstudiantes[sibling2_class].append(sib_name2)
+            
+            if graph_eval.has_edge(sibling1_class, sibling2_class):
+                graph_eval.edges[sibling1_class, sibling2_class]["weight"] += 1
+            else:
+                graph_eval.add_edge(sibling1_class, sibling2_class)
+                graph_eval.edges[sibling1_class, sibling2_class]["weight"] = 1
 
     return graph_eval
 
@@ -107,37 +108,44 @@ def create_solution(individual):
     students_by_edge = {}
     dicEstudiantes = nx.get_node_attributes(graph_eval,'Estudiantes')
 
-    for (classroom1, (sib_name1, sib_data1)) in zip(individual, gd.siblings_dict.items()):
-        sib_name2 = sib_data1[4]
-        # Order the pair 
-        if sib_name2 > sib_name1:
-            siblings_pair = (sib_name1, sib_name2)
-        else:
-            siblings_pair = (sib_name2, sib_name1)
+    for (sib_name1, sib_data1) in gd.siblings_dict.items():
 
-        if siblings_pair in seen:
-            continue
-
-        seen.add(siblings_pair)
-
+        classroom1 = individual[sib_data1[0]]
         sibling1_class = f"{sib_data1[1]}{sib_data1[2]}{gd.classrooms[classroom1]}"
-        
-        sib_data2 = gd.siblings_dict[sib_name2]
-        classroom2 = individual[sib_data2[0]]
-
-        sibling2_class = f"{sib_data2[1]}{sib_data2[2]}{gd.classrooms[classroom2]}"
-
+        if sib_name1 not in dicEstudiantes[sibling1_class]:
+            dicEstudiantes[sibling1_class].append(sib_name1)
         graph_students.nodes[sib_name1]["Clase"] = gd.classrooms[classroom1]
-        graph_students.nodes[sib_name2]["Clase"] = gd.classrooms[classroom2]
-        
-        if sibling1_class < sibling2_class:
-            edge = (sibling1_class, sibling2_class)
-        else:
-            edge = (sibling2_class, sibling1_class)
-        if edge not in students_by_edge:
-            students_by_edge[edge] = set()
 
-        students_by_edge[edge].update([sib_name1, sib_name2])
+        sib_names = sib_data1[4]
+        for sib_name2 in sib_names:
+            # Order the pair 
+            if sib_name2 > sib_name1:
+                siblings_pair = (sib_name1, sib_name2)
+            else:
+                siblings_pair = (sib_name2, sib_name1)
+
+            if siblings_pair in seen:
+                continue
+
+            seen.add(siblings_pair)
+
+            sib_data2 = gd.siblings_dict[sib_name2]
+            classroom2 = individual[sib_data2[0]]
+
+            sibling2_class = f"{sib_data2[1]}{sib_data2[2]}{gd.classrooms[classroom2]}"
+            if sib_name2 not in dicEstudiantes[sibling2_class]:
+                dicEstudiantes[sibling2_class].append(sib_name2)
+
+            graph_students.nodes[sib_name2]["Clase"] = gd.classrooms[classroom2]
+    
+            if sibling1_class < sibling2_class:
+                edge = (sibling1_class, sibling2_class)
+            else:
+                edge = (sibling2_class, sibling1_class)
+            if edge not in students_by_edge:
+                students_by_edge[edge] = set()
+
+            students_by_edge[edge].update([sib_name1, sib_name2])
 
 
     students_list = []
