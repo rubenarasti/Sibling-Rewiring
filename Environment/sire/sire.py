@@ -157,17 +157,11 @@ def show_download():
 	
 @app.route("/download")
 def download():
-	#uploads = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
-    #return send_from_directory(uploads, filename)
 	path = os.getcwd()
 	UPLOAD_FOLDER = os.path.join(path, 'uploads')
 	app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-	p = "randomGraphuploaded.gexf"
-	print(path)
-	print(UPLOAD_FOLDER)
-	print(app.config['UPLOAD_FOLDER'])
-	file_path = os.path.join(app.config['UPLOAD_FOLDER'], p)
-	return send_file(file_path, as_attachment=True)
+	p = "/randomGraphuploaded.gexf"
+	return send_file(app.config['UPLOAD_FOLDER']+ p, as_attachment=True)
 
 
 @app.route('/showData')
