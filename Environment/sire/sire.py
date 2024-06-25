@@ -228,7 +228,7 @@ def download_solution():
     fitness = request.form.get('fitness')
     modified = request.form.get('modified')
     
-    files = dm.solution_files(individual)
+    files, modified = dm.solution_files(individual)
 
     modified_flag = "modified_" if modified == "True" else ""
     zip_filename = f"{modified_flag}solution{id}_{fitness}.zip"
@@ -244,6 +244,31 @@ def download_solution():
 
     return send_file(zip_buffer, mimetype='application/zip', as_attachment=True, attachment_filename=zip_filename)
 
+@app.route('/download_all_solutions', methods=['POST'])
+def download_all_solutions():
+
+	solutions_string = request.form.get('all_solutions')
+	solutions = ast.literal_eval(solutions_string)
+	zip_buffer = BytesIO()
+    
+	with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+		for solution in solutions:
+			individual = solution["Individual_data"]
+			id = solution["Id"]
+			fitness = solution["Fitness"]
+			
+			files, modified = dm.solution_files(individual)
+
+			modified_flag = "modified_" if modified == "True" else ""
+			folder_name = f"{modified_flag}solution{id}_{fitness}.zip"
+
+			for filename, file_content in files.items():
+				file_data = base64.b64decode(file_content)
+				zip_file.writestr(f"{folder_name}/{filename}", file_data)
+		
+	zip_buffer.seek(0)
+    
+	return send_file(zip_buffer, mimetype='application/zip', as_attachment=True, attachment_filename='soluciones.zip')
 
 @app.route('/showData/genetic_results', methods=['POST', 'GET'])
 def genetic_algorithm():
@@ -255,23 +280,12 @@ def genetic_algorithm():
 														 200, 200, 0.6, 0.05, "one_point")
 		img_data = dm.plot_pareto_front2D(pareto_front, all_fitness)
 
-		solutions = []
-
-		for index, (individual, fitness) in enumerate(pareto_front):
-			id = index + 1
-			rounded_fitness = (int(fitness[0]), round(fitness[1], 2), round(fitness[2], 2))
-			row = {
-				"Id": id,
-				"Individual": "Solución {}".format(id),
-				"Fitness": rounded_fitness,
-				"Individual_data": individual
-			}
-			
-			solutions.append(row)
+		solutions, ids_number = dm.generate_solutions_list(pareto_front=pareto_front)
 
 		return render_template('ga_results.html', 
 							img_data=img_data, 
-							solutions=solutions)
+							solutions=solutions,
+							num_solutions=ids_number)
 	elif selected_option == 'advanced':
 		return render_template('ga_advanced.html')
 	else:
@@ -310,23 +324,13 @@ def advanced_ga_options():
 														_crossover_operator)
 	img_data = dm.plot_pareto_front2D(pareto_front, all_fitness)
 
-	solutions = []
-
-	for index, (individual, fitness) in enumerate(pareto_front):
-			
-		row = {
-			"Individual": "Solución {}".format(index + 1),
-			"Fitness": fitness,
-			"Individual_data": individual
-		}
-			
-		solutions.append(row)
+	solutions, ids_number = dm.generate_solutions_list(pareto_front=pareto_front)
 
 	return render_template('ga_results.html', 
 						img_data=img_data, 
-						solutions=solutions)
+						solutions=solutions,
+						num_solutions=ids_number)
 	
-
 
 @app.route('/showSelection/randomAdvanced', methods=['POST', 'GET'])
 def pick_option():

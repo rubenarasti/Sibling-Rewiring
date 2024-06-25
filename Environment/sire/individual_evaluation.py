@@ -77,7 +77,6 @@ def convert_to_feasible(individual):
         graph_eval = fenotype(new_individual)
         dicEstudiantes = nx.get_node_attributes(graph_eval,'Estudiantes')
         solution_feasible = True
-        print(solution_feasible)
         for students in dicEstudiantes.values():
             k = len(students) - gd.capacity # leftover students
             if k > 0:

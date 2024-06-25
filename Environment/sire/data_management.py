@@ -90,7 +90,7 @@ def convert_to_base64(data, data_type):
 
     if data_type == 'csv':
         data.to_csv(buffer, index=False)
-    elif data_type == 'image':
+    elif data_type == 'matplotlib_figure':
         data.savefig(buffer, format='png')
     elif data_type == 'graph':
         nx.write_gexf(data, buffer)
@@ -133,7 +133,7 @@ def plot_pareto_front2D(pareto_front, all_fitness):
 
     plt.tight_layout()
 
-    data_str = convert_to_base64(fig, data_type='image')
+    data_str = convert_to_base64(fig, data_type='matplotlib_figure')
 
     img_data = 'data:image/png;base64,' + data_str
 
@@ -168,51 +168,66 @@ def solution_files(individual):
 
     components = list(nx.connected_components(graph_eval))
     unique_colors = generate_unique_colors(len(components))
-
+    
     color_map = {}
-
+    
     for i, component in enumerate(components):
         color = unique_colors[i]
         for node in component:
             color_map[node] = color
-
+    
     node_colors = [color_map[node] for node in graph_eval.nodes()]
 
     plt.figure(figsize=(12, 12))
     pos = nx.circular_layout(graph_eval)
-    nx.draw(graph_eval, pos, with_labels=True, node_size=1000, node_color=node_colors, 
+    nx.draw(graph_eval, pos, with_labels=True, node_size=1000, node_color=node_colors,
             font_size=10, font_color='black', edge_color='gray')
+
     edge_labels = nx.get_edge_attributes(graph_eval, 'weight')
     nx.draw_networkx_edge_labels(graph_eval, pos, edge_labels=edge_labels)
 
-    graph_image_str = convert_to_base64(plt, data_type='image')
+    from matplotlib.patches import Patch
+    
+    legend_elements = []
+    for i, component in enumerate(components):
+        color = unique_colors[i]
+        subgraph = graph_eval.subgraph(component)
+        num_nodes = len(component)
+        num_edges = subgraph.size(weight='weight')
+        
+        label = f'Tamaño: {num_nodes}, Enlaces: {num_edges}'
+        legend_elements.append(Patch(facecolor=color, edgecolor='black', label=label))
+    
+    plt.legend(handles=legend_elements, loc='upper right', title='Componentes')
+    graph_image_str = convert_to_base64(plt, data_type='matplotlib_figure')
     
     plt.close()
     
-    return {
+    return ({
     "grafo_clases.gexf": graph_eval_str,
     "estudiantes.csv": students_str,
     "grafo_clases.png": graph_image_str,
     "par_clases.csv": connections_str
-    }
+    }, modified)
 
 def generate_unique_colors(num_colors):
     hues = [i / num_colors for i in range(num_colors)]
     random.shuffle(hues)  
     return [colorsys.hsv_to_rgb(hue, 0.7, 1.0) for hue in hues]
-"""
-if __name__ == "__main__":
 
 
-    df_path = os.path.join("files to upload", "siblings.csv")
-    df = pd.read_csv(df_path)
-    mat = df.values[:, 1:]
-    # Leer el grafo desde el archivo GEXF
-    gexf_path = os.path.join("files to upload", "school_net.gexf")
-    G = nx.read_gexf(gexf_path)
-    load_data(mat, G)
+def generate_solutions_list(pareto_front):
+    solutions = []
 
-    ind = [0]*gd.siblings_number
-    solution_files(ind)
+    for index, (individual, fitness) in enumerate(pareto_front):
+        id = index + 1
+        rounded_fitness = (int(fitness[0]), round(fitness[1], 2), round(fitness[2], 2))
+        row = {
+            "Id": id,
+            "Individual": f"Solución {id}",
+            "Fitness": rounded_fitness,
+            "Individual_data": individual
+        }
+        solutions.append(row)
 
-"""
+    return solutions, id
