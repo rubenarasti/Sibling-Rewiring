@@ -230,8 +230,7 @@ def download_solution():
     
     files, modified = dm.solution_files(individual)
 
-    modified_flag = "modified_" if modified == "True" else ""
-    zip_filename = f"{modified_flag}solution{id}_{fitness}.zip"
+    zip_filename = dm.solution_name(id, fitness, modified, individual)
 
     zip_buffer = BytesIO()
 
@@ -259,8 +258,7 @@ def download_all_solutions():
 			
 			files, modified = dm.solution_files(individual)
 
-			modified_flag = "modified_" if modified == "True" else ""
-			folder_name = f"{modified_flag}solution{id}_{fitness}.zip"
+			folder_name = dm.solution_name(id, fitness, modified, individual)
 
 			for filename, file_content in files.items():
 				file_data = base64.b64decode(file_content)
@@ -277,7 +275,7 @@ def genetic_algorithm():
 	
 	if selected_option == 'default':
 		pareto_front, all_fitness = ga.solve_genetic_algorithm(matrix_siblings, G, 
-														 200, 200, 0.6, 0.05, "one_point")
+														200, 200, 0.6, 0.05, "one_point")
 		img_data = dm.plot_pareto_front2D(pareto_front, all_fitness)
 
 		solutions, ids_number = dm.generate_solutions_list(pareto_front=pareto_front)

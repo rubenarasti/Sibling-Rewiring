@@ -18,10 +18,12 @@ def load_data(siblings, graph):
     gd.initial_network = graph
     gd.total_students = len(graph.nodes())
     gd.siblings_number = len(siblings)
+    gd.siblings_dict = {}
 
     # Reconvert the siblings matrix to a pandas dataframe
     columns = ['nombre', 'etapa', 'curso', 'clase', 'hermano de']
     siblings_df = pd.DataFrame(siblings, columns=columns)
+
     # Group data by name
     siblings_grouped = siblings_df.groupby('nombre')
 
@@ -161,7 +163,6 @@ def solution_files(individual):
 
     connections_str = convert_to_base64(df_connections, data_type='csv')
 
-
     df_students = pd.DataFrame(students_list)
     students_str = convert_to_base64(df_students, data_type='csv')
 
@@ -181,7 +182,7 @@ def solution_files(individual):
     plt.figure(figsize=(12, 12))
     pos = nx.circular_layout(graph_eval)
     nx.draw(graph_eval, pos, with_labels=True, node_size=1000, node_color=node_colors,
-            font_size=10, font_color='black', edge_color='gray')
+            font_size=15, font_color='black', edge_color='gray')
 
     edge_labels = nx.get_edge_attributes(graph_eval, 'weight')
     nx.draw_networkx_edge_labels(graph_eval, pos, edge_labels=edge_labels)
@@ -195,7 +196,7 @@ def solution_files(individual):
         num_nodes = len(component)
         num_edges = subgraph.size(weight='weight')
         
-        label = f'Tamaño: {num_nodes}, Enlaces: {num_edges}'
+        label = f'{i+1} Tamaño: {num_nodes}, Enlaces: {int(num_edges)}'
         legend_elements.append(Patch(facecolor=color, edgecolor='black', label=label))
     
     plt.legend(handles=legend_elements, loc='upper right', title='Componentes')
@@ -231,3 +232,10 @@ def generate_solutions_list(pareto_front):
         solutions.append(row)
 
     return solutions, id
+
+def solution_name(id, fitness, modified, individual):
+    if modified:
+        fitness = ie.fitness(individual)
+    
+    modified_flag = "modified_" if modified else ""
+    return f"{modified_flag}solution{id}_{fitness}.zip"

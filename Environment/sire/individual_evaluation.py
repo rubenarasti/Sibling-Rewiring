@@ -70,38 +70,46 @@ def fenotype (individual):
     return graph_eval
 
 def convert_to_feasible(individual):
-    new_individual = individual[:]
-    modified = False # Flag to know when a solution is modified
+    modified = False  # Flag to know when a solution is modified
+    # If more class changes are made than there are siblings, the input data is not correct
+    max_iterations = gd.siblings_number
+    iterations = 0
 
-    while True:
-        graph_eval = fenotype(new_individual)
-        dicEstudiantes = nx.get_node_attributes(graph_eval,'Estudiantes')
+    while iterations < max_iterations:
+        graph_eval = fenotype(individual)
+        dicEstudiantes = nx.get_node_attributes(graph_eval, 'Estudiantes')
         solution_feasible = True
+
         for students in dicEstudiantes.values():
-            k = len(students) - gd.capacity # leftover students
+            k = len(students) - gd.capacity  # leftover students
             if k > 0:
                 solution_feasible = False
                 modified = True
                 sibs_to_change = students[:k]
                 for sib in sibs_to_change:
                     sib_data = gd.siblings_dict[sib]
-                    classroom = new_individual[sib_data[0]]
+                    classroom = individual[sib_data[0]]
                     # the new class is the previous letter 
                     if classroom == 0:
                         new_classroom = len(gd.classrooms) - 1
                     else:
                         new_classroom = classroom - 1
-                    new_individual[sib_data[0]] = new_classroom
+                    individual[sib_data[0]] = new_classroom
 
         if solution_feasible:
             break
 
-    return new_individual, graph_eval, modified
+        iterations += 1
+    
+    if iterations >= max_iterations:
+        raise ValueError("Exceeded maximum iterations in covert_to_feasible. Input data may be invalid.")
+
+    return graph_eval, modified
 
 
 def create_solution(individual):
 
-    individual, graph_eval, modified = convert_to_feasible(individual)
+    graph_eval, modified = convert_to_feasible(individual)
     seen = set() # Set to avoid repeating those pairs already seen
     graph_students = gd.initial_network.copy()
     students_by_edge = {}

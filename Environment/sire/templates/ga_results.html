@@ -55,8 +55,8 @@
 		<h1>Resultados del Algoritmo Genético</h1>
         <div class="container-fluid">
 			<img src="{{ img_data }}" class="img-responsive" alt="Pareto Front1">			
-			<h3>Se encontraron {{ num_solutions }} soluciones diferentes.</h3>
-			<form action="/download_all_solutions" method="post" style="margin-top:20px;">
+			<h3>Se encontraron {{ num_solutions }} soluciones diferentes</h3>
+			<form action="/download_all_solutions" method="post">
 				<input type="hidden" name="all_solutions" value='{{ solutions }}'>
 				<button type="submit" class="download-btn">Descargar todas las soluciones</button>
 			</form>			
