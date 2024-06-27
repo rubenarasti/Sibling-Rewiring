@@ -17,7 +17,6 @@ def load_data(siblings, graph):
 
     gd.initial_network = graph
     gd.total_students = len(graph.nodes())
-    gd.siblings_number = len(siblings)
     gd.siblings_dict = {}
 
     # Reconvert the siblings matrix to a pandas dataframe
@@ -44,6 +43,7 @@ def load_data(siblings, graph):
                                     hermanos
                                     ]
 
+    gd.siblings_number = len(gd.siblings_dict)
 
     students_count = {}
     dicNombre = {}
