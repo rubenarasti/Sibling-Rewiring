@@ -4,6 +4,8 @@ services:
   db:
     image: mysql:8.0
     environment:
+      MYSQL_HOST: db
+      MYSQL_USER: root
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: sire
     volumes:
@@ -24,12 +26,7 @@ services:
       - db
     networks:
       - network
-    environment:
-      DATABASE_HOST: db
-      DATABASE_USER: root
-      DATABASE_PASSWORD: root
-      DATABASE_NAME: sire
-      
+
 volumes:
   db_data:
 
