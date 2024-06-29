@@ -26,7 +26,10 @@ services:
     networks:
       - flask_network
     environment:
-      DATABASE_HOST: db  # Nombre de host para la aplicación Docker
+      DATABASE_HOST: db
+      DATABASE_USER: root
+      DATABASE_PASSWORD: root
+      DATABASE_NAME: sire
       
 volumes:
   db_data:
