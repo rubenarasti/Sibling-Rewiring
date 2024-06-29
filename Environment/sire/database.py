@@ -5,7 +5,7 @@ import os
 import mysql.connector
 
 db_config = {
-    'host': os.getenv('DATABASE_HOST', 'localhost'),
+    'host': os.getenv('DATABASE_HOST', 'db'),
     'user': os.getenv('DATABASE_USER', 'root'),
     'password': os.getenv('DATABASE_PASSWORD', 'root'),
     'database': os.getenv('DATABASE_NAME', 'sire')
