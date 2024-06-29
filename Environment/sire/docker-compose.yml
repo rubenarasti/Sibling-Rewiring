@@ -8,11 +8,10 @@ services:
       MYSQL_DATABASE: sire
     volumes:
       - db_data:/var/lib/mysql
-      - ./procedure.sql:/docker-entrypoint-initdb.d/procedure.sql
     ports:
       - "3406:3406"
     networks:
-      - flask_network
+      - network
 
   app:
     build: .
@@ -24,7 +23,7 @@ services:
     depends_on:
       - db
     networks:
-      - flask_network
+      - network
     environment:
       DATABASE_HOST: db
       DATABASE_USER: root
@@ -35,5 +34,6 @@ volumes:
   db_data:
 
 networks:
-  flask_network:
+  network:
+    driver: bridge
       

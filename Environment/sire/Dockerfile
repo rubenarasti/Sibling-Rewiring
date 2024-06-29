@@ -11,7 +11,6 @@ COPY . .
 ENV MYSQL_ROOT_PASSWORD=root
 ENV MYSQL_DATABASE=sire
 
-
 EXPOSE 5000
 
 #CMD ["python", "sire.py"]
