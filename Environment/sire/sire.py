@@ -21,9 +21,12 @@ import fileNetCreation as fileNet
 from function import *
 import data_management as dm
 import genetic_algorithm as ga
+from config import Config
 
 app = Flask(__name__)
+app.config.from_object(Config)
 #app.debug = True
+
 bootstrap = Bootstrap(app)
  
 schyear_class = nx.Graph() 
@@ -453,5 +456,4 @@ def logout():
 	
 	
 if __name__ == '__main__':
-	app.secret_key = os.urandom(24)
 	app.run()

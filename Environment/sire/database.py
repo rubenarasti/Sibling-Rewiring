@@ -1,11 +1,17 @@
 from flask import Flask, json, request, session
 from flask_login import LoginManager
 from werkzeug.security import generate_password_hash, check_password_hash
+import os
 import mysql.connector
 
-mydb = mysql.connector.connect(host="localhost", user="root", passwd="root", database="sire")
+db_config = {
+    'host': os.getenv('DATABASE_HOST', 'localhost'),
+    'user': os.getenv('DATABASE_USER', 'root'),
+    'password': os.getenv('DATABASE_PASSWORD', 'root'),
+    'database': os.getenv('DATABASE_NAME', 'sire')
+}
 
-
+mydb = mysql.connector.connect(**db_config)
 mycursor = mydb.cursor()
 
 def create_tables():
@@ -15,7 +21,7 @@ def create_tables():
 	
 def create_procedure():
 	mycursor.execute("DROP PROCEDURE IF EXISTS sp_createUser")
-	file = open('procedure.txt','r')
+	file = open('procedure.sql','r')
 	query = file.read()
 	mycursor.execute(query)
 
