@@ -21,7 +21,7 @@ else:
     # Configuration for Heroku
     DATABASE_URL = os.getenv('DATABASE_URL')
     if DATABASE_URL:
-        url = urlparse.urlparse(DATABASE_URL)
+        url = urlparse(DATABASE_URL)
         db_config = {
             'host': url.hostname,
             'user': url.username,
