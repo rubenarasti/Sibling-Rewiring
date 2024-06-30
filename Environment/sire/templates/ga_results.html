@@ -52,31 +52,34 @@
 </head>
 <body>
     <div class="container">
-		<h1>Resultados del Algoritmo Genético</h1>
+        <h1>Resultados del Algoritmo Genético</h1>
         <div class="container-fluid">
-			<img src="{{ img_data }}" class="img-responsive" alt="Pareto Front1">			
-			<h3>Se encontraron {{ num_solutions }} soluciones diferentes</h3>
-			<form action="/download_all_solutions" method="post">
-				<input type="hidden" name="all_solutions" value='{{ solutions }}'>
-				<button type="submit" class="download-btn">Descargar todas las soluciones</button>
-			</form>			
+            <img src="{{ img_data }}" class="img-responsive" alt="Pareto Front1">
+            <h3>Se encontraron {{ num_solutions }} soluciones diferentes</h3>
+            
+            {% set solutions_json = solutions | tojson %}
+            
+            <form action="/download_all_solutions" method="post">
+                <input type="hidden" name="all_solutions" value='{{ solutions_json | safe }}'>
+                <button type="submit" class="download-btn">Descargar todas las soluciones</button>
+            </form>            
 
             <h2>Lista de Soluciones</h2>
             <table class="table">
                 <tr>
                     <th>Soluciones</th>
-                    <th>Fitness (Nº Componentes, Variablidad del Tamaño de los Componentes, Variablidad del Nº de Enlaces)</th>
+                    <th>Fitness (Nº Componentes, Variabilidad del Tamaño de los Componentes, Variabilidad del Nº de Enlaces)</th>
                     <th>Descargas</th>
                 </tr>
                 {% for solution in solutions %}
                 <tr>
                     <td class="center-align">{{ solution["Individual"] }}</td>
                     <td class="center-align">{{ solution["Fitness"] }}</td>
-					<td>
+                    <td>
                         <form action="/download_solution" method="post">
                             <input type="hidden" name="individual" value="{{ solution["Individual_data"] }}">
-							<input type="hidden" name="id" value="{{ solution["Id"] }}">
-							<input type="hidden" name="fitness" value="{{ solution["Fitness"] }}">
+                            <input type="hidden" name="id" value="{{ solution["Id"] }}">
+                            <input type="hidden" name="fitness" value="{{ solution["Fitness"] }}">
                             <button type="submit" class="download-btn">Descargar</button>
                         </form>
                     </td>
@@ -85,7 +88,6 @@
             </table>
         </div>
     </div>
-
-
 </body>
+
 {% endblock %}

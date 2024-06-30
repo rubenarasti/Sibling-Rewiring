@@ -34,7 +34,7 @@ else:
         db_config = {
 	    'host': os.getenv('DATABASE_HOST', 'localhost'),
 	    'user': os.getenv('DATABASE_USER', 'root'),
-	    'password': os.getenv('DATABASE_PASSWORD', 'root'),
+	    'password': os.getenv('DATABASE_PASSWORD', 'nueva_contraseña'),
 	    'database': os.getenv('DATABASE_NAME', 'sire')
 	}
 

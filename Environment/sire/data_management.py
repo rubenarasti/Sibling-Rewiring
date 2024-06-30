@@ -153,14 +153,16 @@ def solution_files(individual):
     graph_eval_str = convert_to_base64(graph_eval, 'graph')
     
     df_connections = pd.DataFrame(columns=["Clase 1", "Clase 2", "Estudiantes"])
+    
     for edge, students in students_by_edge.items():
-        df_connections = df_connections.append({
-            "Clase 1": edge[0], 
-            "Clase 2": edge[1], 
-            "Estudiantes": ", ".join(student for student in sorted(students))
-        }, ignore_index=True)
-    df_connections = df_connections.sort_values(by=["Clase 1", "Clase 2"])
+        temp_df = pd.DataFrame({
+            "Clase 1": [edge[0]],
+            "Clase 2": [edge[1]],
+            "Estudiantes": [", ".join(student for student in sorted(students))]
+        })
 
+        df_connections = pd.concat([df_connections, temp_df], ignore_index=True)
+    
     connections_str = convert_to_base64(df_connections, data_type='csv')
 
     df_students = pd.DataFrame(students_list)
@@ -222,7 +224,7 @@ def generate_solutions_list(pareto_front):
 
     for index, (individual, fitness) in enumerate(pareto_front):
         id = index + 1
-        rounded_fitness = (int(fitness[0]), round(fitness[1], 2), round(fitness[2], 2))
+        rounded_fitness = (int(fitness[0]), float(round(fitness[1], 2)), float(round(fitness[2], 2)))
         row = {
             "Id": id,
             "Individual": f"Solución {id}",

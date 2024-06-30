@@ -244,7 +244,7 @@ def download_solution():
 
     zip_buffer.seek(0)
 
-    return send_file(zip_buffer, mimetype='application/zip', as_attachment=True, attachment_filename=zip_filename)
+    return send_file(zip_buffer, mimetype='application/zip', as_attachment=True, download_name=zip_filename)
 
 @app.route('/download_all_solutions', methods=['POST'])
 def download_all_solutions():
@@ -269,7 +269,7 @@ def download_all_solutions():
 		
 	zip_buffer.seek(0)
     
-	return send_file(zip_buffer, mimetype='application/zip', as_attachment=True, attachment_filename='soluciones.zip')
+	return send_file(zip_buffer, mimetype='application/zip', as_attachment=True, download_name='soluciones.zip')
 
 @app.route('/showData/genetic_results', methods=['POST', 'GET'])
 def genetic_algorithm():
@@ -456,4 +456,5 @@ def logout():
 	
 	
 if __name__ == '__main__':
+	app.secret_key = os.urandom(24)
 	app.run()
