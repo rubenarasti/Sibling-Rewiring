@@ -20,20 +20,16 @@ services:
       - .:/app
     ports:
       - "5000:5000"
+    env_file:
+      - .env
     depends_on:
       - db
     networks:
       - network
-    environment:
-      DATABASE_HOST: db
-      DATABASE_USER: root
-      DATABASE_PASSWORD: root
-      DATABASE_NAME: sire
-      
+
 volumes:
   db_data:
 
 networks:
   network:
     driver: bridge
-      
