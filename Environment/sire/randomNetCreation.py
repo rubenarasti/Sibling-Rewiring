@@ -17,6 +17,11 @@ def create_initial_network(totalStudents, numberSiblings):
     Creates the initial network
     
     """
+    if not isinstance(totalStudents, int):
+        raise TypeError("the number of students must be an integer")
+    if not isinstance(numberSiblings, int):
+        raise TypeError("the number of pairs of siblings must be an integer")
+
     if totalStudents < (3*len(__class)+6*len(__class)):
         totalStudents = (3*len(__class)+6*len(__class))
     dicNombre = {}

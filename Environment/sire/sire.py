@@ -226,13 +226,13 @@ def show_ga_selection():
 def download_solution():
     individual_string = request.form.get('individual')
     individual = ast.literal_eval(individual_string)
-    id = request.form.get('id')
+    individual_id = request.form.get('id')
     fitness = request.form.get('fitness')
     modified = request.form.get('modified')
     
     files, modified = dm.solution_files(individual)
 
-    zip_filename = dm.solution_name(id, fitness, modified, individual)
+    zip_filename = dm.solution_name(individual_id, fitness, modified, individual)
 
     zip_buffer = BytesIO()
 
@@ -255,12 +255,12 @@ def download_all_solutions():
 	with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
 		for solution in solutions:
 			individual = solution["Individual_data"]
-			id = solution["Id"]
+			individual_id = solution["Id"]
 			fitness = solution["Fitness"]
 			
 			files, modified = dm.solution_files(individual)
 
-			folder_name = dm.solution_name(id, fitness, modified, individual)
+			folder_name = dm.solution_name(individual_id, fitness, modified, individual)
 
 			for filename, file_content in files.items():
 				file_data = base64.b64decode(file_content)
@@ -278,7 +278,7 @@ def genetic_algorithm():
 	if selected_option == 'default':
 		pareto_front, all_fitness = ga.solve_genetic_algorithm(matrix_siblings, G, 
 														200, 200, 0.6, 0.05, "one_point")
-		img_data = dm.plot_pareto_front2D(pareto_front, all_fitness)
+		img_data = dm.plot_pareto_front_2d(pareto_front, all_fitness)
 
 		solutions, ids_number = dm.generate_solutions_list(pareto_front=pareto_front)
 
@@ -322,7 +322,7 @@ def advanced_ga_options():
 														generations, population_size, 
 														crossover_probability, mutation_probability, 
 														_crossover_operator)
-	img_data = dm.plot_pareto_front2D(pareto_front, all_fitness)
+	img_data = dm.plot_pareto_front_2d(pareto_front, all_fitness)
 
 	solutions, ids_number = dm.generate_solutions_list(pareto_front=pareto_front)
 

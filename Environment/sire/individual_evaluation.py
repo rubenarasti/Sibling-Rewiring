@@ -9,7 +9,7 @@ import data_management as dm
 
 def fitness (individual):
 
-    graph_eval = fenotype(individual)
+    graph_eval = phenotype(individual)
 
     components_sizes = []
     components_edges = []
@@ -28,8 +28,20 @@ def fitness (individual):
 
     return contag_compo, comp_size_var, comp_edges_var
 
-def fenotype (individual):
+def phenotype(individual):
+    """
+    Converts the individual into the phenotype for the evalutation.
 
+    Parameters
+    ----------
+    individual : list
+        A list representing the individual.
+
+    Returns
+    -------
+    graph_eval : nx.Graph
+        The evaluation graph.
+    """
     graph_eval = copy.deepcopy(gd.graph_eval_ini)
     seen = set() # Set to avoid repeating those pairs already seen
     dicEstudiantes = nx.get_node_attributes(graph_eval,'Estudiantes')
@@ -76,7 +88,7 @@ def convert_to_feasible(individual):
     iterations = 0
     
     while iterations < max_iterations:
-        graph_eval = fenotype(individual)
+        graph_eval = phenotype(individual)
         dicEstudiantes = nx.get_node_attributes(graph_eval, 'Estudiantes')
         solution_feasible = True
 

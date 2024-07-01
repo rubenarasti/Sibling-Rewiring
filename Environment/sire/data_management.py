@@ -102,35 +102,41 @@ def convert_to_base64(data, data_type):
     
     return data_str  
 
-def plot_pareto_front2D(pareto_front, all_fitness):
+def plot_pareto_front_2d(pareto_front, all_fitness):
     objective1 = [fit[0] for fit in all_fitness]
     objective2 = [fit[1] for fit in all_fitness]
     objective3 = [fit[2] for fit in all_fitness]
 
     fig, axs = plt.subplots(1, 3, figsize=(15, 5))
 
-    axs[0].scatter(objective1, objective2, c='r', label='Individuos dominados')
+    dominated_tag = 'Individuos dominados'
+    non_dominated_tag = 'Frente de Pareto'
+    objective1_tag = 'Número de componentes'
+    objective2_tag = 'Variabilidad del tamaño de componentes'
+    objective3_tag = 'Variabilidad del número de enlaces'
+
+    axs[0].scatter(objective1, objective2, c='r', label=dominated_tag)
     pareto_fitness1 = np.array([(ind[1][0], ind[1][1]) for ind in pareto_front])
-    axs[0].scatter(pareto_fitness1[:, 0], pareto_fitness1[:, 1], c='b', label='Frente de Pareto')
+    axs[0].scatter(pareto_fitness1[:, 0], pareto_fitness1[:, 1], c='b', label=non_dominated_tag)
     axs[0].set_title('Objetivo 1 (Max x) vs Objetivo 2 (Min y)')
-    axs[0].set_xlabel('Número de componentes')
-    axs[0].set_ylabel('Variabilidad del tamaño de componentes')
+    axs[0].set_xlabel(objective1_tag)
+    axs[0].set_ylabel(objective2_tag)
     axs[0].legend()
 
-    axs[1].scatter(objective1, objective3, c='r', label='Individuos dominados')
+    axs[1].scatter(objective1, objective3, c='r', label=dominated_tag)
     pareto_fitness2 = np.array([(ind[1][0], ind[1][2]) for ind in pareto_front])
-    axs[1].scatter(pareto_fitness2[:, 0], pareto_fitness2[:, 1], c='b', label='Frente de Pareto')
+    axs[1].scatter(pareto_fitness2[:, 0], pareto_fitness2[:, 1], c='b', label=non_dominated_tag)
     axs[1].set_title('Objetivo 1 (Max x) vs Objetivo 3 (Min y)')
-    axs[1].set_xlabel('Número de componentes')
-    axs[1].set_ylabel('Variabilidad del número de enlaces')
+    axs[1].set_xlabel(objective1_tag)
+    axs[1].set_ylabel(objective3_tag)
     axs[1].legend()
 
-    axs[2].scatter(objective2, objective3, c='r', label='Individuos dominados')
+    axs[2].scatter(objective2, objective3, c='r', label=dominated_tag)
     pareto_fitness3 = np.array([(ind[1][1], ind[1][2]) for ind in pareto_front])
-    axs[2].scatter(pareto_fitness3[:, 0], pareto_fitness3[:, 1], c='b', label='Frente de Pareto')
+    axs[2].scatter(pareto_fitness3[:, 0], pareto_fitness3[:, 1], c='b', label=non_dominated_tag)
     axs[2].set_title('Objetivo 2 (Min x) vs Objetivo 3 (Min y)')
-    axs[2].set_xlabel('Variabilidad del tamaño de componentes')
-    axs[2].set_ylabel('Variabilidad del número de enlaces')
+    axs[2].set_xlabel(objective2_tag)
+    axs[2].set_ylabel(objective3_tag)
     axs[2].legend()
 
     plt.tight_layout()
@@ -223,21 +229,21 @@ def generate_solutions_list(pareto_front):
     solutions = []
 
     for index, (individual, fitness) in enumerate(pareto_front):
-        id = index + 1
+        individual_id = index + 1
         rounded_fitness = (int(fitness[0]), float(round(fitness[1], 2)), float(round(fitness[2], 2)))
         row = {
-            "Id": id,
-            "Individual": f"Solución {id}",
+            "Id": individual_id,
+            "Individual": f"Solución {individual_id}",
             "Fitness": rounded_fitness,
             "Individual_data": individual
         }
         solutions.append(row)
 
-    return solutions, id
+    return solutions, individual_id
 
-def solution_name(id, fitness, modified, individual):
+def solution_name(individual_id, fitness, modified, individual):
     if modified:
         fitness = ie.fitness(individual)
     
     modified_flag = "modified_" if modified else ""
-    return f"{modified_flag}solution{id}_{fitness}.zip"
+    return f"{modified_flag}solution{individual_id}_{fitness}.zip"

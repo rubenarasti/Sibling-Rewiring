@@ -80,25 +80,26 @@ def signUp():
 
 
 def logIn():
-	try:
-		_email = request.form['email']
-		_password = request.form['password']
-		
-		if  _email and _password:		
-			sql = ('SELECT user_id FROM tbl_user where user_email = %s and user_password = %s')
-			values = (_email, _password)
-			mycursor.execute(sql, values)
-			users = mycursor.fetchone()
-			user_exist = False
-			
-			if users != None:
-				user_exist = True
-				
-	except Exception as e:
-		return json.dumps({'error':'El usuario especificado no existe, compruebe su mail y contraseña'})
-		
-	finally:
-		return user_exist
+    user_exist = False  # Valor por defecto
+    
+    try:
+        _email = request.form['email']
+        _password = request.form['password']
+
+        if _email and _password:
+            
+            sql = 'SELECT user_id FROM tbl_user WHERE user_email = %s AND user_password = %s'
+            values = (_email, _password)
+            mycursor.execute(sql, values)
+            user = mycursor.fetchone()
+
+            if user is not None:
+                user_exist = True
+
+    except Exception as e:
+        print(f"Error: {e}")
+    
+    return user_exist
 	
 def addNet(totalStudents,numberSiblings):
 	try: 
