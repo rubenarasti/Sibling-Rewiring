@@ -6,7 +6,7 @@ matplotlib==3.9.0
 mysql-connector==2.2.9
 mysql-connector-python==8.0.23
 networkx==3.3
-numpy==2.0.0
+numpy==1.26.0
 pandas==2.2.2
 pymoo==0.6.0
 python-dotenv==1.0.1
