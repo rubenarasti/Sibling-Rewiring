@@ -102,7 +102,7 @@ def solve_genetic_algorithm(siblings_matrix, school_graph, ngen, psize, cxpb, mu
 
     pareto_front = [(list(ind), fit) for ind, fit in unique_solutions.items()]
 
-    pareto_front = sorted(pareto_front, key=lambda x: (x[1][0], x[1][1]))
+    pareto_front = sorted(pareto_front, key=lambda x: (x[1][0], x[1][1]), reverse=True)
 
     return pareto_front, all_fitness
 
