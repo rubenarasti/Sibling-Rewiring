@@ -20,8 +20,6 @@ import randomNetCreation as randomNet
 import fileNetCreation as fileNet
 from function import *
 import data_management as dm
-#import genetic_algorithm as ga
-
 import ga_function as ga
 from config import Config
 
