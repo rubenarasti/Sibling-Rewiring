@@ -20,12 +20,14 @@ import randomNetCreation as randomNet
 import fileNetCreation as fileNet
 from function import *
 import data_management as dm
-import genetic_algorithm as ga
+#import genetic_algorithm as ga
+
+import ga_function as ga
 from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
-#app.debug = True
+app.debug = True
 
 bootstrap = Bootstrap(app)
  

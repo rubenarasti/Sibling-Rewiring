@@ -74,7 +74,7 @@ def convert_to_feasible(individual):
     # If more class changes are made than there are siblings, the input data is not correct
     max_iterations = gd.siblings_number
     iterations = 0
-
+    
     while iterations < max_iterations:
         graph_eval = fenotype(individual)
         dicEstudiantes = nx.get_node_attributes(graph_eval, 'Estudiantes')

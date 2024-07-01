@@ -75,13 +75,20 @@ def create_initial_network(totalStudents, numberSiblings):
 
     used_pairs = set()
     
+    max_iterations = (totalStudents ** 2) // 2 # posible combinations of pairs
+    iterations = 0
+
     for i in range(0,numberSiblings):
         node1 = random.choice(copy)
         node2 = random.choice(copy)
         while node1 == node2 or (node1, node2) in used_pairs or (node2, node1) in used_pairs:
             node1 = random.choice(copy)
             node2 = random.choice(copy)
-        
+
+            iterations += 1
+            if iterations > max_iterations:
+                raise RuntimeError("Exceeded maximum iterations. Too many pairs of siblings.")
+            
         edge = (node1,node2)    
         used_pairs.add(edge)
         __siblings.append(edge)
