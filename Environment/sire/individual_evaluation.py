@@ -83,8 +83,8 @@ def phenotype(individual):
 
 def convert_to_feasible(individual):
     modified = False  # Flag to know when a solution is modified
-    # If more class changes are made than there are siblings, the input data is not correct
-    max_iterations = gd.siblings_number
+    # If more class changes are made than students, the input data is not correct
+    max_iterations = gd.total_students
     iterations = 0
     
     while iterations < max_iterations:
