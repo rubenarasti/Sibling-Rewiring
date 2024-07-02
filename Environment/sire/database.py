@@ -1,42 +1,11 @@
-from urllib.parse import urlparse
+from config import Config
 from flask import Flask, json, request, session
 from flask_login import LoginManager
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import mysql.connector
 
-def is_docker():
-    return os.getenv('IS_DOCKER', 'false') == 'true'
-    
-if is_docker():
-    # Configuration for Docker
-    db_config = {
-        'host': os.getenv('DATABASE_HOST', 'db'),
-        'user': os.getenv('DATABASE_USER', 'root'),
-        'password': os.getenv('DATABASE_PASSWORD', 'root'),
-        'database': os.getenv('DATABASE_NAME', 'sire')
-    }
-
-else:
-    # Configuration for Heroku
-    DATABASE_URL = os.getenv('DATABASE_URL')
-    if DATABASE_URL:
-        url = urlparse(DATABASE_URL)
-        db_config = {
-            'host': url.hostname,
-            'user': url.username,
-            'password': url.password,
-            'database': url.path[1:],
-            'port': url.port if url.port else 3306
-        }
-    else:
-        # Default configuration
-        db_config = {
-	    'host': os.getenv('DATABASE_HOST', 'localhost'),
-	    'user': os.getenv('DATABASE_USER', 'root'),
-	    'password': os.getenv('DATABASE_PASSWORD', 'root'),
-	    'database': os.getenv('DATABASE_NAME', 'sire')
-	}
+db_config = Config.get_db_config()
 
 mydb = mysql.connector.connect(**db_config)
 mycursor = mydb.cursor()

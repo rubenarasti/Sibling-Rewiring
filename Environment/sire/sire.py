@@ -62,7 +62,7 @@ def register():
 	user_created = signUp()
 	if user_created == json.dumps({'message':'User created successfully !'}):
 		return render_template('login.html')
-	return jsonify({'NOT': x})
+	return jsonify({'error': 'User registration failed.'})
 
 @app.route('/user_home')
 def show_user_home():
