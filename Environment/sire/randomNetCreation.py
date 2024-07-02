@@ -14,14 +14,47 @@ __schoolyear_class = nx.Graph()
 
 def create_initial_network(totalStudents, numberSiblings):
     """
-    Creates the initial network
+    Creates the initial network and puts the pairs of siblings on a list.
     
-    """
-    if not isinstance(totalStudents, int):
-        raise TypeError("the number of students must be an integer")
-    if not isinstance(numberSiblings, int):
-        raise TypeError("the number of pairs of siblings must be an integer")
+    Parameters
+    ----------
+    totalStudents : int
+        Total number of students. Must be an integer between 0 and 100000.
+    numberSiblings : int
+        Number of sibling pairs to create in the network. Must be an integer 
+        between 1 and the posible combinations between students.
 
+    Returns
+    -------
+    nx.Graph
+        The initial network graph created.
+    
+    Raises
+    ------
+    TypeError
+        If totalStudents or numberSiblings are not integers.
+    ValueError
+        If totalStudents or numberSiblings are not within the specified range.
+    """
+    # Check if totalStudents is an integer
+    if not isinstance(totalStudents, int):
+        raise TypeError("The number of students must be an integer")
+
+    # Check if numberSiblings is an integer
+    if not isinstance(numberSiblings, int):
+        raise TypeError("The number of pairs of siblings must be an integer")
+    
+    # Check if totalStudents is within the valid range
+    if not (0 <= totalStudents <= 100000):
+        raise ValueError("The number of students must be between 0 and 100.000")
+    
+    # Calculate the maximum number of sibling pairs
+    max_siblings = (totalStudents ** 2) // 2
+
+    # Check if numberSiblings is within the valid range
+    if not (1 <= numberSiblings <= max_siblings):
+        raise ValueError(f"The number of pairs of siblings must be between 1 and {max_siblings}")
+    
     if totalStudents < (3*len(__class)+6*len(__class)):
         totalStudents = (3*len(__class)+6*len(__class))
     dicNombre = {}
@@ -80,7 +113,7 @@ def create_initial_network(totalStudents, numberSiblings):
 
     used_pairs = set()
     
-    max_iterations = (totalStudents ** 2) // 2 # posible combinations of pairs
+    max_iterations = max_siblings * 2
     iterations = 0
 
     for i in range(0,numberSiblings):
