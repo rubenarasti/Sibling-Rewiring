@@ -1,4 +1,5 @@
 import numpy as np
+import networkx as nx
 import random
 
 from pymoo.core.problem import ElementwiseProblem
@@ -92,15 +93,14 @@ def solve_genetic_algorithm(siblings_matrix, school_graph, ngen, psize, cxpb, mu
 
     all_fitness = list(set(tuple(fit) for fit in all_fitness))
     
-    unique_solutions = {}
+    unique_solutions = set()
 
     for ind, fit in zip(res.X, res.F):
-        ind_tuple = tuple(int(i) for i in ind)
-        fit_tuple = (int(-fit[0]), float(fit[1]), float(fit[2]))
-        if ind_tuple not in unique_solutions:
-            unique_solutions[ind_tuple] = fit_tuple
+        ind = tuple(int(i) for i in ind)
+        fit = (int(-fit[0]), float(fit[1]), float(fit[2]))
+        unique_solutions.add((ind, fit))
 
-    pareto_front = [(list(ind), fit) for ind, fit in unique_solutions.items()]
+    pareto_front = [(list(ind), fit) for ind, fit in unique_solutions]
 
     pareto_front = sorted(pareto_front, key=lambda x: (x[1][0], x[1][1]), reverse=True)
 

@@ -8,5 +8,5 @@ class Config:
     if not secret_key_env:
         raise ValueError("No SECRET_KEY set, create the file .env with a variable named SECRET_KEY")
     SECRET_KEY = secret_key_env.encode()
-    DEBUG = False
+    DEBUG = True
     

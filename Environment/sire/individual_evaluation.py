@@ -83,8 +83,8 @@ def phenotype(individual):
 
 def convert_to_feasible(individual):
     modified = False  # Flag to know when a solution is modified
-    # If more class changes are made than students, the input data is not correct
-    max_iterations = gd.total_students
+    # If there are more class changes than classrooms, the input data is not correct
+    max_iterations = 9 * len(gd.classrooms) + 1
     iterations = 0
     
     while iterations < max_iterations:
@@ -114,6 +114,12 @@ def convert_to_feasible(individual):
         iterations += 1
     
     if iterations >= max_iterations:
+        print("capacidad ",gd.capacity)
+        for clase, students in dicEstudiantes.items():
+            print("clase ",clase)
+            print("Estudiantes: ",students)
+            k = len(students) - gd.capacity  # leftover students
+            print("sobrantes: ", k)
         raise ValueError("Exceeded maximum iterations in covert_to_feasible. Input data may be invalid.")
 
     return graph_eval, modified

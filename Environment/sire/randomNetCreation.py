@@ -36,22 +36,18 @@ def create_initial_network(totalStudents, numberSiblings):
     ValueError
         If totalStudents or numberSiblings are not within the specified range.
     """
-    # Check if totalStudents is an integer
     if not isinstance(totalStudents, int):
         raise TypeError("The number of students must be an integer")
 
-    # Check if numberSiblings is an integer
     if not isinstance(numberSiblings, int):
         raise TypeError("The number of pairs of siblings must be an integer")
     
-    # Check if totalStudents is within the valid range
     if not (0 <= totalStudents <= 100000):
         raise ValueError("The number of students must be between 0 and 100.000")
     
-    # Calculate the maximum number of sibling pairs
+    # Posible combinations of siblings
     max_siblings = (totalStudents ** 2) // 2
 
-    # Check if numberSiblings is within the valid range
     if not (1 <= numberSiblings <= max_siblings):
         raise ValueError(f"The number of pairs of siblings must be between 1 and {max_siblings}")
     
