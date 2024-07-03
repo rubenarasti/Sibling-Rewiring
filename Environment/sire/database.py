@@ -19,7 +19,7 @@ def create_procedure():
 	#mycursor.execute("DROP PROCEDURE IF EXISTS sp_createUser")
 	file = open('procedure.sql','r')
 	query = file.read()
-	mycursor.execute(query)
+	mycursor.execute(query, multi=True)
 
 def signUp():
 	try:
