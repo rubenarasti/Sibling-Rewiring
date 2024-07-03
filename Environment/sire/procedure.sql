@@ -1,3 +1,5 @@
+DROP PROCEDURE IF EXISTS sp_createUser;
+
 CREATE PROCEDURE sp_createUser(
     IN p_name VARCHAR(45),
     IN p_surname VARCHAR(45),
