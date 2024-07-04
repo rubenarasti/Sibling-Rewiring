@@ -16,7 +16,6 @@ def create_tables():
 	mycursor.execute("CREATE TABLE IF NOT EXISTS tbl_file(file_id INT AUTO_INCREMENT PRIMARY KEY, file_name VARCHAR(45) NOT NULL, file_directory VARCHAR(100))")
 	
 def create_procedure():
-	#mycursor.execute("DROP PROCEDURE IF EXISTS sp_createUser")
 	file = open('procedure.sql','r')
 	query = file.read()
 	mycursor.execute(query, multi=True)
