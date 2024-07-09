@@ -1,46 +1,26 @@
-# TFG: Sibling-Rewiring
-Bienvenido a Sibling-Rewiring (SIRE). Sire es una aplicaciónque se ha desarrollado como TFG. 
+# TFG: Sibling-Rewiring2.0
+Bienvenido a Sibling-Rewiring (SiRe). SiRe es una aplicación web desarrollada como trabajo final de grado en 2021. Esta es su segunda iteración.
 
-Se encargará de obtener la mejor colocación de alumnos en sus aulas, para reducir los riesgos de contagios al mínimo teniendo en cuenta las relaciones de hermanos.
+SiRe se encarga de obtener la mejor organización de alumnos en un colegio para reducir al mínimo el riesgo de contagio.
 
-### Resumen del proyecto
-Actualmente, nos encontramos sumidos en una pandemia a nivel mundial, la pandemia del COVID-19, causada por el virus SARS-CoV-2. Hecho que ha generado nuevas necesidades,
-que han repercutido en cambios muy relevantes en la vida de las personas en los distintos ámbitos de su vida.
+## Funcionamiento
+SiRe se basa en el concepto de los grupos burbuja, que consiste en aislar las aulas de estudiantes para minimizar su interacción con alumnos de otras aulas. Para que esta medida sea más efectiva, se debe considerar que algunas clases de distintos cursos están conectadas por hermanos que conviven en el mismo hogar.
 
-Este proyecto surge para dar solución a una de las necesidades encontradas a raíz de esta pandemia, el proceso de generación de clases en los colegios tratando de minimizar el
-riesgo de contagios. Anteriormente, se tenían en cuenta los hermanos encontrados en el mismo curso, tratando de unirlos en una misma clase puesto que su contacto además de en el colegio también se producía en el hogar. Pero ¿y los hermanos que no tienen la misma edad?
+Para minimizar el riesgo de contagio, se busca cambiar a los hermanos de grupo de manera que estas conexiones separen al máximo número de clases, intentando no perjudicar el riesgo de algunas clases sobre otras.
 
-Gracias a la ayuda del algoritmo denominado recocido simulado y las redes complejas, hallamos una solución a esta organización de un modo más eficiente. Tenemos en cuenta todos
-los hermanos que se puedan encontrar en el colegio, generando enlaces entre las clases y tras ello buscamos la mejor combinación para minimizar tanto el riesgo de contagio individual como el riesgo por grupo.
+Para lograr esto, SiRe utiliza un criterio tri-objetivo para evaluar las distintas combinaciones en las que se asignan los hermanos a los grupos. Mediante un algoritmo genético, se encuentran múltiples soluciones óptimas a este problema con distintas evaluaciones, permitiendo al usuario elegir la solución que mejor se ajuste a sus necesidades.
 
-Sire (Sibling-Rewiring) es por tanto una aplicación concebida para minimizar los riesgos de contagio de cualquier enfermedad transmitida por el aire o contacto cercano.
+## Resultados
+
+![grafo.png](https://github.com/rubenarasti/Sibling-Rewiring/blob/main/Documentaci%C3%B3n/Imagenes%20documentacion/grafo_clases.png)
+
+## Características
+
+## Web
+La aplicación web se puede probar en el siguiente enlace: [Sibling-Rewiring2.0](https://sire-ddeac2c1782a.herokuapp.com/)
 
 ## Instalación
-  - Python 3.8
-  
-  | Podemos encontrar la versión pinchando en el siguiente enlace: https://www.python.org/downloads/release/python-380/
-  
-  - MySQL Installer 8.0.20
-  
-  | Podemos encontrar la versión pinchando en el siguiente enlace: https://downloads.mysql.com/archives/installer/
-  
-  - El resto de herramientas o librerías necesarias se podrán instalar ejecutando el archivo 'tools.txt'. El modo de hacerlo será ejecutando el siguiente comando:
-  
-  | pip install -r tools.txt
-  
- ## Máquina virtual
- A continuación, se proporciona un enlace desde el cual descargar una imagen de máquina virtual. Para poder usar la aplicación con mayor facilidad únicamente habrá que descargar este '.ova' e importarla en un software de virtualización.
- [Descargar]( https://drive.google.com/file/d/1pqplWOKvM_FgxKfGRe-RAzmfHlqa9RJm/view?usp=sharing)
- 
- Por si fuera necesario la contraseña = 'contraseña'
- 
-Para ejecutarlo una vez alojada la imagen en la máquina virtual, habrá que seguir los pasos que encontramos en el README
-
-## Vídeos
-
-[EJECUCIÓN RÁPIDA](https://youtu.be/seJjD0zPrdo)
-
-[MUESTRA DE TODAS LAS PANTALLAS](https://youtu.be/82mpQ9Rujvc)
+Si se quiere instalar la aplicación localmente toda la información necesaria se encuentra en el apartado D.3 de los [anexos](https://github.com/rubenarasti/Sibling-Rewiring/blob/main/Documentaci%C3%B3n/TFG-SiblingRewiring2.0-Anexos.pdf) 
 
 ##
 
@@ -60,28 +40,4 @@ are siblings and nodes classes of school. We mix that net looking for a similar 
 Sire (Sibling-Rewiring) is therefore an application designed to minimize the risk of spread of any disease transmitted by air or close contact.
 
 ## Installation
-  - Python 3.8
-  
-  | Use next link to download: https://www.python.org/downloads/release/python-380/
-  
-  - MySQL Installer 8.0.20
-  
-  | Use next link to download: https://downloads.mysql.com/archives/installer/
-  
-  - The other packages and tools could be installed by 'tools.txt' execution. Use the following command:
-  
-  | pip install -r tools.txt
-  
- ## Virtual machine
- Using the following link you can download a virtual machine image to could use the app easily. Just donwload the '.ova' file and import it to a virtual machine.
- [Download]( https://drive.google.com/file/d/1pqplWOKvM_FgxKfGRe-RAzmfHlqa9RJm/view?usp=sharing)
- 
- If needed Password = 'contraseña' 
- 
-To execute it, follow the steps at README.
 
-## Videos
-
-[QUICK EXECUTION](https://youtu.be/seJjD0zPrdo)
-
-[ALL SLIDES SIRE](https://youtu.be/82mpQ9Rujvc)
