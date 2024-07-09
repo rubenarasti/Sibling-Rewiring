@@ -1,18 +1,18 @@
 # TFG: Sibling-Rewiring2.0
-Bienvenido a Sibling-Rewiring (SiRe). SiRe es una aplicación web que se desarrolló como trabajo final de grado en 2021. Esta es su segunda iteración.
+Bienvenido a Sibling-Rewiring (SiRe). SiRe es una aplicación web desarrollada como trabajo final de grado en 2021. Esta es su segunda iteración.
 
-Se encargará de obtener la mejor organización de alumnos en un colegio para reducir el riesgo de contagio al mínimo.
+SiRe se encarga de obtener la mejor organización de alumnos en un colegio para reducir al mínimo el riesgo de contagio.
 
-### Funcionamiento
-SiRe, se basa en el concepto de los grupos burbuja, que son aislar las aulas de estudiantes para que tengan la mínima interacción posible con alumnos de otras aulas. Para que esta medida sea más efectiva, se debe tener en cuenta que algunas clases de distintos cursos están conectadas por hermanos que conviven en el mismo hogar.
-Para minimizar el riesgo de contagio, se busca cambiar a los hermanos de grupo para que dichas conexiones aislen al máximo número de clases intentando no perjudicar el riesgo de algunas clases sobre otras.
+## Funcionamiento
+SiRe se basa en el concepto de los grupos burbuja, que consiste en aislar las aulas de estudiantes para minimizar su interacción con alumnos de otras aulas. Para que esta medida sea más efectiva, se debe considerar que algunas clases de distintos cursos están conectadas por hermanos que conviven en el mismo hogar.
 
-Para conseguir esto, SiRe utiliza un criterio tri-objetivo para evaluar las distintas combinaciones en las que asignan los hermanos a los grupos. mediante un algoritmo genético, se ecuentran múltiples soluciones optimas (ESTO NO SE SI ESTÁ BIEN DICHO YA Q EL OPTIMO ES LO MEJOR POSIBLE) a este problema con distintas evaluaciones para que el usuario pueda elegir la solucion que más se ajuste a sus necesidades.
+Para minimizar el riesgo de contagio, se busca cambiar a los hermanos de grupo de manera que estas conexiones separen al máximo número de clases, intentando no perjudicar el riesgo de algunas clases sobre otras.
 
+Para lograr esto, SiRe utiliza un criterio tri-objetivo para evaluar las distintas combinaciones en las que se asignan los hermanos a los grupos. Mediante un algoritmo genético, se encuentran múltiples soluciones óptimas a este problema con distintas evaluaciones, permitiendo al usuario elegir la solución que mejor se ajuste a sus necesidades.
 
-### Resultados
+## Resultados
 
-![graficas](https://github.com/rubenarasti/Sibling-Rewiring/blob/main/Documentaci%C3%B3n/Imagenes%20documentacion/grafo_clases.png)
+![grafo.png](https://github.com/rubenarasti/Sibling-Rewiring/blob/main/Documentaci%C3%B3n/Imagenes%20documentacion/grafo_clases.png)
 
 ## Características
 
