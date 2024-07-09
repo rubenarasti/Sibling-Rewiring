@@ -2,7 +2,7 @@
 Bienvenido a Sibling-Rewiring (SIRE). Sire es una aplicación web que se ha desarrollado como TFG. 
 
 Se encargará de obtener la mejor organización de alumnos en sus aulas, para reducir los riesgos de contagios al mínimo teniendo en cuenta las relaciones de hermanos.
-
+![Descripción de la imagen](https://github.com/rubenarasti/Sibling-Rewiring/blob/main/Documentaci%C3%B3n/Imagenes%20documentacion/FrentePareto3Objetivos%20(2).png)
 ### Resumen del proyecto
 Actualmente, nos encontramos sumidos en una pandemia a nivel mundial, la pandemia del COVID-19, causada por el virus SARS-CoV-2. Hecho que ha generado nuevas necesidades,
 que han repercutido en cambios muy relevantes en la vida de las personas en los distintos ámbitos de su vida.
