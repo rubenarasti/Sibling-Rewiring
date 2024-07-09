@@ -1,5 +1,5 @@
 # TFG: Sibling-Rewiring
-Bienvenido a Sibling-Rewiring (SIRE). Sire es una aplicaciónque se ha desarrollado como TFG. 
+Bienvenido a Sibling-Rewiring (SIRE). Sire es una aplicación web que se ha desarrollado como TFG. 
 
 Se encargará de obtener la mejor organización de alumnos en sus aulas, para reducir los riesgos de contagios al mínimo teniendo en cuenta las relaciones de hermanos.
 
@@ -17,30 +17,7 @@ Sire (Sibling-Rewiring) es por tanto una aplicación concebida para minimizar lo
 
 ## Instalación
   - Python 3.8
-  
-  | Podemos encontrar la versión pinchando en el siguiente enlace: https://www.python.org/downloads/release/python-380/
-  
-  - MySQL Installer 8.0.20
-  
-  | Podemos encontrar la versión pinchando en el siguiente enlace: https://downloads.mysql.com/archives/installer/
-  
-  - El resto de herramientas o librerías necesarias se podrán instalar ejecutando el archivo 'tools.txt'. El modo de hacerlo será ejecutando el siguiente comando:
-  
-  | pip install -r tools.txt
-  
- ## Máquina virtual
- A continuación, se proporciona un enlace desde el cual descargar una imagen de máquina virtual. Para poder usar la aplicación con mayor facilidad únicamente habrá que descargar este '.ova' e importarla en un software de virtualización.
- [Descargar]( https://drive.google.com/file/d/1pqplWOKvM_FgxKfGRe-RAzmfHlqa9RJm/view?usp=sharing)
- 
- Por si fuera necesario la contraseña = 'contraseña'
- 
-Para ejecutarlo una vez alojada la imagen en la máquina virtual, habrá que seguir los pasos que encontramos en el README
 
-## Vídeos
-
-[EJECUCIÓN RÁPIDA](https://youtu.be/seJjD0zPrdo)
-
-[MUESTRA DE TODAS LAS PANTALLAS](https://youtu.be/82mpQ9Rujvc)
 
 ##
 
@@ -60,28 +37,4 @@ are siblings and nodes classes of school. We mix that net looking for a similar 
 Sire (Sibling-Rewiring) is therefore an application designed to minimize the risk of spread of any disease transmitted by air or close contact.
 
 ## Installation
-  - Python 3.8
-  
-  | Use next link to download: https://www.python.org/downloads/release/python-380/
-  
-  - MySQL Installer 8.0.20
-  
-  | Use next link to download: https://downloads.mysql.com/archives/installer/
-  
-  - The other packages and tools could be installed by 'tools.txt' execution. Use the following command:
-  
-  | pip install -r tools.txt
-  
- ## Virtual machine
- Using the following link you can download a virtual machine image to could use the app easily. Just donwload the '.ova' file and import it to a virtual machine.
- [Download]( https://drive.google.com/file/d/1pqplWOKvM_FgxKfGRe-RAzmfHlqa9RJm/view?usp=sharing)
- 
- If needed Password = 'contraseña' 
- 
-To execute it, follow the steps at README.
 
-## Videos
-
-[QUICK EXECUTION](https://youtu.be/seJjD0zPrdo)
-
-[ALL SLIDES SIRE](https://youtu.be/82mpQ9Rujvc)
